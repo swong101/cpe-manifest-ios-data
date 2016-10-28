@@ -72,33 +72,35 @@ open class NGDMAppData {
         id = manifestObject.AppID
         
         for obj in manifestObject.NVPairList {
-            switch obj.Name {
-            case NVPairName.Location:
-                if let obj = obj.Location {
-                    location = NGDMLocation(manifestObject: obj)
-                } else if let obj = obj.LocationSet?.LocationList?.first {
-                    location = NGDMLocation(manifestObject: obj)
+            if let name = obj.Name {
+                switch name {
+                case NVPairName.Location:
+                    if let obj = obj.Location {
+                        location = NGDMLocation(manifestObject: obj)
+                    } else if let obj = obj.LocationSet?.LocationList?.first {
+                        location = NGDMLocation(manifestObject: obj)
+                    }
+                    
+                    break
+                    
+                case NVPairName.Zoom:
+                    zoomLevel = Float(obj.Integer ?? 0)
+                    break
+                    
+                case NVPairName.ExperienceId:
+                    if let id = obj.ExperienceID {
+                        experience = NGDMExperience.getById(id)
+                    }
+                    
+                    break
+                    
+                case NVPairName.AppType:
+                    backupTitle = obj.Text
+                    break
+                    
+                default:
+                    break
                 }
-                
-                break
-                
-            case NVPairName.Zoom:
-                zoomLevel = Float(obj.Integer ?? 0)
-                break
-                
-            case NVPairName.ExperienceId:
-                if let id = obj.ExperienceID {
-                    experience = NGDMExperience.getById(id)
-                }
-                
-                break
-                
-            case NVPairName.AppType:
-                backupTitle = obj.Text
-                break
-                
-            default:
-                break
             }
         }
     }

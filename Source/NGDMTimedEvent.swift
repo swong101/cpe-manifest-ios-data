@@ -54,6 +54,10 @@ open class NGDMTimedEvent: Equatable {
     }
     
     /// Video associated with this TimedEvent's AudioVisual/Presentation
+    open var video: NGDMVideo? {
+        return audioVisual?.presentations?.last?.video
+    }
+    
     open var videoURL: URL? {
         return audioVisual?.presentations?.last?.videoURL
     }
