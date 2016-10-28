@@ -12,7 +12,7 @@ open class NGDMPicture {
     var id: String
     
     /// Image URL to be used for full display
-    var image: NGDMImage?
+    open var image: NGDMImage?
     private var _imageURL: URL?
     open var imageURL: URL? {
         return _imageURL ?? image?.url
