@@ -12,6 +12,7 @@ open class NGDMAppData {
         static let Location = "location"
         static let Text = "text"
         static let Zoom = "zoom"
+        static let ZoomLocked = "zoom_locked"
         static let VideoId = "video_id"
         static let GalleryId = "gallery_id"
         static let LocationThumbnail = "location_thumbnail"
@@ -52,6 +53,7 @@ open class NGDMAppData {
     var experience: NGDMExperience?
     open var location: NGDMLocation?
     open var zoomLevel: Float = 0
+    open var zoomLocked = false
     open var mediaCount: Int {
         return experience?.childExperiences?.count ?? 0
     }
@@ -85,6 +87,10 @@ open class NGDMAppData {
                     
                 case NVPairName.Zoom:
                     zoomLevel = Float(obj.Integer ?? 0)
+                    break
+                    
+                case NVPairName.ZoomLocked:
+                    zoomLocked = (obj.Text == "Y")
                     break
                     
                 case NVPairName.ExperienceId:
