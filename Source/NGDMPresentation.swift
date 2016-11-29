@@ -24,6 +24,9 @@ open class NGDMPresentation {
         return video?.size ?? CGSize.zero
     }
     
+    /// Commentary Audio associated with this Presentation
+    var commentaryAudio: NGDMAudio?
+    
     // MARK: Initialization
     /**
         Initializes a new Presentation
@@ -34,8 +37,16 @@ open class NGDMPresentation {
     init(manifestObject: NGEPresentationType) {
         id = manifestObject.PresentationID
         
-        if let id = manifestObject.TrackMetadataList.first?.VideoTrackReferenceList?.first?.VideoTrackIDList?.first {
-            video = NGDMVideo.getById(id)
+        if let trackMetadataObjList = manifestObject.TrackMetadataList {
+            if let videoId = trackMetadataObjList.first?.VideoTrackReferenceList?.first?.VideoTrackIDList?.first {
+                video = NGDMVideo.getById(videoId)
+            }
+            
+            for trackMetadataObj in trackMetadataObjList {
+                if let audioId = trackMetadataObj.AudioTrackReferenceList?.first?.AudioTrackIDList?.first, let audio = NGDMAudio.getById(audioId), audio.isCommentary {
+                    commentaryAudio = audio
+                }
+            }
         }
     }
     
