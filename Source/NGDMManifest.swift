@@ -82,6 +82,10 @@ open class NGDMManifest {
         
         let manifest = NGEMediaManifestType.NGEMediaManifestTypeFromFile(path: filePath)!
         
+        guard manifest.Inventory != nil else {
+            throw NGDMError.manifestMissing
+        }
+        
         // Pre-load experience inventory
         if let objList = manifest.Inventory.ImageList {
             for obj in objList {

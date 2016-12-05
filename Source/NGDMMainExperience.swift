@@ -36,6 +36,10 @@ open class NGDMMainExperience: NGDMExperience {
         return nil
     }
     
+    open var commentaryAudioURL: URL? {
+        return presentation?.commentaryAudio?.url
+    }
+    
     // MARK: Helper Methods
     /**
         Find the value of any custom identifier associated with this Experience
