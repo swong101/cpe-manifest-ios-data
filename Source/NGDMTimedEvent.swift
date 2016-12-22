@@ -229,9 +229,13 @@ open class NGDMTimedEvent: Equatable {
         return nil
     }
     
-    open static func findByTimecode(_ timecode: Double, type: TimedEventType) -> [NGDMTimedEvent] {
+    open static func findByTimecode(_ timecode: Double, type: TimedEventType = .any) -> [NGDMTimedEvent] {
         let timedEvents = NGDMManifest.sharedInstance.timedEvents.filter({ $0.isType(type) && timecode >= $0.startTime && timecode <= $0.endTime })
         return timedEvents.sorted(by: { ($0.experience?.sequenceNumber ?? 0) < ($1.experience?.sequenceNumber ?? 0) })
+    }
+    
+    open static func findClosestToTimecode(_ timecode: Double, type: TimedEventType = .any) -> NGDMTimedEvent? {
+        return NGDMManifest.sharedInstance.timedEvents.first(where: { $0.isType(type) && timecode <= $0.endTime })
     }
     
 }
