@@ -25,7 +25,7 @@ open class NGDMManifest {
     
     // MARK: Singleton Methods
     /// Static shared instance for singleton
-    open static var sharedInstance: NGDMManifest!
+    open static var sharedInstance: NGDMManifest! = NGDMManifest()
     
     // MARK: Instance variables
     /// The Manifest's main Experiences associated with the feature film, in-movie and out-of-movie experiences
@@ -338,17 +338,11 @@ open class NGDMManifest {
     }
     
     /**
-        Creates a new static instance of a Manifest
-    */
-    open static func createInstance() {
-        sharedInstance = NGDMManifest()
-    }
-    
-    /**
         Destroys the current Manifest instance
     */
     open static func destroyInstance() {
         sharedInstance = nil
+        NGDMManifest.sharedInstance = NGDMManifest()
     }
     
 }
