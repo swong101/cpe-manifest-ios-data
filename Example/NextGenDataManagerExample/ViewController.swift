@@ -10,13 +10,11 @@ import UIKit
 import NextGenDataManager
 
 class ViewController: UIViewController {
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         if let filePath = Bundle.main.path(forResource: "mos_manifest", ofType: "xml") {
-            NGDMManifest.createInstance()
-            
             do {
                 try NGDMManifest.sharedInstance.loadManifestXMLFile(filePath)
                 print("Main Experience ID: \(NGDMManifest.sharedInstance.mainExperience?.id)")
@@ -29,4 +27,3 @@ class ViewController: UIViewController {
     }
     
 }
-
