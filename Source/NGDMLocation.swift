@@ -7,10 +7,10 @@ open class NGDMLocation {
     
     // MARK: Instance Variables
     /// Metadata
-    open var name: String?
-    open var address: String?
+    public var name: String?
+    public var address: String?
     var icon: NGDMImage?
-    open var iconImage: UIImage? {
+    public var iconImage: UIImage? {
         if let icon = icon {
             return NGDMManifest.sharedInstance.imageCache[icon.id]
         }
@@ -19,8 +19,8 @@ open class NGDMLocation {
     }
     
     /// Coordinates
-    open var latitude: Double = 0
-    open var longitude: Double = 0
+    public var latitude: Double = 0
+    public var longitude: Double = 0
     
     // MARK: Initialization
     /**

@@ -7,7 +7,7 @@ import Foundation
 // Wrapper class for `NGEExperienceAppType` Manifest object
 open class NGDMAppData {
     
-    fileprivate struct NVPairName {
+    private struct NVPairName {
         static let AppType = "type"
         static let Location = "location"
         static let Text = "text"
@@ -23,44 +23,49 @@ open class NGDMAppData {
     
     // MARK: Instance Variables
     /// Unique identifier
-    open var id: String!
-    
-    /// Metadata
-    private var backupTitle: String?
-    open var title: String? {
-        return experience?.title ?? backupTitle
+    var id: String!
+    open var analyticsIdentifier: String {
+        return id
     }
     
-    open var thumbnailImageURL: URL? {
+    /// Metadata
+    private var _title: String?
+    public var title: String? {
+        return (experience?.title ?? _title)
+    }
+    
+    public var thumbnailImageURL: URL? {
         if let imageURL = experience?.imageURL {
             return imageURL
         }
         
         if let location = location {
-            let locationString = String(location.latitude) + "," + String(location.longitude)
-            let locationUrlString = "http://maps.googleapis.com/maps/api/staticmap?center=" + locationString + "&zoom=" + String(max(Int(zoomLevel) - 4, 1)) + "&scale=2&size=480x270&maptype=roadmap&format=png&visual_refresh=true"
-            return URL(string: locationUrlString)
+            return URL(string: "http://maps.googleapis.com/maps/api/staticmap" +
+                "?center=" + String(location.latitude) + "," + String(location.longitude) +
+                "&zoom=" + String(max(Int(zoomLevel) - 4, 1)) +
+                "&scale=2&size=480x270&maptype=roadmap&format=png&visual_refresh=true"
+            )
         }
         
         return nil
     }
     
-    open var description: String? {
+    public var description: String? {
         return experience?.description
     }
     
     /// Media
     var experience: NGDMExperience?
-    open var location: NGDMLocation?
-    open var zoomLevel: Float = 0
-    open var zoomLocked = false
-    open var mediaCount: Int {
-        return experience?.childExperiences?.count ?? 0
+    public var location: NGDMLocation?
+    public var zoomLevel: Float = 0
+    public var zoomLocked = false
+    public var mediaCount: Int {
+        return (experience?.childExperiences?.count ?? 0)
     }
     
     /// Check if AppData is location-based
-    var isLocation: Bool {
-        return location != nil
+    public var isLocation: Bool {
+        return (location != nil)
     }
     
     // MARK: Initialization
@@ -77,9 +82,7 @@ open class NGDMAppData {
             if let name = obj.Name {
                 switch name {
                 case NVPairName.Location:
-                    if let obj = obj.Location {
-                        location = NGDMLocation(manifestObject: obj)
-                    } else if let obj = obj.LocationSet?.LocationList?.first {
+                    if let obj = (obj.Location ?? obj.LocationSet?.LocationList?.first) {
                         location = NGDMLocation(manifestObject: obj)
                     }
                     
@@ -101,7 +104,7 @@ open class NGDMAppData {
                     break
                     
                 case NVPairName.AppType:
-                    backupTitle = obj.Text
+                    _title = obj.Text
                     break
                     
                 default:
@@ -120,12 +123,8 @@ open class NGDMAppData {
      
         - Returns: Associated Experience if it exists
      */
-    open func mediaAtIndex(_ index: Int) -> NGDMExperience? {
-        if let experiences = experience?.childExperiences , index < mediaCount {
-            return experiences[index]
-        }
-        
-        return nil
+    public func mediaAtIndex(_ index: Int) -> NGDMExperience? {
+        return (index < mediaCount ? experience?.childExperiences?[index] : nil)
     }
     
 }

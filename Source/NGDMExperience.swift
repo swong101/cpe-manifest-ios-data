@@ -26,15 +26,18 @@ open class NGDMExperience: Equatable {
     var nodeStyles: [NGDMNodeStyle]?
     
     /// Unique identifier
-    open var id: String
+    public var id: String
+    open var analyticsIdentifier: String {
+        return id
+    }
     
     /// Order within parent experience
-    open var sequenceNumber = 0
+    var sequenceNumber = 0
     
     /// All children of this Experience
-    fileprivate var _childExperiences: [NGDMExperience]?
-    fileprivate var _childExperienceIds: [String]?
-    open var childExperiences: [NGDMExperience]? {
+    private var _childExperiences: [NGDMExperience]?
+    private var _childExperienceIds: [String]?
+    public var childExperiences: [NGDMExperience]? {
         if _childExperiences == nil, let childExperienceIds = _childExperienceIds {
             _childExperiences = childExperienceIds.flatMap({ NGDMExperience.getById($0) })
         }
@@ -44,9 +47,13 @@ open class NGDMExperience: Equatable {
         return _childExperiences
     }
     
+    public var numChildren: Int {
+        return (childExperiences?.count ?? 0)
+    }
+    
     /// Child of this Experience that is a talent data Experience
-    fileprivate var _childTalentDataExperience: NGDMExperience?
-    open var childTalentDataExperience: NGDMExperience? {
+    private var _childTalentDataExperience: NGDMExperience?
+    var childTalentDataExperience: NGDMExperience? {
         if _childTalentDataExperience == nil, let index = childExperiences?.index(where: { $0.isType(.talentData) }) {
             _childTalentDataExperience = childExperiences?[index]
         }
@@ -55,22 +62,22 @@ open class NGDMExperience: Equatable {
     }
     
     /// Metadata associated with this Experience
-    open var metadata: NGDMMetadata?
+    var metadata: NGDMMetadata?
     
     /// Title to be used for display
-    open var title: String {
-        return metadata?.title ?? appData?.title ?? ""
+    public var title: String {
+        return (metadata?.title ?? appData?.title ?? "")
     }
     
     /// Description to be used for display
-    open var description: String {
-        return metadata?.description ?? appData?.description ?? ""
+    public var description: String {
+        return (metadata?.description ?? appData?.description ?? "")
     }
     
     /// Image URL to be used for thumbnail displays
-    open var imageURL: URL? {
+    public var imageURL: URL? {
         if let imageURL = metadata?.imageURL {
-            return imageURL as URL
+            return imageURL
         }
         
         // Break recursion if this is one of the main experiences
@@ -78,27 +85,11 @@ open class NGDMExperience: Equatable {
             return nil
         }
         
-        if let imageURL = audioVisual?.imageURL {
-            return imageURL as URL
-        }
-        
-        if let imageURL = gallery?.imageURL {
-            return imageURL as URL
-        }
-        
-        if let imageURL = appData?.thumbnailImageURL {
-            return imageURL as URL
-        }
-        
-        if let imageURL = app?.imageURL {
-            return imageURL as URL
-        }
-        
-        return childExperiences?.first?.imageURL
+        return (audioVisual?.imageURL ?? gallery?.imageURL ?? appData?.thumbnailImageURL ?? app?.imageURL ?? childExperiences?.first?.imageURL)
     }
     
     /// AudioVisual associated with this Experience, if it exists
-    open var audioVisual: NGDMAudioVisual?
+    var audioVisual: NGDMAudioVisual?
     
     /// Presentation associated with this Experience's AudioVisual, if it exists
     var presentation: NGDMPresentation? {
@@ -106,32 +97,32 @@ open class NGDMExperience: Equatable {
     }
     
     /// Video URL to be used for video display, if it exists
-    open var video: NGDMVideo? {
-        return presentation?.video
+    public var videoURL: URL? {
+        return presentation?.videoURL
     }
     
-    open var videoURL: URL? {
-        return video?.url
+    public var videoID: String? {
+        return presentation?.videoID
+    }
+    
+    public var videoAnalyticsIdentifier: String? {
+        return presentation?.videoAnalyticsIdentifier
     }
     
     /// Video runtime length in seconds
-    open var videoRuntime: TimeInterval {
-        if let runtime = presentation?.video?.runtimeInSeconds {
-            return runtime
-        }
-        
-        return 0
+    public var videoRuntime: TimeInterval {
+        return (presentation?.videoRuntime ?? 0)
     }
     
     /// Gallery associated with this Experience, if it exists
-    open var gallery: NGDMGallery?
+    public var gallery: NGDMGallery?
     
     /// App associated with this Experience, if it exists
-    open var app: NGDMExperienceApp?
+    public var app: NGDMExperienceApp?
     
     /// AppData associated with this Experience, if it exists
-    fileprivate var _appDataId: String?
-    open var appData: NGDMAppData? {
+    private var _appDataId: String?
+    public var appData: NGDMAppData? {
         if let id = _appDataId {
             return NGDMManifest.sharedInstance.appData?[id]
         }
@@ -139,8 +130,8 @@ open class NGDMExperience: Equatable {
         return nil
     }
     
-    open var appDataMediaCount: Int {
-        return appData?.mediaCount ?? 0
+    public var appDataMediaCount: Int {
+        return (appData?.mediaCount ?? 0)
     }
     
     // MARK: Initialization
@@ -173,7 +164,9 @@ open class NGDMExperience: Equatable {
             let experienceApp = NGDMExperienceApp(manifestObject: obj)
             app = experienceApp
             _appDataId = experienceApp.id
-            NGDMManifest.sharedInstance.experienceApps[experienceApp.id] = experienceApp
+            if NGDMManifest.sharedInstance.experienceApps[experienceApp.id] == nil {
+                NGDMManifest.sharedInstance.experienceApps[experienceApp.id] = experienceApp
+            }
         }
         
         if let objList = manifestObject.ExperienceChildList , objList.count > 0 {
@@ -200,19 +193,19 @@ open class NGDMExperience: Equatable {
         - Returns: `true` if the Experience is of the specified type
      */
     // FIXME: Hardcoded Experience ID strings are being used to identify Experience types
-    open func isType(_ type: ExperienceType) -> Bool {
+    public func isType(_ type: ExperienceType) -> Bool {
         switch type {
         case .app:
-            return app != nil
+            return (app != nil)
             
         case .audioVisual:
-            return audioVisual != nil && !isType(.clipShare)
+            return (audioVisual != nil && !isType(.clipShare))
             
         case .clipShare:
             return id.contains("clipshare")
             
         case .gallery:
-            return gallery != nil
+            return (gallery != nil)
             
         case .location:
             if appData?.location != nil {
@@ -226,7 +219,7 @@ open class NGDMExperience: Equatable {
             return false
             
         case .shopping:
-            return app?.name == Namespaces.TheTake
+            return (app?.isProductApp ?? false)
             
         case .talentData:
             return id.contains("castcrew")
@@ -241,7 +234,7 @@ open class NGDMExperience: Equatable {
  
         - Returns: Associated Experience if it exists
     */
-    open func appDataMediaAtIndex(_ index: Int) -> NGDMExperience? {
+    public func appDataMediaAtIndex(_ index: Int) -> NGDMExperience? {
         return appData?.mediaAtIndex(index)
     }
     
@@ -253,7 +246,7 @@ open class NGDMExperience: Equatable {
  
         - Returns: Current NodeStyle if it exists
     */
-    open func getNodeStyle(_ interfaceOrientation: UIInterfaceOrientation) -> NGDMNodeStyle? {
+    public func getNodeStyle(_ interfaceOrientation: UIInterfaceOrientation) -> NGDMNodeStyle? {
         let isTablet = (UIDevice.current.userInterfaceIdiom == .pad)
         let isLandscape = UIInterfaceOrientationIsLandscape(interfaceOrientation)
         
@@ -274,6 +267,22 @@ open class NGDMExperience: Equatable {
         return nil
     }
     
+    /**
+        Finds the ExperienceChild at the given index
+ 
+        - Parameters:
+            - index: Child experience index to search
+ 
+        - Returns: Child experience, if it exists
+    */
+    public func childExperience(atIndex index: Int) -> NGDMExperience? {
+        if let childExperiences = childExperiences, childExperiences.count > index {
+            return childExperiences[index]
+        }
+        
+        return nil
+    }
+    
     // MARK: Search Methods
     /**
         Find an `NGDMExperience` object by unique identifier
@@ -283,7 +292,7 @@ open class NGDMExperience: Equatable {
 
         - Returns: Object associated with identifier if it exists
     */
-    open static func getById(_ id: String) -> NGDMExperience? {
+    public static func getById(_ id: String) -> NGDMExperience? {
         return NGDMManifest.sharedInstance.experiences[id]
     }
     

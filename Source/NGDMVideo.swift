@@ -8,13 +8,16 @@ import Foundation
 open class NGDMVideo {
     
     /// Unique identifier
-    open var id: String
+    var id: String
+    open var analyticsIdentifier: String {
+        return id
+    }
     
     /// Size in pixels of this Video
-    open var size = CGSize.zero
+    var size = CGSize.zero
     
     /// URL associated with this Video
-    open var url: URL?
+    var url: URL?
     
     /// Video length in seconds
     var runtimeInSeconds: TimeInterval = 0

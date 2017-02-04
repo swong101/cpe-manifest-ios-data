@@ -12,10 +12,10 @@ open class NGDMMainExperience: NGDMExperience {
     var talents: [String: NGDMTalent]?
     
     /// Ordered list of Talents with type Actor associated with the feature film
-    open var orderedActors: [NGDMTalent]? {
+    public var orderedActors: [NGDMTalent]? {
         if let talents = talents {
             return talents.values.filter { (talent) -> Bool in
-                talent.type == TalentType.Actor
+                talent.type == TalentType.actor
             }.sorted(by: { (talent1, talent2) -> Bool in
                 return talent1.billingBlockOrder < talent2.billingBlockOrder
             })
@@ -24,20 +24,16 @@ open class NGDMMainExperience: NGDMExperience {
         return nil
     }
     
-    open var hasActors: Bool {
-        return orderedActors?.count ?? 0 > 0
+    public var hasActors: Bool {
+        return ((orderedActors?.count ?? 0) > 0)
     }
     
-    open var interstitialVideoURL: URL? {
-        if let presentations = audioVisual?.presentations, presentations.count > 1 {
-            return presentations.first?.videoURL
-        }
-        
-        return nil
+    public var interstitialVideoURL: URL? {
+        return audioVisual?.presentations?.first?.videoURL
     }
     
-    open var commentaryAudioURL: URL? {
-        return presentation?.commentaryAudio?.url
+    public var commentaryAudioURL: URL? {
+        return presentation?.commentaryAudioURL
     }
     
     // MARK: Helper Methods
@@ -45,22 +41,22 @@ open class NGDMMainExperience: NGDMExperience {
         Find the value of any custom identifier associated with this Experience
 
         - Parameters:
-            - namespace: The namespace of the custom identifier used in the Manifest (e.g. "thetake")
+            - namespace: The namespace of the custom identifier used in the Manifest
 
         - Returns: The value of the custom identifier if it exists
     */
-    open func customIdentifier(_ namespace: String) -> String? {
+    public func customIdentifier(_ namespace: String) -> String? {
         return audioVisual?.metadata?.customIdentifier(namespace)
     }
     
     /**
         Loads talent based on a series of fallbacks, starting with the Baseline API
     */
-    open func loadTalent() {
+    public func loadTalent() {
         let loadTalentImages = {
             if let talentAPIUtil = NGDMConfiguration.talentAPIUtil, let talents = self.talents {
                 for talent in talents.values {
-                    if talent.images == nil, let talentId = talent.apiId {
+                    if talent.images == nil, let talentId = talent.apiID {
                         talentAPIUtil.getTalentImages(talentId, completion: { (talentImages) in
                             talent.images = talentImages
                         })

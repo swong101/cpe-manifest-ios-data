@@ -9,13 +9,13 @@ open class NGDMImage {
     
     // MARK: Instance Variables
     /// Unique identifier
-    open var id: String
+    var id: String
     
     /// URL associated with this Image
-    open var url: URL?
+    public var url: URL?
     
     /// Size of the Image as specified in Manifest file
-    open var size = CGSize.zero
+    public var size = CGSize.zero
     
     // MARK: Initialization
     /**
