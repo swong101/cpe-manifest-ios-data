@@ -4,10 +4,28 @@
 
 import Foundation
 
+public enum AudioVisualType: String {
+    case main = "Main"
+    case promotion = "Promotion"
+    case bonus = "Bonus"
+    case other = "Other"
+}
+
+public enum AudioVisualSubtype: String {
+    case feature = "Feature"
+    case shareableClip = "Shareable Clip"
+    case other = "Other"
+}
+
 // Wrapper class for `NGEAudiovisualType` Manifest object
 open class NGDMAudioVisual {
+    
     /// Unique identifier
     var id: String
+    
+    /// Type of AudioVisual object
+    var type = AudioVisualType.other
+    var subtype = AudioVisualSubtype.other
     
     /// Metadata associated with this AudioVisual
     open var metadata: NGDMMetadata?
@@ -45,7 +63,7 @@ open class NGDMAudioVisual {
             - manifestObject: Raw Manifest data object
     */
     init(manifestObject: NGEAudiovisualType) {
-        id = manifestObject.PresentationID ?? manifestObject.PlayableSequenceID ?? manifestObject.ContentID ?? UUID().uuidString
+        id = (manifestObject.PresentationID ?? manifestObject.PlayableSequenceID ?? manifestObject.ContentID ?? UUID().uuidString)
         
         if let id = manifestObject.ContentID {
             metadata = NGDMMetadata.getById(id)
@@ -56,6 +74,41 @@ open class NGDMAudioVisual {
         } else if let id = manifestObject.PresentationID {
             presentation = NGDMPresentation.getById(id)
         }
+        
+        if let type = manifestObject.Type, let audioVisualType = AudioVisualType(rawValue: type) {
+            self.type = audioVisualType
+        }
+        
+        if let subtype = manifestObject.SubTypeList?.first, let audioVisualSubtype = AudioVisualSubtype(rawValue: subtype) {
+            self.subtype = audioVisualSubtype
+        }
+    }
+    
+    
+    
+    // MARK: Helper Methods
+    /**
+        Check if AudioVisual is of the specified type
+     
+        - Parameters:
+            - type: Type of AudioVisual
+     
+        - Returns: `true` if the AudioVisual is of the specified type
+     */
+    open func isType(_ type: AudioVisualType) -> Bool {
+        return (type == self.type)
+    }
+    
+    /**
+     Check if AudioVisual is of the specified subtype
+     
+        - Parameters:
+            - type: Subtype of AudioVisual
+     
+        - Returns: `true` if the AudioVisual is of the specified subtype
+     */
+    open func isSubtype(_ subtype: AudioVisualSubtype) -> Bool {
+        return (subtype == self.subtype)
     }
     
     // MARK: Search Methods
