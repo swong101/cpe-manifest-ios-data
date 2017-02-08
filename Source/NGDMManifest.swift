@@ -190,7 +190,7 @@ open class NGDMManifest {
         
         for obj in manifest.Experiences.ExperienceList {
             if let experienceId = obj.ExperienceID, experiences[experienceId] == nil {
-                if let audioVisualType = obj.Audiovisual?.Type, audioVisualType == "Main" {
+                if let audioVisualType = obj.Audiovisual?.Type, audioVisualType == AudioVisualType.main.rawValue {
                     mainExperience = NGDMMainExperience(manifestObject: obj)
                     experiences[mainExperience!.id] = mainExperience
                 } else {
