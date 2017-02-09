@@ -6,15 +6,16 @@ import Foundation
 
 @objc public protocol ProductItem {
     
-    var id: String { get set }
-    var name: String { get set }
-    var brand: String? { get set }
-    var price: String? { get set }
-    var productImageURL: URL? { get set }
-    var sceneImageURL: URL? { get set }
-    var exactMatch: Bool { get set }
-    var externalURL: URL? { get set }
-    var bullseyePoint: CGPoint { get set }
+    var externalID: String { get }
+    var externalURL: URL? { get }
+    var name: String { get }
+    var brand: String? { get }
+    var displayPrice: String? { get }
+    var productImageURL: URL? { get }
+    var sceneImageURL: URL? { get }
+    var isExactMatch: Bool { get }
+    var hasExactMatchData: Bool { get }
+    var bullseyePoint: CGPoint { get }
     var shareText: String { get }
     
 }

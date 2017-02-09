@@ -55,9 +55,8 @@ public class NGDMManifest {
     var imageCache = [String: UIImage]() // ImageID: UIImage
     var nodeStyles = [String: NGDMNodeStyle]() // NodeStyleID: NodeStyle
     var themes = [String: NGDMTheme]() // ThemeID: Theme
-    
-    /// AppData mappings
-    public var appData: [String: NGDMAppData]? // AppID: AppData
+    var locations = [String: NGDMLocation]() // AppID: Location
+    var products = [String: NGDMProduct]() // AppID: Product
     
     // MARK: Helper Methods
     /**
@@ -254,18 +253,24 @@ public class NGDMManifest {
  
         - Returns: The full AppData object mapping
     */
-    public func loadAppDataXMLFile(_ filePath: String) throws -> [String: NGDMAppData] {
+    public func loadAppDataXMLFile(_ filePath: String) throws {
         guard let appData = NGEManifestAppDataSetType.NGEManifestAppDataSetTypeFromFile(path: filePath) else { throw NGDMError.appDataMissing }
         
         var imageIds = [String]()
         var allAppData = [String: NGDMAppData]()
         for obj in appData.ManifestAppDataList {
-            let appData = NGDMAppData(manifestObject: obj)
-            allAppData[appData.id] = appData
-            
-            // Pre-load icons as UIImages
-            if let id = appData.location?.icon?.id, !imageIds.contains(id) {
-                imageIds.append(id)
+            if obj.NVPairList.contains(where: { ($0.Name == AppDataNVPairName.AppType) && ($0.Text == "PRODUCT") }) {
+                let product = NGDMProduct(manifestObject: obj)
+                NGDMManifest.sharedInstance.products[product.id] = product
+            } else {
+                let location = NGDMLocation(manifestObject: obj)
+                
+                // Pre-load icons as UIImages
+                if let id = location.icon?.id, !imageIds.contains(id) {
+                    imageIds.append(id)
+                }
+                
+                NGDMManifest.sharedInstance.locations[location.id] = location
             }
         }
         
@@ -276,8 +281,6 @@ public class NGDMManifest {
                 })
             }
         }
-        
-        return allAppData
     }
     
     public func loadCPEStyleXMLFile(_ filePath: String) throws {

@@ -6,7 +6,6 @@ import Foundation
 
 public enum TimedEventType {
     case any
-    case appData
     case appGroup
     case audioVisual
     case clipShare
@@ -46,7 +45,7 @@ open class NGDMTimedEvent: Equatable {
     
     /// Text value associated with this TimedEvent if it exists
     open var descriptionText: String? {
-        return (gallery?.title ?? audioVisual?.descriptionText ?? textItem ?? appData?.title)
+        return (gallery?.title ?? audioVisual?.descriptionText ?? textItem ?? location?.title)
     }
     
     /// Image to be used for display
@@ -75,7 +74,7 @@ open class NGDMTimedEvent: Equatable {
     public var gallery: NGDMGallery?
     public var audioVisual: NGDMAudioVisual?
     public var experienceApp: NGDMExperienceApp?
-    var productNamespace: String?
+    public var productNamespace: String?
     
     private var _talentID: String?
     public var talent: NGDMTalent? {
@@ -86,10 +85,18 @@ open class NGDMTimedEvent: Equatable {
         return nil
     }
     
-    private var _appDataID: String?
-    public var appData: NGDMAppData? {
-        if let id = _appDataID {
-            return NGDMManifest.sharedInstance.appData?[id]
+    private var appDataID: String?
+    public var location: NGDMLocation? {
+        if let id = appDataID {
+            return NGDMManifest.sharedInstance.locations[id]
+        }
+        
+        return nil
+    }
+    
+    public var product: NGDMProduct? {
+        if let id = appDataID {
+            return NGDMManifest.sharedInstance.products[id]
         }
         
         return nil
@@ -142,13 +149,13 @@ open class NGDMTimedEvent: Equatable {
         
         if let otherID = manifestObject.OtherID {
             if otherID.Namespace == Namespaces.AppDataID {
-                _appDataID = otherID.Identifier
+                appDataID = otherID.Identifier
             } else if otherID.Namespace == Namespaces.PeopleID {
                 _talentID = otherID.Identifier
             }
         }
         
-        id = (audioVisual?.id ?? gallery?.id ?? appGroup?.id ?? _appDataID ?? _talentID ?? UUID().uuidString)
+        id = (audioVisual?.id ?? gallery?.id ?? appGroup?.id ?? appDataID ?? _talentID ?? UUID().uuidString)
     }
     
     init(startTime: Double, endTime: Double = -1, productNamespace: String? = nil) {
@@ -169,9 +176,6 @@ open class NGDMTimedEvent: Equatable {
     */
     open func isType(_ type: TimedEventType) -> Bool {
         switch type {
-        case .appData:
-            return (appData != nil)
-            
         case .appGroup:
             return (appGroup != nil)
             
@@ -185,14 +189,14 @@ open class NGDMTimedEvent: Equatable {
             return (gallery != nil)
             
         case .location:
-            return (appData?.location != nil)
+            return (location != nil)
             
         case .product:
-            if let productAPIUtil = NGDMConfiguration.productAPIUtil {
-                return (productNamespace == type(of: productAPIUtil).APINamespace)
+            if let productAPIUtil = NGDMConfiguration.productAPIUtil, (productNamespace == type(of: productAPIUtil).APINamespace) {
+                return true
             }
             
-            return false
+            return (product != nil)
             
         case .talent:
             return (talent != nil)

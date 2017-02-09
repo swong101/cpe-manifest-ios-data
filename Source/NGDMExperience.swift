@@ -66,12 +66,12 @@ open class NGDMExperience: Equatable {
     
     /// Title to be used for display
     public var title: String {
-        return (metadata?.title ?? appData?.title ?? "")
+        return (metadata?.title ?? location?.title ?? "")
     }
     
     /// Description to be used for display
     public var description: String {
-        return (metadata?.description ?? appData?.description ?? "")
+        return (metadata?.description ?? location?.description ?? "")
     }
     
     /// Image URL to be used for thumbnail displays
@@ -85,7 +85,7 @@ open class NGDMExperience: Equatable {
             return nil
         }
         
-        return (audioVisual?.imageURL ?? gallery?.imageURL ?? appData?.thumbnailImageURL ?? app?.imageURL ?? childExperiences?.first?.imageURL)
+        return (audioVisual?.imageURL ?? gallery?.imageURL ?? location?.thumbnailImageURL ?? app?.imageURL ?? childExperiences?.first?.imageURL)
     }
     
     /// AudioVisual associated with this Experience, if it exists
@@ -120,18 +120,18 @@ open class NGDMExperience: Equatable {
     /// App associated with this Experience, if it exists
     public var app: NGDMExperienceApp?
     
-    /// AppData associated with this Experience, if it exists
-    private var _appDataId: String?
-    public var appData: NGDMAppData? {
-        if let id = _appDataId {
-            return NGDMManifest.sharedInstance.appData?[id]
+    /// AppData associated with this Experience
+    private var appDataID: String?
+    public var location: NGDMLocation? {
+        if let id = appDataID {
+            return NGDMManifest.sharedInstance.locations[id]
         }
         
         return nil
     }
     
-    public var appDataMediaCount: Int {
-        return (appData?.mediaCount ?? 0)
+    public var locationMediaCount: Int {
+        return (location?.mediaCount ?? 0)
     }
     
     // MARK: Initialization
@@ -163,7 +163,7 @@ open class NGDMExperience: Equatable {
         if let obj = manifestObject.App {
             let experienceApp = NGDMExperienceApp(manifestObject: obj)
             app = experienceApp
-            _appDataId = experienceApp.id
+            appDataID = experienceApp.id
             if NGDMManifest.sharedInstance.experienceApps[experienceApp.id] == nil {
                 NGDMManifest.sharedInstance.experienceApps[experienceApp.id] = experienceApp
             }
@@ -208,7 +208,7 @@ open class NGDMExperience: Equatable {
             return (gallery != nil)
             
         case .location:
-            if appData?.location != nil {
+            if location != nil {
                 return true
             }
             
@@ -234,8 +234,8 @@ open class NGDMExperience: Equatable {
  
         - Returns: Associated Experience if it exists
     */
-    public func appDataMediaAtIndex(_ index: Int) -> NGDMExperience? {
-        return appData?.mediaAtIndex(index)
+    public func locationMediaAtIndex(_ index: Int) -> NGDMExperience? {
+        return location?.mediaAtIndex(index)
     }
     
     /**
