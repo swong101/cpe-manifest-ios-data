@@ -126,6 +126,9 @@ open class NGDMTalent: NGDMPeople {
                 
                 successBlock(biography, socialAccounts, films)
             })
+        } else {
+            successBlock(biography, socialAccounts, films)
+            detailsLoaded = true
         }
     }
     
