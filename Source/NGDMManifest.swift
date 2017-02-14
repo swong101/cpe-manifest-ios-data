@@ -80,9 +80,7 @@ open class NGDMManifest {
         outOfMovieExperience = nil
         inMovieExperience = nil
         
-        let manifest = NGEMediaManifestType.NGEMediaManifestTypeFromFile(path: filePath)!
-        
-        guard manifest.Inventory != nil else {
+        guard let manifest = NGEMediaManifestType.NGEMediaManifestTypeFromFile(path: filePath), manifest.Inventory != nil else {
             throw NGDMError.manifestMissing
         }
         
