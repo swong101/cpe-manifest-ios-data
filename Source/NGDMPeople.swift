@@ -123,6 +123,9 @@ open class NGDMTalent: NGDMPeople {
                 
                 successBlock(biography, socialAccounts, films)
             })
+        } else {
+            successBlock(biography, socialAccounts, films)
+            detailsLoaded = true
         }
     }
     
@@ -156,8 +159,8 @@ public struct TalentFilm {
 public struct TalentSocialAccount {
     
     public var type = SocialAccountType.unknown
-    var handle: String!
-    public var url: URL!
+    public var handle: String
+    public var url: URL?
     
     public init(handle: String, urlString: String) {
         self.handle = handle
@@ -167,14 +170,11 @@ public struct TalentSocialAccount {
             type = SocialAccountType.twitter
         } else if urlString.contains("facebook") {
             type = SocialAccountType.facebook
-            if urlString.contains("/pages"), let pageID = urlString.components(separatedBy: "/").last , UIApplication.shared.canOpenURL(URL(string: "fb://")!) {
-                urlString = "fb://page?id=" + pageID
-            }
         } else if urlString.contains("instagram") {
             type = SocialAccountType.instagram
         }
         
-        url = URL(string: urlString)!
+        url = URL(string: urlString)
     }
     
 }

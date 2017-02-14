@@ -183,7 +183,12 @@ open class NGDMTimedEvent: Equatable {
             return (audioVisual != nil && !isType(.clipShare))
             
         case .clipShare:
-            return (experience != nil && experience!.isType(.clipShare))
+            if audioVisual != nil && audioVisual!.isSubtype(.shareableClip) {
+                return true
+            }
+            
+            // Support legacy method of denoting clipshare experience
+            return experience != nil && experience!.id.contains("clipshare")
             
         case .gallery:
             return (gallery != nil)

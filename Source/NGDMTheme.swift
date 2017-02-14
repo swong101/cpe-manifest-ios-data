@@ -25,7 +25,7 @@ open class NGDMTheme {
         
         if let objList = manifestObject.ButtonImageSet?.ButtonList {
             for obj in objList {
-                if let label = obj.label {
+                if let label = obj.label?.lowercased() {
                     buttons[label] = NGDMImage.getById(obj.Default.BaseImage)
                 }
             }
@@ -42,7 +42,7 @@ open class NGDMTheme {
         - Returns: Button image if it exists
      */
     public func getButtonImage(_ label: String) -> NGDMImage? {
-        return buttons[label]
+        return buttons[label.lowercased()]
     }
     
 }

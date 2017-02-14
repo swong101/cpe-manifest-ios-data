@@ -79,6 +79,10 @@ open class NGDMNodeStyle {
     public var buttonOverlaySize: CGSize?
     public var buttonOverlayBottomLeft: CGPoint?
     
+    /// Title treatment overlay
+    public var titleOverlaySize: CGSize?
+    public var titleOverlayBottomLeft: CGPoint?
+    
     // MARK: Initialization
     /**
         Initializes a new NodeStyle
@@ -112,7 +116,7 @@ open class NGDMNodeStyle {
                 }
                 
                 if let timecodeString = backgroundVideoObj.LoopTimecode?.value {
-                    backgroundVideoLoopTimecode = Double(timecodeString) ?? 0.0
+                    backgroundVideoLoopTimecode = (Double(timecodeString) ?? 0)
                 }
             }
             
@@ -120,17 +124,23 @@ open class NGDMNodeStyle {
                 backgroundImage = NGDMManifest.sharedInstance.pictureGroups[backgroundImagePictureGroupId]?.first?.image
             }
             
-            if let backgroundAudioObj = backgroundObj.AudioLoop {
-                if let id = backgroundAudioObj.AudioTrackID {
-                    backgroundAudio = NGDMAudio.getById(id)
-                }
+            if let id = backgroundObj.AudioLoop?.AudioTrackID {
+                backgroundAudio = NGDMAudio.getById(id)
             }
             
             if let overlayObjList = backgroundObj.OverlayAreaList {
                 for overlayObj in overlayObjList {
-                    if overlayObj.tag == "button" {
-                        buttonOverlaySize = CGSize(width: CGFloat(overlayObj.WidthPixels), height: CGFloat(overlayObj.HeightPixels))
-                        buttonOverlayBottomLeft = CGPoint(x: CGFloat(overlayObj.PixelsFromLeft), y: CGFloat(overlayObj.PixelsFromBottom))
+                    if let tagName = overlayObj.tag?.lowercased() {
+                        let size = CGSize(width: CGFloat(overlayObj.WidthPixels), height: CGFloat(overlayObj.HeightPixels))
+                        let point = CGPoint(x: CGFloat(overlayObj.PixelsFromLeft), y: CGFloat(overlayObj.PixelsFromBottom))
+                        
+                        if tagName == "button" {
+                            buttonOverlaySize = size
+                            buttonOverlayBottomLeft = point
+                        } else if tagName == "title" {
+                            titleOverlaySize = size
+                            titleOverlayBottomLeft = point
+                        }
                     }
                 }
             }

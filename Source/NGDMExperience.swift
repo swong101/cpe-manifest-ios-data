@@ -7,11 +7,9 @@ import Foundation
 public enum ExperienceType {
     case app
     case audioVisual
-    case clipShare
     case gallery
     case location
     case shopping
-    case talentData
 }
 
 public func ==(lhs: NGDMExperience, rhs: NGDMExperience) -> Bool {
@@ -49,16 +47,6 @@ open class NGDMExperience: Equatable {
     
     public var numChildren: Int {
         return (childExperiences?.count ?? 0)
-    }
-    
-    /// Child of this Experience that is a talent data Experience
-    private var _childTalentDataExperience: NGDMExperience?
-    var childTalentDataExperience: NGDMExperience? {
-        if _childTalentDataExperience == nil, let index = childExperiences?.index(where: { $0.isType(.talentData) }) {
-            _childTalentDataExperience = childExperiences?[index]
-        }
-        
-        return _childTalentDataExperience
     }
     
     /// Metadata associated with this Experience
@@ -199,10 +187,7 @@ open class NGDMExperience: Equatable {
             return (app != nil)
             
         case .audioVisual:
-            return (audioVisual != nil && !isType(.clipShare))
-            
-        case .clipShare:
-            return id.contains("clipshare")
+            return audioVisual != nil
             
         case .gallery:
             return (gallery != nil)
@@ -220,9 +205,6 @@ open class NGDMExperience: Equatable {
             
         case .shopping:
             return (app?.isProductApp ?? false)
-            
-        case .talentData:
-            return id.contains("castcrew")
         }
     }
     
