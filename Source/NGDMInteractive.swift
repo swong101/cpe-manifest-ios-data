@@ -5,7 +5,7 @@
 import Foundation
 
 // Wrapper class for `NGEInventoryInteractiveType` Manifest object
-class NGDMInteractive {
+open class NGDMInteractive {
     
     // MARK: Instance Variables
     /// Unique identifier

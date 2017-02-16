@@ -5,14 +5,14 @@
 import Foundation
 
 // Wrapper class for `NGETextGroupType` Manifest object
-class NGDMTextGroup {
+open class NGDMTextGroup {
     
     // MARK: Instance Variables
     /// Unique identifier
     var id: String
     
     /// TextObject associated with this TextGroup
-    var textObject: NGDMTextObject?
+    private var textObject: NGDMTextObject?
     
     // MARK: Initialization
     /**

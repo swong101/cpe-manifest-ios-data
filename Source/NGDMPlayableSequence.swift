@@ -6,6 +6,7 @@ import Foundation
 
 // Wrapper class for `NGEPlayableSequence` Manifest object
 open class NGDMPlayableSequence {
+    
     /// Unique identifier
     var id: String
     

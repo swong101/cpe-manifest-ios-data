@@ -11,7 +11,7 @@ open class NGDMTheme {
     var id: String
     
     /// Overlay buttons
-    var buttons = [String: NGDMImage]() // Label: NGDMImage
+    private var buttons = [String: NGDMImage]() // Label: NGDMImage
     
     // MARK: Initialization
     /**
@@ -41,7 +41,7 @@ open class NGDMTheme {
      
         - Returns: Button image if it exists
      */
-    open func getButtonImage(_ label: String) -> NGDMImage? {
+    public func getButtonImage(_ label: String) -> NGDMImage? {
         return buttons[label.lowercased()]
     }
     

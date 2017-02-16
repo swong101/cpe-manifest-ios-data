@@ -28,21 +28,21 @@ open class NGDMAudioVisual {
     var subtype = AudioVisualSubtype.other
     
     /// Metadata associated with this AudioVisual
-    open var metadata: NGDMMetadata?
+    var metadata: NGDMMetadata?
     
     /// Image URL to be used for display
-    var imageURL: URL? {
-        return metadata?.imageURL as URL?
+    public var imageURL: URL? {
+        return metadata?.imageURL
     }
     
     /// Description to be used for display
-    open var descriptionText: String? {
-        return metadata?.description ?? metadata?.title
+    public var descriptionText: String? {
+        return (metadata?.description ?? metadata?.title)
     }
     
     /// Presentations associated with this AudioVisual
-    fileprivate var playableSequence: NGDMPlayableSequence?
-    fileprivate var presentation: NGDMPresentation?
+    private var playableSequence: NGDMPlayableSequence?
+    private var presentation: NGDMPresentation?
     var presentations: [NGDMPresentation]? {
         if let playableSequence = playableSequence {
             return playableSequence.presentations

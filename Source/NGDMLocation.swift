@@ -2,15 +2,16 @@
 //  NGDMLocation.swift
 //
 
-// Wrapper class for `NGEEventLocationType` Manifest object
-open class NGDMLocation {
+// Wrapper class for `NGEAppDataType` and `NGEEventLocationType` Manifest objects
+open class NGDMLocation: NGDMAppData {
     
     // MARK: Instance Variables
     /// Metadata
-    open var name: String?
-    open var address: String?
+    public var name: String?
+    public var address: String?
+    
     var icon: NGDMImage?
-    open var iconImage: UIImage? {
+    public var iconImage: UIImage? {
         if let icon = icon {
             return NGDMManifest.sharedInstance.imageCache[icon.id]
         }
@@ -18,9 +19,25 @@ open class NGDMLocation {
         return nil
     }
     
+    override public var thumbnailImageURL: URL? {
+        if let thumbnailImageURL = super.thumbnailImageURL {
+            return thumbnailImageURL
+        }
+        
+        return URL(string: "http://maps.googleapis.com/maps/api/staticmap" +
+            "?center=" + String(latitude) + "," + String(longitude) +
+            "&zoom=" + String(max(Int(zoomLevel) - 4, 1)) +
+            "&scale=2&size=480x270&maptype=roadmap&format=png&visual_refresh=true"
+        )
+    }
+    
     /// Coordinates
-    open var latitude: Double = 0
-    open var longitude: Double = 0
+    public var latitude: Double = 0
+    public var longitude: Double = 0
+    
+    /// Settings
+    public var zoomLevel: Float = 0
+    public var zoomLocked = false
     
     // MARK: Initialization
     /**
@@ -29,15 +46,38 @@ open class NGDMLocation {
         - Parameters:
             - manifestObject: Raw Manifest data object
     */
-    init(manifestObject: NGEEventLocationType) {
-        name = manifestObject.Name
-        if let obj = manifestObject as? NGELocation, let id = obj.icon {
-            icon = NGDMImage.getById(id)
-        }
+    override init(manifestObject: NGEAppDataType) {
+        super.init(manifestObject: manifestObject)
         
-        address = manifestObject.Address
-        latitude = manifestObject.EarthCoordinate?.Latitude ?? 0
-        longitude = manifestObject.EarthCoordinate?.Longitude ?? 0
+        for obj in manifestObject.NVPairList {
+            if let name = obj.Name {
+                switch name {
+                case AppDataNVPairName.Location:
+                    if let obj = (obj.Location ?? obj.LocationSet?.LocationList?.first) {
+                        if let id = (obj as? NGELocation)?.icon {
+                            icon = NGDMImage.getById(id)
+                        }
+                        
+                        address = obj.Address
+                        latitude = (obj.EarthCoordinate?.Latitude ?? 0)
+                        longitude = (obj.EarthCoordinate?.Longitude ?? 0)
+                    }
+                    
+                    break
+                    
+                case AppDataNVPairName.Zoom:
+                    zoomLevel = Float(obj.Integer ?? 0)
+                    break
+                    
+                case AppDataNVPairName.ZoomLocked:
+                    zoomLocked = (obj.Text == "Y")
+                    break
+                    
+                default:
+                    break
+                }
+            }
+        }
     }
     
 }
