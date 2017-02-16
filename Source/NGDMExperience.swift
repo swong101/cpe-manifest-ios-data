@@ -9,7 +9,7 @@ public enum ExperienceType {
     case audioVisual
     case gallery
     case location
-    case shopping
+    case product
 }
 
 public func ==(lhs: NGDMExperience, rhs: NGDMExperience) -> Bool {
@@ -73,7 +73,27 @@ open class NGDMExperience: Equatable {
             return nil
         }
         
-        return (audioVisual?.imageURL ?? gallery?.imageURL ?? location?.thumbnailImageURL ?? app?.imageURL ?? childExperiences?.first?.imageURL)
+        if let imageURL = audioVisual?.imageURL {
+            return imageURL
+        }
+        
+        if let imageURL = gallery?.imageURL {
+            return imageURL
+        }
+        
+        if let imageURL = location?.thumbnailImageURL {
+            return imageURL
+        }
+        
+        if let imageURL = product?.productImageURL {
+            return imageURL
+        }
+        
+        if let imageURL = app?.imageURL {
+            return imageURL
+        }
+        
+        return childExperiences?.first?.imageURL
     }
     
     /// AudioVisual associated with this Experience, if it exists
@@ -120,6 +140,37 @@ open class NGDMExperience: Equatable {
     
     public var locationMediaCount: Int {
         return (location?.mediaCount ?? 0)
+    }
+    
+    public var product: NGDMProduct? {
+        if let id = appDataID {
+            return NGDMManifest.sharedInstance.products[id]
+        }
+        
+        return nil
+    }
+    
+    public var productCategories: [ProductCategory]? {
+        if let app = app {
+            return app.productCategories
+        }
+        
+        var productCategories: [ProductCategory]?
+        if let childExperiences = childExperiences {
+            for childExperience in childExperiences {
+                if let category = childExperience.product?.category {
+                    if productCategories == nil {
+                        productCategories = [ProductCategory]()
+                    }
+                    
+                    if !productCategories!.contains(where: { $0.id == category.id }) {
+                        productCategories!.append(category)
+                    }
+                }
+            }
+        }
+        
+        return productCategories
     }
     
     // MARK: Initialization
@@ -203,8 +254,20 @@ open class NGDMExperience: Equatable {
             
             return false
             
-        case .shopping:
-            return (app?.isProductApp ?? false)
+        case .product:
+            if let app = app, app.isProductApp {
+                return true
+            }
+            
+            if product != nil {
+                return true
+            }
+            
+            if let firstChildExperience = childExperiences?.first {
+                return firstChildExperience.isType(.product)
+            }
+            
+            return false
         }
     }
     

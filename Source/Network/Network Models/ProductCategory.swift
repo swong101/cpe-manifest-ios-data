@@ -6,8 +6,8 @@ import Foundation
 
 @objc public protocol ProductCategory {
     
-    var id: Int { get set }
-    var name: String { get set }
-    var childCategories: [ProductCategory]? { get set }
+    var id: String { get }
+    var name: String { get }
+    @objc optional var childCategories: [ProductCategory]? { get }
     
 }

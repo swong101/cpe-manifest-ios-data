@@ -10,6 +10,7 @@ public struct AppDataNVPairName {
     static let Text = "text"
     static let DisplayOrder = "display_order"
     static let ContentID = "content_id"
+    static let ParentContentID = "parent_content_id"
     static let ExperienceID = "experience_id"
     static let VideoID = "video_id"
     static let GalleryID = "gallery_id"
@@ -45,6 +46,7 @@ open class NGDMAppData {
     
     /// Metadata
     var metadata: NGDMMetadata?
+    var parentMetadata: NGDMMetadata?
     
     public var title: String? {
         return (experience?.title ?? metadata?.title)
@@ -88,6 +90,12 @@ open class NGDMAppData {
                 case AppDataNVPairName.ContentID:
                     if let id = obj.ContentID {
                         metadata = NGDMMetadata.getById(id)
+                    }
+                    break
+                    
+                case AppDataNVPairName.ParentContentID:
+                    if let id = obj.ContentID {
+                        parentMetadata = NGDMMetadata.getById(id)
                     }
                     break
                     

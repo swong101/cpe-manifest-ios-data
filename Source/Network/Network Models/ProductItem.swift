@@ -10,6 +10,7 @@ import Foundation
     var externalURL: URL? { get }
     var name: String { get }
     var brand: String? { get }
+    @objc optional var category: ProductCategory? { get }
     var displayPrice: String? { get }
     var productImageURL: URL? { get }
     var sceneImageURL: URL? { get }

@@ -4,28 +4,6 @@
 
 import Foundation
 
-open class NGDMProductCategory: ProductCategory {
-    
-    private var metadata: NGDMMetadata
-    
-    public var id: String {
-        return metadata.id
-    }
-    
-    public var name: String {
-        return (metadata.title ?? "")
-    }
-    
-    required public init(metadata: NGDMMetadata) {
-        self.metadata = metadata
-    }
-    
-}
-
-public func ==(lhs: NGDMProductCategory, rhs: NGDMProductCategory) -> Bool {
-    return (lhs.id == rhs.id)
-}
-
 // Wrapper class for `NGEAppDataType` Manifest object
 open class NGDMProduct: NGDMAppData, ProductItem {
     
@@ -43,15 +21,6 @@ open class NGDMProduct: NGDMAppData, ProductItem {
     
     public var brand: String? {
         return description
-    }
-    
-    private var _category: NGDMProductCategory?
-    public var category: NGDMProductCategory? {
-        if _category == nil, let metadata = parentMetadata {
-            _category = NGDMProductCategory(metadata: metadata)
-        }
-        
-        return _category
     }
     
     private var price: Double?
@@ -156,10 +125,6 @@ open class NGDMProduct: NGDMAppData, ProductItem {
             bullseyePoint = CGPoint(x: x, y: y)
         } else if let x = productImageBullseyeX, let y = productImageBullseyeY {
             bullseyePoint = CGPoint(x: x, y: y)
-        }
-        
-        if let parentMetadata = parentMetadata {
-            
         }
     }
     
