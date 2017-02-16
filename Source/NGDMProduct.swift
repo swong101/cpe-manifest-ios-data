@@ -30,7 +30,6 @@ public func ==(lhs: NGDMProductCategory, rhs: NGDMProductCategory) -> Bool {
 open class NGDMProduct: NGDMAppData, ProductItem {
     
     // MARK: Instance Variables
-    // ProductItem
     public var externalID: String {
         return id
     }
