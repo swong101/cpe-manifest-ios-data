@@ -23,10 +23,7 @@ open class NGDMInteractive {
     */
     init(manifestObject: NGEInventoryInteractiveType) {
         id = manifestObject.InteractiveTrackID ?? UUID().uuidString
-        
-        if let containerLocation = manifestObject.ContainerReference?.ContainerLocationList?.first?.value {
-            url = URL(string: containerLocation)
-        }
+        url = ManifestUtils.urlForContainerReference(manifestObject.ContainerReference)
     }
     
     // MARK: Search Methods

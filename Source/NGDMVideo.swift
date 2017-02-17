@@ -36,15 +36,7 @@ open class NGDMVideo {
             size = CGSize(width: width, height: height)
         }
         
-        if let containerLocation = manifestObject.ContainerReference?.ContainerLocationList?.first?.value {
-            if containerLocation.contains("file://") {
-                let tempURL = URL(fileURLWithPath: containerLocation.replacingOccurrences(of: "file://", with: ""))
-                url = Bundle.main.url(forResource: tempURL.deletingPathExtension().path, withExtension: tempURL.pathExtension)
-            } else {
-                url = URL(string: containerLocation)
-            }
-        }
-        
+        url = ManifestUtils.urlForContainerReference(manifestObject.ContainerReference)
         runtimeInSeconds = manifestObject.Encoding?.ActualLength?.iso8601TimeInSeconds() ?? 0
     }
     
