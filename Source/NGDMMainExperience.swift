@@ -29,7 +29,7 @@ open class NGDMMainExperience: NGDMExperience {
     }
     
     public var interstitialVideoURL: URL? {
-        return audioVisual?.presentations?.first?.videoURL
+        return audioVisual?.interstitialVideoURL
     }
     
     public var commentaryAudioURL: URL? {

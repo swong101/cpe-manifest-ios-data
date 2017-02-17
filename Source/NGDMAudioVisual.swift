@@ -55,6 +55,14 @@ open class NGDMAudioVisual {
         return nil
     }
     
+    var interstitialVideoURL: URL? {
+        if let presentations = playableSequence?.presentations, presentations.count > 1 {
+            return presentations.first?.videoURL
+        }
+        
+        return nil
+    }
+    
     // MARK: Initialization
     /**
         Initializes a new AudioVisual
