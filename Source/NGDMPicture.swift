@@ -25,7 +25,7 @@ open class NGDMPicture {
     /// Image URL to be used for thumbnail display
     private var thumbnailImage: NGDMImage?
     public var thumbnailImageURL: URL? {
-        return thumbnailImage?.url
+        return (thumbnailImage?.url ?? imageURL)
     }
     
     /// Caption associated with this image

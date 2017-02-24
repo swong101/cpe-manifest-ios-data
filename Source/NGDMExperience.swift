@@ -63,7 +63,7 @@ open class NGDMExperience: Equatable {
     }
     
     /// Image URL to be used for thumbnail displays
-    public var imageURL: URL? {
+    public var thumbnailImageURL: URL? {
         if let imageURL = metadata?.imageURL {
             return imageURL
         }
@@ -73,11 +73,11 @@ open class NGDMExperience: Equatable {
             return nil
         }
         
-        if let imageURL = audioVisual?.imageURL {
+        if let imageURL = audioVisual?.thumbnailImageURL {
             return imageURL
         }
         
-        if let imageURL = gallery?.imageURL {
+        if let imageURL = gallery?.thumbnailImageURL {
             return imageURL
         }
         
@@ -93,7 +93,7 @@ open class NGDMExperience: Equatable {
             return imageURL
         }
         
-        return childExperiences?.first?.imageURL
+        return childExperiences?.first?.thumbnailImageURL
     }
     
     /// AudioVisual associated with this Experience, if it exists

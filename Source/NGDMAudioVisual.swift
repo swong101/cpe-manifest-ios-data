@@ -30,8 +30,8 @@ open class NGDMAudioVisual {
     /// Metadata associated with this AudioVisual
     var metadata: NGDMMetadata?
     
-    /// Image URL to be used for display
-    public var imageURL: URL? {
+    /// Thumbnail image URL to be used for display
+    public var thumbnailImageURL: URL? {
         return metadata?.imageURL
     }
     

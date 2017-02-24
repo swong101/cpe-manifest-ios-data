@@ -19,5 +19,6 @@ public struct NGDMConfiguration {
     
     /// The map service to be used to display any interactive maps in the UI
     public static var mapService = NGDMMapService.appleMaps
+    public static var googleMapsAPIKey: String?
     
 }

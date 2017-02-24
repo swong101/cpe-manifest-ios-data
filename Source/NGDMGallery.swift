@@ -37,7 +37,7 @@ open class NGDMGallery {
     }
     
     /// Thumbnail image URL to be used for display
-    public var imageURL: URL?
+    public var thumbnailImageURL: URL?
     
     /// Pictures associated with this Gallery
     public var pictures: [NGDMPicture]
@@ -93,8 +93,7 @@ open class NGDMGallery {
         }
         
         galleryName = manifestObject.GalleryNameList?.first?.value
-        
-        imageURL = (metadata?.imageURL ?? pictures.first?.thumbnailImageURL)
+        thumbnailImageURL = (metadata?.imageURL ?? pictures.first?.thumbnailImageURL)
     }
  
     /**

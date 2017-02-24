@@ -24,11 +24,19 @@ open class NGDMLocation: NGDMAppData {
             return thumbnailImageURL
         }
         
-        return URL(string: "http://maps.googleapis.com/maps/api/staticmap" +
-            "?center=" + String(latitude) + "," + String(longitude) +
-            "&zoom=" + String(max(Int(zoomLevel) - 4, 1)) +
-            "&scale=2&size=480x270&maptype=roadmap&format=png&visual_refresh=true"
-        )
+        return mapImageURL
+    }
+    
+    public var mapImageURL: URL? {
+        if let key = NGDMConfiguration.googleMapsAPIKey {
+            let locationString = "\(latitude),\(longitude)"
+            let zoomString = String(max(Int(zoomLevel) - 4, 1))
+            if let urlString = "http://maps.googleapis.com/maps/api/staticmap?center=\(locationString)&zoom=\(zoomString)&scale=2&size=480x270&maptype=roadmap&format=png&visual_refresh=true&key=\(key)".addingPercentEscapes(using: .utf8) {
+                return URL(string: urlString)
+            }
+        }
+        
+        return nil
     }
     
     /// Coordinates

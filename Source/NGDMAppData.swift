@@ -53,7 +53,7 @@ open class NGDMAppData {
     }
     
     public var thumbnailImageURL: URL? {
-        return (experience?.imageURL ?? metadata?.imageURL)
+        return (experience?.thumbnailImageURL ?? metadata?.imageURL)
     }
     
     public var description: String? {

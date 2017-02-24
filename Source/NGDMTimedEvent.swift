@@ -48,10 +48,11 @@ open class NGDMTimedEvent: Equatable {
         return (gallery?.title ?? audioVisual?.descriptionText ?? textItem ?? location?.title)
     }
     
-    /// Image to be used for display
-    private var _imageURL: URL?
-    open var imageURL: URL? {
-        return (_imageURL ?? gallery?.imageURL ?? audioVisual?.imageURL ?? experienceApp?.imageURL)
+    /// Images to be used for display
+    open var imageURL: URL?
+    private var _thumbnailImageURL: URL?
+    open var thumbnailImageURL: URL? {
+        return (_thumbnailImageURL ?? gallery?.thumbnailImageURL ?? audioVisual?.thumbnailImageURL ?? experienceApp?.imageURL ?? location?.thumbnailImageURL ?? imageURL)
     }
     
     /// Video associated with this TimedEvent's AudioVisual/Presentation
@@ -120,8 +121,9 @@ open class NGDMTimedEvent: Equatable {
         }
         
         // FIXME: Making assumption that PictureID is in the Initialization property
-        if let id = manifestObject.Initialization {
-            _imageURL = NGDMPicture.getById(id)?.imageURL
+        if let id = manifestObject.Initialization, let picture = NGDMPicture.getById(id) {
+            imageURL = picture.imageURL
+            _thumbnailImageURL = picture.thumbnailImageURL
         }
         
         // TimedEvent objects
