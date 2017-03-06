@@ -5,24 +5,26 @@
 import Foundation
 
 public enum DeviceTargetClass: String {
-    case Mobile = "Mobile"
+    case computer = "Computer"
+    case tv = "TV"
+    case mobile = "Mobile"
 }
 
 public enum DeviceTargetSubClass: String {
-    case Tablet = "Tablet"
-    case Phone = "Phone"
+    case tablet = "Tablet"
+    case phone = "Phone"
 }
 
 public enum BackgroundScaleMethod: String {
-    case BestFit = "BestFit"
-    case Full = "Full"
-    case Tiled = "Tiled"
+    case bestFit = "BestFit"
+    case full = "Full"
+    case tiled = "Tiled"
 }
 
 public enum BackgroundPositionMethod: String {
-    case UpperLeft = "upperleft"
-    case UpperRight = "upperright"
-    case Centered = "centered"
+    case upperLeft = "upperleft"
+    case upperRight = "upperright"
+    case centered = "centered"
 }
 
 open class NGDMNodeStyle {
@@ -41,27 +43,45 @@ open class NGDMNodeStyle {
     var theme: NGDMTheme!
     
     /// Background properties
-    open var backgroundColor = UIColor.black
-    open var backgroundScaleMethod = BackgroundScaleMethod.BestFit
-    open var backgroundPositionMethod = BackgroundPositionMethod.Centered
+    public var backgroundColor = UIColor.black
+    public var backgroundScaleMethod = BackgroundScaleMethod.bestFit
+    public var backgroundPositionMethod = BackgroundPositionMethod.centered
     
     /// Background image
-    open var backgroundImage: NGDMImage?
+    private var backgroundImage: NGDMImage?
+    open var backgroundImageSize: CGSize {
+        return (backgroundImage?.size ?? CGSize.zero)
+    }
+    
+    open var backgroundImageURL: URL? {
+        return backgroundImage?.url
+    }
     
     /// Background video
     private var backgroundPresentation: NGDMPresentation?
     open var backgroundVideoLoops = false
     open var backgroundVideoLoopTimecode = 0.0
-    open var backgroundVideo: NGDMVideo? {
-        return backgroundPresentation?.video
+    open var backgroundVideoSize: CGSize {
+        return (backgroundPresentation?.videoSize ?? CGSize.zero)
+    }
+    
+    open var backgroundVideoURL: URL? {
+        return backgroundPresentation?.videoURL
     }
     
     /// Background audio
-    open var backgroundAudio: NGDMAudio?
+    var backgroundAudio: NGDMAudio?
+    open var backgroundAudioURL: URL? {
+        return backgroundAudio?.url
+    }
     
     /// Button overlay
-    open var buttonOverlaySize: CGSize?
-    open var buttonOverlayBottomLeft: CGPoint?
+    public var buttonOverlaySize: CGSize?
+    public var buttonOverlayBottomLeft: CGPoint?
+    
+    /// Title treatment overlay
+    public var titleOverlaySize: CGSize?
+    public var titleOverlayBottomLeft: CGPoint?
     
     // MARK: Initialization
     /**
@@ -96,7 +116,7 @@ open class NGDMNodeStyle {
                 }
                 
                 if let timecodeString = backgroundVideoObj.LoopTimecode?.value {
-                    backgroundVideoLoopTimecode = Double(timecodeString) ?? 0.0
+                    backgroundVideoLoopTimecode = (Double(timecodeString) ?? 0)
                 }
             }
             
@@ -104,17 +124,23 @@ open class NGDMNodeStyle {
                 backgroundImage = NGDMManifest.sharedInstance.pictureGroups[backgroundImagePictureGroupId]?.first?.image
             }
             
-            if let backgroundAudioObj = backgroundObj.AudioLoop {
-                if let id = backgroundAudioObj.AudioTrackID {
-                    backgroundAudio = NGDMAudio.getById(id)
-                }
+            if let id = backgroundObj.AudioLoop?.AudioTrackID {
+                backgroundAudio = NGDMAudio.getById(id)
             }
             
             if let overlayObjList = backgroundObj.OverlayAreaList {
                 for overlayObj in overlayObjList {
-                    if overlayObj.tag == "button" {
-                        buttonOverlaySize = CGSize(width: CGFloat(overlayObj.WidthPixels), height: CGFloat(overlayObj.HeightPixels))
-                        buttonOverlayBottomLeft = CGPoint(x: CGFloat(overlayObj.PixelsFromLeft), y: CGFloat(overlayObj.PixelsFromBottom))
+                    if let tagName = overlayObj.tag?.lowercased() {
+                        let size = CGSize(width: CGFloat(overlayObj.WidthPixels), height: CGFloat(overlayObj.HeightPixels))
+                        let point = CGPoint(x: CGFloat(overlayObj.PixelsFromLeft), y: CGFloat(overlayObj.PixelsFromBottom))
+                        
+                        if tagName == "button" {
+                            buttonOverlaySize = size
+                            buttonOverlayBottomLeft = point
+                        } else if tagName == "title" {
+                            titleOverlaySize = size
+                            titleOverlayBottomLeft = point
+                        }
                     }
                 }
             }
@@ -130,8 +156,8 @@ open class NGDMNodeStyle {
  
         - Returns: Button image if it exists
     */
-    open func getButtonImage(_ label: String) -> NGDMImage? {
-        return theme.buttons[label]
+    public func getButtonImage(_ label: String) -> NGDMImage? {
+        return theme.getButtonImage(label)
     }
     
     // MARK: Search Methods
@@ -143,7 +169,7 @@ open class NGDMNodeStyle {
      
         - Returns: Object associated with identifier if it exists
      */
-    open static func getById(_ id: String) -> NGDMNodeStyle? {
+    static func getById(_ id: String) -> NGDMNodeStyle? {
         return NGDMManifest.sharedInstance.nodeStyles[id]
     }
     

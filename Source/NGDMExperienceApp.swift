@@ -9,31 +9,46 @@ open class NGDMExperienceApp {
     
     // MARK: Instance Variables
     /// Unique identifier
-    open var id: String
+    var id: String
+    open var analyticsIdentifier: String {
+        return id
+    }
     
     /// Metadata associated with this ExperienceApp
     var metadata: NGDMMetadata?
     
     /// Title associated with this ExperienceApp
-    open var title: String? {
-        return metadata?.title ?? name
+    public var title: String? {
+        return (metadata?.title ?? name)
     }
     
     /// Name associated with this ExperienceApp
     var name: String?
     
     /// Image URL to be used for display
-    var imageURL: URL? {
-        return metadata?.imageURL as URL?
+    public var imageURL: URL? {
+        return metadata?.imageURL
     }
     
     /// AppGroup associated with this ExperienceApp, if it exists
     var appGroup: NGDMAppGroup?
     
     /// URL to the AppGroup's HTML5 application, if it exists
-    open var url: URL? {
-        return appGroup?.url as URL?
+    public var url: URL? {
+        return appGroup?.url
     }
+    
+    /// Check if AppGroup is a shopping/product app
+    public var isProductApp: Bool {
+        if let name = name, let productAPIUtil = NGDMConfiguration.productAPIUtil {
+            return (name == type(of: productAPIUtil).APINamespace)
+        }
+        
+        return false
+    }
+    
+    /// List of ProductCategories for a shopping app
+    public var productCategories: [ProductCategory]?
     
     // MARK: Initialization
     /**
@@ -43,7 +58,7 @@ open class NGDMExperienceApp {
             - manifestObject: Raw Manifest data object
     */
     init(manifestObject: NGEExperienceAppType) {
-        id = manifestObject.AppID ?? manifestObject.AppGroupID ?? UUID().uuidString
+        id = (manifestObject.AppID ?? manifestObject.AppGroupID ?? UUID().uuidString)
         
         if let id = manifestObject.ContentID {
             metadata = NGDMMetadata.getById(id)
@@ -54,6 +69,16 @@ open class NGDMExperienceApp {
         if let id = manifestObject.AppGroupID {
             appGroup = NGDMAppGroup.getById(id)
         }
+    }
+    
+    // MARK: Helper Methods
+    /**
+        Loads the `ProductCategory` objects needed for a shopping experience
+     */
+    func loadProductData() {
+        NGDMConfiguration.productAPIUtil?.getProductCategories(completion: { [weak self] (productCategories) in
+            self?.productCategories = productCategories
+        })
     }
     
     // MARK: Search Methods

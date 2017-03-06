@@ -5,14 +5,14 @@
 import Foundation
 
 // Wrapper class for `NGEInventoryTextObjectType` Manifest object
-class NGDMTextObject {
+open class NGDMTextObject {
     
     // MARK: Instance Variables
-    /// Child TextStrings associated with this TextObject - Index: TextString value
-    var textStrings = [Int: String]()
-    
     /// Unique identifier
     var id: String
+    
+    /// Child TextStrings associated with this TextObject - Index: TextString value
+    var textStrings = [Int: String]()
     
     // MARK: Initialization
     /**

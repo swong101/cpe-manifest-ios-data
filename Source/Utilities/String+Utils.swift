@@ -38,6 +38,10 @@ extension String {
         return 0
     }
     
+    func trim() -> String? {
+        return self.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+    
     subscript (i: Int) -> Character {
         return self[self.characters.index(self.startIndex, offsetBy: i)]
     }

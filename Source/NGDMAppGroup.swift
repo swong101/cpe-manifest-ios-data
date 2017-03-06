@@ -4,18 +4,31 @@
 
 import Foundation
 
+public enum RuntimeEnvironment: String {
+    case cmx                = "CMX"     // Connected Media Experience
+    case flash              = "Flash"   // Adobe Flash
+    case bdj                = "BD-J"    // Blu-ray Java
+    case mheg               = "MHEG"    // MHEG-5, or more formally ISO/IEC 13522-5
+    case html5              = "HTML5"   // W3C HTML5
+    case defaultEnvironment = "Default" // Represents an application that can be played if nothing else can. This is typically an image
+    case other              = "Other"   // May be used when there is not a type convention
+}
+
 // Wrapper class for `NGEAppGroupType` Manifest object
 open class NGDMAppGroup {
     
     // MARK: Instance Variables
     /// Unique identifier
     var id: String
+    open var analyticsIdentifier: String {
+        return id
+    }
     
     /// URL associated with this AppGroup
-    open var url: URL?
+    public var url: URL?
     
-    /// Check if this is an HTML5 app
-    var isHTML5 = false
+    /// The execution runtime environment for the interactive content
+    public var runtimeEnvironment = RuntimeEnvironment.other
     
     // MARK: Initialization
     /**
@@ -33,7 +46,7 @@ open class NGDMAppGroup {
             }
             
             if let runtimeEnvironment = interactiveTrackReference.CompatibilityList?.first?.RuntimeEnvironment {
-                isHTML5 = (runtimeEnvironment == "HTML5")
+                self.runtimeEnvironment = (RuntimeEnvironment(rawValue: runtimeEnvironment) ?? .other)
             }
         }
     }

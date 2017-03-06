@@ -11,7 +11,7 @@ open class NGDMTheme {
     var id: String
     
     /// Overlay buttons
-    var buttons = [String: NGDMImage]() // Label: NGDMImage
+    private var buttons = [String: NGDMImage]() // Label: NGDMImage
     
     // MARK: Initialization
     /**
@@ -25,11 +25,24 @@ open class NGDMTheme {
         
         if let objList = manifestObject.ButtonImageSet?.ButtonList {
             for obj in objList {
-                if let label = obj.label {
+                if let label = obj.label?.lowercased() {
                     buttons[label] = NGDMImage.getById(obj.Default.BaseImage)
                 }
             }
         }
+    }
+    
+    // MARK: Helper Methods
+    /**
+        Finds a button image with the given label
+     
+        - Parameters:
+            - label: Button label name to search
+     
+        - Returns: Button image if it exists
+     */
+    public func getButtonImage(_ label: String) -> NGDMImage? {
+        return buttons[label.lowercased()]
     }
     
 }

@@ -12,20 +12,35 @@ open class NGDMPresentation {
     var id: String
     
     /// Video associated with this Presentation
-    var video: NGDMVideo?
+    private var video: NGDMVideo?
+    var videoID: String? {
+        return video?.id
+    }
+    
+    var videoAnalyticsIdentifier: String? {
+        return video?.analyticsIdentifier
+    }
     
     /// Video URL to be used for display
-    open var videoURL: URL? {
+    var videoURL: URL? {
         return video?.url
     }
     
     /// Original size of the Video
-    open var videoSize: CGSize {
-        return video?.size ?? CGSize.zero
+    var videoSize: CGSize {
+        return (video?.size ?? CGSize.zero)
+    }
+    
+    /// Video runtime length in seconds
+    var videoRuntime: TimeInterval {
+        return (video?.runtimeInSeconds ?? 0)
     }
     
     /// Commentary Audio associated with this Presentation
-    var commentaryAudio: NGDMAudio?
+    private var commentaryAudio: NGDMAudio?
+    var commentaryAudioURL: URL? {
+        return commentaryAudio?.url
+    }
     
     // MARK: Initialization
     /**

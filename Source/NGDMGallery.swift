@@ -12,40 +12,44 @@ public enum GallerySubType: String {
 // Wrapper class for `NGEGalleryType` Manifest object
 open class NGDMGallery {
     
-    fileprivate struct Constants {
+    private struct Constants {
         static let SubTypeTurntable = "Turntable"
     }
     
     // MARK: Instance Variables
     /// Unique identifier
-    open var id: String
+    var id: String
+    open var analyticsIdentifier: String {
+        return id
+    }
     
     /// Metadata
-    fileprivate var _metadata: NGDMMetadata?
-    fileprivate var _galleryName: String?
-    var title: String? {
-        return _galleryName ?? _metadata?.title
+    private var metadata: NGDMMetadata?
+    private var galleryName: String?
+    
+    public var title: String? {
+        return (galleryName ?? metadata?.title)
     }
     
     /// Description to be used for display
-    open var description: String? {
-        return _metadata?.description
+    public var description: String? {
+        return metadata?.description
     }
     
     /// Thumbnail image URL to be used for display
-    var imageURL: URL?
+    public var thumbnailImageURL: URL?
     
     /// Pictures associated with this Gallery
-    open var pictures: [NGDMPicture]
+    public var pictures: [NGDMPicture]
     
     /// Whether or not this Gallery should be displayed as a turntable
-    fileprivate var subType = GallerySubType.Gallery
-    open var isTurntable: Bool {
+    private var subType = GallerySubType.Gallery
+    public var isTurntable: Bool {
         return isSubType(.Turntable)
     }
     
     /// Total number of items in this gallery
-    open var totalCount: Int {
+    public var totalCount: Int {
         return pictures.count
     }
     
@@ -60,7 +64,7 @@ open class NGDMGallery {
         id = manifestObject.GalleryID ?? UUID().uuidString
         
         if let id = manifestObject.ContentID {
-            _metadata = NGDMMetadata.getById(id)
+            metadata = NGDMMetadata.getById(id)
         }
         
         if let subTypeString = manifestObject.SubTypeList?.first, let subType = GallerySubType(rawValue: subTypeString) {
@@ -88,9 +92,8 @@ open class NGDMGallery {
             pictures = [NGDMPicture]()
         }
         
-        _galleryName = manifestObject.GalleryNameList?.first?.value
-        
-        imageURL = _metadata?.imageURL as URL?? ?? pictures.first?.thumbnailImageURL as URL?
+        galleryName = manifestObject.GalleryNameList?.first?.value
+        thumbnailImageURL = (metadata?.imageURL ?? pictures.first?.thumbnailImageURL)
     }
  
     /**
@@ -113,7 +116,7 @@ open class NGDMGallery {
             - Returns: `true` if the Gallery is of the specified sub-type
                 - pictures: Pictures associated with this Gallery
     */
-    open func isSubType(_ subType: GallerySubType) -> Bool {
+    public func isSubType(_ subType: GallerySubType) -> Bool {
         return (self.subType == subType)
     }
     
@@ -126,7 +129,7 @@ open class NGDMGallery {
         - Returns:
             - Picture for the given page number, if one exists
     */
-    open func getPictureForPage(_ page: Int) -> NGDMPicture? {
+    public func getPictureForPage(_ page: Int) -> NGDMPicture? {
         return (pictures.count > page ? pictures[page] : nil)
     }
     
@@ -139,12 +142,8 @@ open class NGDMGallery {
         - Returns:
             - Image URL for the given page number, if one exists
     */
-    open func getImageURLForPage(_ page: Int) -> URL? {
-        if let picture = getPictureForPage(page) {
-            return picture.imageURL as URL?
-        }
-        
-        return nil
+    public func getImageURLForPage(_ page: Int) -> URL? {
+        return getPictureForPage(page)?.imageURL
     }
     
     // MARK: Search Methods

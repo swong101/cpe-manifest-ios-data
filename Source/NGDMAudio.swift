@@ -5,11 +5,11 @@
 import Foundation
 
 public enum AudioType: String {
-    case primary = "primary"
-    case narration = "narration"
-    case dialogCentric = "dialogcentric"
-    case commentary = "commentary"
-    case other = "other"
+    case primary        = "primary"         // primary audio track. There may be multiple primary tracks, with one for each language
+    case narration      = "narration"       // The visually impairment associated service is a complete program mix containing music, effects, dialogue, and additionally a narrative description of the picture content
+    case dialogCentric  = "dialogcentric"   // The hearing impaired associated service is a complete program mix containing music, effects, and dialogue with dynamic range compression
+    case commentary     = "commentary"      // Commentary on the video
+    case other          = "other"           // not one of the above
 }
 
 // Wrapper class for `NGEInventoryAudioType` Manifest object
@@ -19,10 +19,10 @@ open class NGDMAudio {
     var id: String
     
     /// URL associated with this Audio
-    open var url: URL?
+    public var url: URL?
     
     /// Type of Audio track
-    private var type: AudioType = .primary
+    private var type = AudioType.primary
     
     /// True if this Audio is a commentary track
     public var isCommentary: Bool {
@@ -43,14 +43,7 @@ open class NGDMAudio {
             self.type = type
         }
         
-        if let containerLocation = manifestObject.ContainerReference?.ContainerLocationList?.first?.value {
-            if containerLocation.contains("file://") {
-                let tempURL = URL(fileURLWithPath: containerLocation.replacingOccurrences(of: "file://", with: ""))
-                url = Bundle.main.url(forResource: tempURL.deletingPathExtension().path, withExtension: tempURL.pathExtension)
-            } else {
-                url = URL(string: containerLocation)
-            }
-        }
+        url = ManifestUtils.urlForContainerReference(manifestObject.ContainerReference)
     }
     
     // MARK: Helper Methods

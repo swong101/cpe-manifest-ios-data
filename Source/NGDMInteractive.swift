@@ -5,7 +5,7 @@
 import Foundation
 
 // Wrapper class for `NGEInventoryInteractiveType` Manifest object
-class NGDMInteractive {
+open class NGDMInteractive {
     
     // MARK: Instance Variables
     /// Unique identifier
@@ -23,10 +23,7 @@ class NGDMInteractive {
     */
     init(manifestObject: NGEInventoryInteractiveType) {
         id = manifestObject.InteractiveTrackID ?? UUID().uuidString
-        
-        if let containerLocation = manifestObject.ContainerReference?.ContainerLocationList?.first?.value {
-            url = URL(string: containerLocation)
-        }
+        url = ManifestUtils.urlForContainerReference(manifestObject.ContainerReference)
     }
     
     // MARK: Search Methods

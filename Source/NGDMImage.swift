@@ -9,13 +9,13 @@ open class NGDMImage {
     
     // MARK: Instance Variables
     /// Unique identifier
-    open var id: String
+    var id: String
     
     /// URL associated with this Image
-    open var url: URL?
+    public var url: URL?
     
     /// Size of the Image as specified in Manifest file
-    open var size = CGSize.zero
+    public var size = CGSize.zero
     
     // MARK: Initialization
     /**
@@ -26,16 +26,7 @@ open class NGDMImage {
     */
     init(manifestObject: NGEInventoryImageType) {
         id = manifestObject.ImageID ?? UUID().uuidString
-        
-        if let containerLocation = manifestObject.ContainerReference?.ContainerLocationList?.first?.value  {
-            if containerLocation.contains("file://") {
-                let tempURL = URL(fileURLWithPath: containerLocation.replacingOccurrences(of: "file://", with: ""))
-                url = Bundle.main.url(forResource: tempURL.deletingPathExtension().path, withExtension: tempURL.pathExtension)
-            } else {
-                url = URL(string: containerLocation)
-            }
-        }
-        
+        url = ManifestUtils.urlForContainerReference(manifestObject.ContainerReference)
         size = CGSize(width: manifestObject.Width, height: manifestObject.Height)
     }
     

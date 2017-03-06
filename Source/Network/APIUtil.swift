@@ -9,8 +9,8 @@ public typealias APIUtilErrorBlock = (_ error: NSError?) -> Void
 
 open class APIUtil: NSObject, URLSessionDataDelegate {
     
-    var apiDomain: String!
-    open var customHeaders = [String: String]()
+    private var apiDomain: String!
+    public var customHeaders = [String: String]()
     
     public init(apiDomain: String) {
         super.init()
@@ -31,7 +31,7 @@ open class APIUtil: NSObject, URLSessionDataDelegate {
         return getJSONWithRequest(requestWithURLPath(urlPath + "?" + parameters.stringFromHTTPParameters()) as URLRequest, successBlock: successBlock, errorBlock: errorBlock)
     }
     
-    fileprivate func getJSONWithRequest(_ request: URLRequest, successBlock: APIUtilSuccessBlock?, errorBlock: APIUtilErrorBlock?) -> URLSessionDataTask {
+    open func getJSONWithRequest(_ request: URLRequest, successBlock: APIUtilSuccessBlock?, errorBlock: APIUtilErrorBlock?) -> URLSessionDataTask {
         let sessionConfiguration = URLSessionConfiguration.default
         sessionConfiguration.requestCachePolicy = NSURLRequest.CachePolicy.returnCacheDataElseLoad
         sessionConfiguration.urlCache = URLCache(memoryCapacity: 0, diskCapacity: 1024 * 1024 * 64, diskPath: "com.wb.nextgen_api_cache") // 64Mb

@@ -8,13 +8,16 @@ import Foundation
 open class NGDMVideo {
     
     /// Unique identifier
-    open var id: String
+    var id: String
+    open var analyticsIdentifier: String {
+        return id
+    }
     
     /// Size in pixels of this Video
-    open var size = CGSize.zero
+    var size = CGSize.zero
     
     /// URL associated with this Video
-    open var url: URL?
+    var url: URL?
     
     /// Video length in seconds
     var runtimeInSeconds: TimeInterval = 0
@@ -33,15 +36,7 @@ open class NGDMVideo {
             size = CGSize(width: width, height: height)
         }
         
-        if let containerLocation = manifestObject.ContainerReference?.ContainerLocationList?.first?.value {
-            if containerLocation.contains("file://") {
-                let tempURL = URL(fileURLWithPath: containerLocation.replacingOccurrences(of: "file://", with: ""))
-                url = Bundle.main.url(forResource: tempURL.deletingPathExtension().path, withExtension: tempURL.pathExtension)
-            } else {
-                url = URL(string: containerLocation)
-            }
-        }
-        
+        url = ManifestUtils.urlForContainerReference(manifestObject.ContainerReference)
         runtimeInSeconds = manifestObject.Encoding?.ActualLength?.iso8601TimeInSeconds() ?? 0
     }
     

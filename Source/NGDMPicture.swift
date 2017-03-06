@@ -12,21 +12,25 @@ open class NGDMPicture {
     var id: String
     
     /// Image URL to be used for full display
-    open var image: NGDMImage?
+    var image: NGDMImage?
     private var _imageURL: URL?
-    open var imageURL: URL? {
-        return _imageURL ?? image?.url
+    public var imageURL: URL? {
+        return (_imageURL ?? image?.url)
+    }
+    
+    public var imageID: String? {
+        return image?.id
     }
     
     /// Image URL to be used for thumbnail display
-    var thumbnailImage: NGDMImage?
-    open var thumbnailImageURL: URL? {
-        return thumbnailImage?.url
+    private var thumbnailImage: NGDMImage?
+    public var thumbnailImageURL: URL? {
+        return (thumbnailImage?.url ?? imageURL)
     }
     
     /// Caption associated with this image
-    fileprivate var captions: [String: String]? // Language: Caption
-    open var caption: String? {
+    private var captions: [String: String]? // Language: Caption
+    public var caption: String? {
         if let caption = captions?[Locale.deviceLanguage()] {
             return caption
         }

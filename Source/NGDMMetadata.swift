@@ -5,7 +5,7 @@
 import Foundation
 
 // Wrapper class for `NGEBasicMetadataInfoType` Manifest object
-class NGDMLocalizedInfo {
+open class NGDMLocalizedInfo {
     
     /// Metadata
     var language: String
@@ -42,35 +42,35 @@ open class NGDMMetadata {
     
     // MARK: Static Variables
     /// Static mapping of all Metadatas - ContentID: Metadata
-    fileprivate static var objectMap = [String: NGDMMetadata]()
+    private static var objectMap = [String: NGDMMetadata]()
     
     // MARK: Instance Variables
     /// Unique identifier
     var id: String
     
     /// Mapping of all LocalizedInfos for this Metadata - Language: LocalizedInfo
-    fileprivate var _defaultLocalizedInfo: NGDMLocalizedInfo?
-    fileprivate var _localizedInfoMap = [String: NGDMLocalizedInfo]()
-    fileprivate var _localizedInfo: NGDMLocalizedInfo? {
-        return _localizedInfoMap[Locale.deviceLanguage()] ?? _localizedInfoMap[Locale.deviceLanguageBackup()] ?? _defaultLocalizedInfo ?? _localizedInfoMap["en-US"] ?? _localizedInfoMap["en"]
+    private var defaultLocalizedInfo: NGDMLocalizedInfo?
+    private var localizedInfoMap = [String: NGDMLocalizedInfo]()
+    private var localizedInfo: NGDMLocalizedInfo? {
+        return localizedInfoMap[Locale.deviceLanguage()] ?? localizedInfoMap[Locale.deviceLanguageBackup()] ?? defaultLocalizedInfo ?? localizedInfoMap["en-US"] ?? localizedInfoMap["en"]
     }
     
     /// Mapping of all content identifiers for this Metadata - Namespace: Identifier
-    fileprivate var _contentIdentifiers: [String: String]?
+    private var contentIdentifiers: [String: String]?
     
     /// Full title associated with this Metadata
-    open var title: String? {
-        return _localizedInfo?.title
+    var title: String? {
+        return localizedInfo?.title
     }
     
     /// Full description or summary associated with this Metadata
-    open var description: String? {
-        return _localizedInfo?.description
+    var description: String? {
+        return localizedInfo?.description
     }
     
     /// Image URL to be used for display
     var imageURL: URL? {
-        return _localizedInfo?.imageURL
+        return localizedInfo?.imageURL
     }
     
     /// Mapping of all Talents for this Metadata - PeopleOtherID: Talent
@@ -89,19 +89,19 @@ open class NGDMMetadata {
         if let objList = manifestObject.BasicMetadata?.LocalizedInfoList {
             for obj in objList {
                 let localizedInfo = NGDMLocalizedInfo(manifestObject: obj)
-                _localizedInfoMap[localizedInfo.language] = localizedInfo
+                localizedInfoMap[localizedInfo.language] = localizedInfo
                 
                 if obj.isDefault != nil && obj.isDefault! {
-                    _defaultLocalizedInfo = localizedInfo
+                    defaultLocalizedInfo = localizedInfo
                 }
             }
         }
         
         if let objList = manifestObject.BasicMetadata?.AltIdentifierList {
-            _contentIdentifiers = [String: String]()
+            contentIdentifiers = [String: String]()
             
             for obj in objList {
-                _contentIdentifiers![obj.Namespace] = obj.Identifier
+                contentIdentifiers![obj.Namespace] = obj.Identifier
             }
         }
         
@@ -120,12 +120,12 @@ open class NGDMMetadata {
         Find any custom identifier associated with this Experience
      
         - Parameters:
-            - namespace: The namespace of the custom identifier used in the Manifest (e.g. "thetake")
+            - namespace: The namespace of the custom identifier used in the Manifest
      
         - Returns: The value of the custom identifier if it exists
      */
     func customIdentifier(_ namespace: String) -> String? {
-        return _contentIdentifiers?[namespace]
+        return contentIdentifiers?[namespace]
     }
     
     // MARK: Search Methods

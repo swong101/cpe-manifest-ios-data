@@ -3,11 +3,11 @@
 //
 
 public enum TalentType: String {
-    case Unknown = "Unknown"
-    case Actor = "Actor"
-    case Director = "Directory"
-    case Producer = "Producer"
-    case Writer = "Writer"
+    case unknown = "Unknown"
+    case actor = "Actor"
+    case director = "Director"
+    case producer = "Producer"
+    case writer = "Writer"
 }
 
 public enum SocialAccountType: String {
@@ -22,12 +22,12 @@ open class NGDMPeople: NSObject {
     
     // MARK: Instance Variables
     open var id: String!
-    open var apiId: String?
+    open var apiID: String?
     
     open var name: String?
     open var role: String?
     open var billingBlockOrder = 0
-    var type = TalentType.Unknown
+    var type = TalentType.unknown
     var biography: String?
     open var images: [TalentImage]?
     open var films: [TalentFilm]?
@@ -65,16 +65,13 @@ open class NGDMPeople: NSObject {
             for identifier in identifiers {
                 if identifier.Namespace == Namespaces.PeopleID {
                     id = identifier.Identifier
-                } else if NGDMConfiguration.talentAPIUtil != nil && NGDMConfiguration.talentAPIUtil!.apiNamespace == identifier.Namespace {
-                    apiId = identifier.Identifier
+                } else if let talentAPIUtil = NGDMConfiguration.talentAPIUtil, type(of: talentAPIUtil).APINamespace == identifier.Namespace {
+                    apiID = identifier.Identifier
                 }
             }
         }
         
-        if id == nil {
-            id = apiId != nil ? apiId : String(arc4random())
-        }
-        
+        id = (id ?? apiID ?? String(arc4random()))
         name = manifestObject.Name.DisplayNameList.first?.value
         role = manifestObject.JobList.first?.CharacterList?.first
         if let job = manifestObject.JobList.first {
@@ -85,7 +82,7 @@ open class NGDMPeople: NSObject {
             if let jobFunction = job.JobFunction?.value, let type = TalentType(rawValue: jobFunction) {
                 self.type = type
             } else {
-                type = .Unknown
+                type = .unknown
             }
         }
     }
@@ -102,10 +99,10 @@ open class NGDMTalent: NGDMPeople {
         - Parameters:
             - baselineInfo: Response from the Baseline API
      */
-    public convenience init(apiId: String, name: String?, role: String?, billingBlockOrder: Int, type: TalentType) {
+    public convenience init(apiID: String, name: String?, role: String?, billingBlockOrder: Int, type: TalentType) {
         self.init()
         
-        self.apiId = apiId
+        self.apiID = apiID
         self.name = name
         self.role = role
         self.billingBlockOrder = billingBlockOrder
@@ -115,7 +112,7 @@ open class NGDMTalent: NGDMPeople {
     open func getTalentDetails(_ successBlock: @escaping (_ biography: String?, _ socialAccounts: [TalentSocialAccount]?, _ films: [TalentFilm]?) -> Void) {
         if detailsLoaded {
             successBlock(biography, socialAccounts, films)
-        } else if let talentAPIUtil = NGDMConfiguration.talentAPIUtil, let id = apiId {
+        } else if let talentAPIUtil = NGDMConfiguration.talentAPIUtil, let id = apiID {
             talentAPIUtil.getTalentDetails(id, completion: { [weak self] (biography, socialAccounts, films) in
                 if let strongSelf = self {
                     strongSelf.biography = biography
@@ -126,6 +123,9 @@ open class NGDMTalent: NGDMPeople {
                 
                 successBlock(biography, socialAccounts, films)
             })
+        } else {
+            successBlock(biography, socialAccounts, films)
+            detailsLoaded = true
         }
     }
     
