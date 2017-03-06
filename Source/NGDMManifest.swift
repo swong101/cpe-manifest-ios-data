@@ -362,6 +362,8 @@ public class NGDMManifest {
     */
     public static func destroyInstance() {
         NGDMManifest.sharedInstance = NGDMManifest()
+        NGDMConfiguration.talentAPIUtil = nil
+        NGDMConfiguration.productAPIUtil = nil
     }
     
 }
