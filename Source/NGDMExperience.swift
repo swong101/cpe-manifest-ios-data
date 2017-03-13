@@ -292,24 +292,37 @@ open class NGDMExperience: Equatable {
         - Returns: Current NodeStyle if it exists
     */
     public func getNodeStyle(_ interfaceOrientation: UIInterfaceOrientation) -> NGDMNodeStyle? {
-        let isTablet = (UIDevice.current.userInterfaceIdiom == .pad)
-        let isLandscape = UIInterfaceOrientationIsLandscape(interfaceOrientation)
+        var tabletLandscapeNodeStyle: NGDMNodeStyle?
+        var tabletPortraitNodeStyle: NGDMNodeStyle?
+        var phoneLandscapeNodeStyle: NGDMNodeStyle?
+        var phonePortraitNodeStyle: NGDMNodeStyle?
         
         if let nodeStyles = nodeStyles {
             for nodeStyle in nodeStyles {
-                if (isTablet && nodeStyle.supportsTablet) || (!isTablet && nodeStyle.supportsPhone) {
-                    if isLandscape && nodeStyle.supportsLandscape {
-                        return nodeStyle
+                if nodeStyle.supportsTablet {
+                    if nodeStyle.supportsLandscape {
+                        tabletLandscapeNodeStyle = nodeStyle
+                    } else if nodeStyle.supportsPortrait {
+                        tabletPortraitNodeStyle = nodeStyle
                     }
-                    
-                    if !isLandscape && nodeStyle.supportsPortrait {
-                        return nodeStyle
+                }
+                
+                if nodeStyle.supportsPhone {
+                    if nodeStyle.supportsLandscape {
+                        phoneLandscapeNodeStyle = nodeStyle
+                    } else if nodeStyle.supportsPortrait {
+                        phonePortraitNodeStyle = nodeStyle
                     }
                 }
             }
         }
         
-        return nil
+        let isLandscape = UIInterfaceOrientationIsLandscape(interfaceOrientation)
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            return (isLandscape ? (tabletLandscapeNodeStyle ?? tabletPortraitNodeStyle) : (tabletPortraitNodeStyle ?? tabletLandscapeNodeStyle))
+        }
+        
+        return (isLandscape ? (phoneLandscapeNodeStyle ?? phonePortraitNodeStyle) : (phonePortraitNodeStyle ?? phoneLandscapeNodeStyle))
     }
     
     /**

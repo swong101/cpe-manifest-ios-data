@@ -34,10 +34,10 @@ open class NGDMNodeStyle {
     var id: String
     
     /// Properties
-    var supportsLandscape = false
-    var supportsPortrait = false
-    var supportsTablet = false
-    var supportsPhone = false
+    public var supportsLandscape = false
+    public var supportsPortrait = false
+    public var supportsTablet = false
+    public var supportsPhone = false
     
     /// General theme (includes buttons)
     var theme: NGDMTheme!
