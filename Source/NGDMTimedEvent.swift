@@ -70,7 +70,7 @@ open class NGDMTimedEvent: Equatable {
     
     /// TimedEvent objects
     var textItem: String?
-    public var experience: NGDMExperience?
+    public var experience: NGDMExperience!
     public var appGroup: NGDMAppGroup?
     public var gallery: NGDMGallery?
     public var audioVisual: NGDMAudioVisual?
@@ -190,7 +190,7 @@ open class NGDMTimedEvent: Equatable {
             }
             
             // Support legacy method of denoting clipshare experience
-            return experience != nil && experience!.id.contains("clipshare")
+            return experience.id.contains("clipshare")
             
         case .gallery:
             return (gallery != nil)
@@ -263,7 +263,7 @@ open class NGDMTimedEvent: Equatable {
     
     public static func findByTimecode(_ timecode: Double, type: TimedEventType = .any) -> [NGDMTimedEvent] {
         let timedEvents = NGDMManifest.sharedInstance.timedEvents.filter({ $0.isType(type) && timecode >= $0.startTime && timecode <= $0.endTime })
-        return timedEvents.sorted(by: { ($0.experience?.sequenceNumber ?? 0) < ($1.experience?.sequenceNumber ?? 0) })
+        return timedEvents.sorted(by: { $0.experience.sequenceNumber < $1.experience.sequenceNumber })
     }
     
     public static func findClosestToTimecode(_ timecode: Double, type: TimedEventType = .any) -> NGDMTimedEvent? {

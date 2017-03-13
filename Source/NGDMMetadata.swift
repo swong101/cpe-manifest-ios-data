@@ -52,7 +52,7 @@ open class NGDMMetadata {
     private var defaultLocalizedInfo: NGDMLocalizedInfo?
     private var localizedInfoMap = [String: NGDMLocalizedInfo]()
     private var localizedInfo: NGDMLocalizedInfo? {
-        return localizedInfoMap[Locale.deviceLanguage()] ?? localizedInfoMap[Locale.deviceLanguageBackup()] ?? defaultLocalizedInfo ?? localizedInfoMap["en-US"] ?? localizedInfoMap["en"]
+        return localizedInfoMap[Locale.deviceLanguage] ?? localizedInfoMap[Locale.deviceLanguageBackup] ?? defaultLocalizedInfo ?? localizedInfoMap["en-US"] ?? localizedInfoMap["en"]
     }
     
     /// Mapping of all content identifiers for this Metadata - Namespace: Identifier

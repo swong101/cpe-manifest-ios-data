@@ -184,7 +184,7 @@ public class NGDMManifest {
         }
         
         for obj in manifest.Experiences.ExperienceList {
-            if let experienceId = obj.ExperienceID, experiences[experienceId] == nil {
+            if !ManifestUtils.isExperienceExcluded(obj), let experienceId = obj.ExperienceID, experiences[experienceId] == nil {
                 if let audioVisualType = obj.Audiovisual?.Type, audioVisualType == AudioVisualType.main.rawValue {
                     mainExperience = NGDMMainExperience(manifestObject: obj)
                     experiences[mainExperience!.id] = mainExperience
@@ -211,13 +211,16 @@ public class NGDMManifest {
                 for experienceObj in manifest.Experiences.ExperienceList {
                     if let experienceID = experienceObj.ExperienceID, let timedEventSequenceID = experienceObj.TimedSequenceIDList?.first, timedEventSequenceID == obj.TimedSequenceID {
                         timedEventExperience = experiences[experienceID]
+                        break
                     }
                 }
                 
-                for childObj in obj.TimedEventList {
-                    let timedEvent = NGDMTimedEvent(manifestObject: childObj)
-                    timedEvent.experience = timedEventExperience
-                    timedEvents.append(timedEvent)
+                if let timedEventExperience = timedEventExperience {
+                    for childObj in obj.TimedEventList {
+                        let timedEvent = NGDMTimedEvent(manifestObject: childObj)
+                        timedEvent.experience = timedEventExperience
+                        timedEvents.append(timedEvent)
+                    }
                 }
             }
             
