@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name            = 'NextGenDataManager'
-  s.version         = '2.2.0'
+  s.version         = '2.2.1'
   s.summary         = 'Manifest.XML parser and full one-to-one mapping of the Manifest and Common Metadata specs to Swift objects'
   s.license         = { :type => 'Apache License, Version 2.0', :file => 'LICENSE' }
   s.homepage        = 'https://github.com/warnerbros/cpe-manifest-ios-data'
@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   s.preserve_path   = 'Source/libxml/module.modulemap'
   s.pod_target_xcconfig = { 
     'HEADER_SEARCH_PATHS' => '/usr/include/libxml2', 
-    'SWIFT_INCLUDE_PATHS' => '~/Documents/Source/cpe-manifest-ios-data/Source/libxml',
+    'SWIFT_INCLUDE_PATHS' => '$(SRCROOT)/Source/libxml/**',
     'SWIFT_VERSION' => '3.0' 
   }
 
