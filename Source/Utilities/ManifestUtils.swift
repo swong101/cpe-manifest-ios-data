@@ -19,4 +19,12 @@ class ManifestUtils {
         return nil
     }
     
+    static func isExperienceExcluded(_ experienceObj: NGEExperienceType) -> Bool {
+        if let excludedRegions = experienceObj.ExcludedRegionList, let currentRegionCode = NGDMConfiguration.countryCode {
+            return excludedRegions.contains(where: { $0.country == currentRegionCode })
+        }
+        
+        return false
+    }
+    
 }

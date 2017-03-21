@@ -7,12 +7,11 @@ import Foundation
 
 extension Locale {
     
-    public static func deviceLanguage() -> String {
+    static var deviceLanguage: String {
         return Locale.current.identifier.replacingOccurrences(of: "_", with: "-")
     }
     
-    public static func deviceLanguageBackup() -> String {
-        let deviceLanguage = self.deviceLanguage()
+    static var deviceLanguageBackup: String {
         return deviceLanguage[deviceLanguage.startIndex ..< deviceLanguage.characters.index(deviceLanguage.startIndex, offsetBy: 2)]
     }
     

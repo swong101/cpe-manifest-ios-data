@@ -31,11 +31,11 @@ open class NGDMPicture {
     /// Caption associated with this image
     private var captions: [String: String]? // Language: Caption
     public var caption: String? {
-        if let caption = captions?[Locale.deviceLanguage()] {
+        if let caption = captions?[Locale.deviceLanguage] {
             return caption
         }
         
-        return captions?[Locale.deviceLanguageBackup()]
+        return captions?[Locale.deviceLanguageBackup]
     }
     
     // MARK: Initialization
@@ -59,7 +59,7 @@ open class NGDMPicture {
         captions = [String: String]()
         if let objList = manifestObject.CaptionList {
             for obj in objList {
-                let language = obj.language ?? Locale.deviceLanguage()
+                let language = obj.language ?? Locale.deviceLanguage
                 if let value = obj.value {
                     captions![language] = value
                 }

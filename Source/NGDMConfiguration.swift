@@ -11,6 +11,18 @@ public enum NGDMMapService {
 
 public struct NGDMConfiguration {
     
+    /// Optional user country code specified by the retailer
+    private static var _countryCode: String?
+    public static var countryCode: String? {
+        get {
+            return (_countryCode ?? Locale.current.regionCode)
+        }
+        
+        set {
+            _countryCode = newValue
+        }
+    }
+    
     /// The TalentAPIUtil to be used to fetch talent details from a third party API, if any
     public static var talentAPIUtil: TalentAPIUtil?
     
