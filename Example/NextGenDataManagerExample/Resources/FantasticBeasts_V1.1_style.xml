@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<cpestyle:CPEStyleSet xmlns:cpestyle="http://www.movielabs.com/schema/md/cpestyle/v1.0/cpestyle" CPEStyleSetID="md:cpestyleid:eidr-x:EE48-FE4D-B363-71AF-A3AB-G" updateNum="1" specVersion="1.0">
+    <cpestyle:ExperienceStyleMap>
+        <cpestyle:ExperienceID>md:experienceid:eidr-x:EE48-FE4D-B363-71AF-A3AB-G:feature.3839</cpestyle:ExperienceID>
+        <cpestyle:NodeStyleRef NodeStyleID="md:nodestyleid:eidr-x:EE48-FE4D-B363-71AF-A3AB-G:feature:Landscape.3899">
+            <cpestyle:Orientation>Landscape</cpestyle:Orientation>
+            <cpestyle:DeviceTarget>
+                <cpestyle:Class>Mobile</cpestyle:Class>
+                <cpestyle:SubClass>Tablet</cpestyle:SubClass>
+            </cpestyle:DeviceTarget>
+            <cpestyle:DeviceTarget>
+                <cpestyle:Class>Mobile</cpestyle:Class>
+                <cpestyle:SubClass>Phone</cpestyle:SubClass>
+            </cpestyle:DeviceTarget>
+        </cpestyle:NodeStyleRef>
+        <cpestyle:NodeStyleRef NodeStyleID="md:nodestyleid:eidr-x:EE48-FE4D-B363-71AF-A3AB-G:feature:Portrait.3907">
+            <cpestyle:Orientation>Portrait</cpestyle:Orientation>
+            <cpestyle:DeviceTarget>
+                <cpestyle:Class>Mobile</cpestyle:Class>
+                <cpestyle:SubClass>Phone</cpestyle:SubClass>
+            </cpestyle:DeviceTarget>
+        </cpestyle:NodeStyleRef>
+    </cpestyle:ExperienceStyleMap>
+    <cpestyle:ExperienceStyleMap>
+        <cpestyle:ExperienceID>md:experienceid:eidr-x:EE48-FE4D-B363-71AF-A3AB-G:inmovie.3898</cpestyle:ExperienceID>
+        <cpestyle:NodeStyleRef NodeStyleID="md:nodestyleid:eidr-x:EE48-FE4D-B363-71AF-A3AB-G:inmovie.3908"/>
+    </cpestyle:ExperienceStyleMap>
+    <cpestyle:ExperienceStyleMap>
+        <cpestyle:ExperienceID>md:experienceid:eidr-x:EE48-FE4D-B363-71AF-A3AB-G:outofmovie.3896</cpestyle:ExperienceID>
+        <cpestyle:NodeStyleRef NodeStyleID="md:nodestyleid:eidr-x:EE48-FE4D-B363-71AF-A3AB-G:outofmovie.3910"/>
+    </cpestyle:ExperienceStyleMap>
+    <cpestyle:NodeStyle NodeStyleID="md:nodestyleid:eidr-x:EE48-FE4D-B363-71AF-A3AB-G:feature:Landscape.3899">
+        <cpestyle:Type>App</cpestyle:Type>
+        <cpestyle:ThemeID>md:themeid:eidr-x:EE48-FE4D-B363-71AF-A3AB-G:home-buttons.3900</cpestyle:ThemeID>
+        <cpestyle:Background looping="true">
+            <cpestyle:Color>#000000</cpestyle:Color>
+            <cpestyle:Image>
+                <cpestyle:PictureGroupID>md:picturegroupid:eidr-x:EE48-FE4D-B363-71AF-A3AB-G:BG_GALLERY:gallery.2696</cpestyle:PictureGroupID>
+            </cpestyle:Image>
+            <cpestyle:Video>
+                <cpestyle:PresentationID>md:presentationid:eidr-x:EE48-FE4D-B363-71AF-A3AB-G:BG_VIDEO.453</cpestyle:PresentationID>
+                <cpestyle:LoopTimecode>5.33</cpestyle:LoopTimecode>
+            </cpestyle:Video>
+            <cpestyle:AudioLoop>
+                <cpestyle:AudioTrackID>md:audtrackid:eidr-x:EE48-FE4D-B363-71AF-A3AB-G:BG_AUDIO:audio.459</cpestyle:AudioTrackID>
+            </cpestyle:AudioLoop>
+            <cpestyle:Adaptation>
+                <cpestyle:ScaleMethod>BestFit</cpestyle:ScaleMethod>
+                <cpestyle:PositioningMethod>centered</cpestyle:PositioningMethod>
+            </cpestyle:Adaptation>
+            <cpestyle:OverlayArea tag="button" priority="1">
+                <cpestyle:WidthPixels>400</cpestyle:WidthPixels>
+                <cpestyle:HeightPixels>175</cpestyle:HeightPixels>
+                <cpestyle:PixelsFromLeft>410</cpestyle:PixelsFromLeft>
+                <cpestyle:PixelsFromBottom>420</cpestyle:PixelsFromBottom>
+            </cpestyle:OverlayArea>
+        </cpestyle:Background>
+    </cpestyle:NodeStyle>
+    <cpestyle:NodeStyle NodeStyleID="md:nodestyleid:eidr-x:EE48-FE4D-B363-71AF-A3AB-G:feature:Portrait.3907">
+        <cpestyle:Type>App</cpestyle:Type>
+        <cpestyle:ThemeID>md:themeid:eidr-x:EE48-FE4D-B363-71AF-A3AB-G:home-buttons.3900</cpestyle:ThemeID>
+        <cpestyle:Background looping="true">
+            <cpestyle:Color>#000000</cpestyle:Color>
+            <cpestyle:Image>
+                <cpestyle:PictureGroupID>md:picturegroupid:eidr-x:EE48-FE4D-B363-71AF-A3AB-G:BG_GALLERY:gallery.2696</cpestyle:PictureGroupID>
+            </cpestyle:Image>
+            <cpestyle:Video>
+                <cpestyle:PresentationID>md:presentationid:eidr-x:EE48-FE4D-B363-71AF-A3AB-G:BG_VIDEO.453</cpestyle:PresentationID>
+                <cpestyle:LoopTimecode>5.33</cpestyle:LoopTimecode>
+            </cpestyle:Video>
+            <cpestyle:AudioLoop>
+                <cpestyle:AudioTrackID>md:audtrackid:eidr-x:EE48-FE4D-B363-71AF-A3AB-G:BG_AUDIO:audio.459</cpestyle:AudioTrackID>
+            </cpestyle:AudioLoop>
+            <cpestyle:Adaptation>
+                <cpestyle:ScaleMethod>Full</cpestyle:ScaleMethod>
+                <cpestyle:PositioningMethod>upperleft</cpestyle:PositioningMethod>
+            </cpestyle:Adaptation>
+            <cpestyle:OverlayArea tag="button" priority="1">
+                <cpestyle:WidthPixels>750</cpestyle:WidthPixels>
+                <cpestyle:HeightPixels>550</cpestyle:HeightPixels>
+                <cpestyle:PixelsFromLeft>649</cpestyle:PixelsFromLeft>
+                <cpestyle:PixelsFromBottom>150</cpestyle:PixelsFromBottom>
+            </cpestyle:OverlayArea>
+        </cpestyle:Background>
+    </cpestyle:NodeStyle>
+    <cpestyle:NodeStyle NodeStyleID="md:nodestyleid:eidr-x:EE48-FE4D-B363-71AF-A3AB-G:inmovie.3908">
+        <cpestyle:Type>App</cpestyle:Type>
+        <cpestyle:ThemeID>md:themeid:eidr-x:EE48-FE4D-B363-71AF-A3AB-G:id_generated_by_r60_theme_id.3909</cpestyle:ThemeID>
+        <cpestyle:Background>
+            <cpestyle:Color>#000000</cpestyle:Color>
+            <cpestyle:Image>
+                <cpestyle:PictureGroupID>md:picturegroupid:eidr-x:EE48-FE4D-B363-71AF-A3AB-G:BG_GALLERY:gallery.2696</cpestyle:PictureGroupID>
+            </cpestyle:Image>
+            <cpestyle:Adaptation>
+                <cpestyle:ScaleMethod>BestFit</cpestyle:ScaleMethod>
+                <cpestyle:PositioningMethod>centered</cpestyle:PositioningMethod>
+            </cpestyle:Adaptation>
+        </cpestyle:Background>
+    </cpestyle:NodeStyle>
+    <cpestyle:NodeStyle NodeStyleID="md:nodestyleid:eidr-x:EE48-FE4D-B363-71AF-A3AB-G:outofmovie.3910">
+        <cpestyle:Type>App</cpestyle:Type>
+        <cpestyle:ThemeID>md:themeid:eidr-x:EE48-FE4D-B363-71AF-A3AB-G:id_generated_by_r60_theme_id.3909</cpestyle:ThemeID>
+        <cpestyle:Background>
+            <cpestyle:Color>#000000</cpestyle:Color>
+            <cpestyle:Image>
+                <cpestyle:PictureGroupID>md:picturegroupid:eidr-x:EE48-FE4D-B363-71AF-A3AB-G:BG_GALLERY:gallery.2696</cpestyle:PictureGroupID>
+            </cpestyle:Image>
+            <cpestyle:Adaptation>
+                <cpestyle:ScaleMethod>BestFit</cpestyle:ScaleMethod>
+                <cpestyle:PositioningMethod>centered</cpestyle:PositioningMethod>
+            </cpestyle:Adaptation>
+        </cpestyle:Background>
+    </cpestyle:NodeStyle>
+    <cpestyle:Theme ThemeID="md:themeid:eidr-x:EE48-FE4D-B363-71AF-A3AB-G:home-buttons.3900">
+        <cpestyle:ButtonImageSet>
+            <cpestyle:Button label="Extras">
+                <cpestyle:Default language="en">
+                    <cpestyle:BaseImage>md:imageid:eidr-x:EE48-FE4D-B363-71AF-A3AB-G:theme:image.3901</cpestyle:BaseImage>
+                    <cpestyle:HighlightImage>md:imageid:eidr-x:EE48-FE4D-B363-71AF-A3AB-G:theme:image.3903</cpestyle:HighlightImage>
+                    <cpestyle:DefocusImage>md:imageid:eidr-x:EE48-FE4D-B363-71AF-A3AB-G:theme:image.3902</cpestyle:DefocusImage>
+                </cpestyle:Default>
+            </cpestyle:Button>
+            <cpestyle:Button label="Play">
+                <cpestyle:Default language="en">
+                    <cpestyle:BaseImage>md:imageid:eidr-x:EE48-FE4D-B363-71AF-A3AB-G:theme:image.3904</cpestyle:BaseImage>
+                    <cpestyle:HighlightImage>md:imageid:eidr-x:EE48-FE4D-B363-71AF-A3AB-G:theme:image.3906</cpestyle:HighlightImage>
+                    <cpestyle:DefocusImage>md:imageid:eidr-x:EE48-FE4D-B363-71AF-A3AB-G:theme:image.3905</cpestyle:DefocusImage>
+                </cpestyle:Default>
+            </cpestyle:Button>
+        </cpestyle:ButtonImageSet>
+    </cpestyle:Theme>
+    <cpestyle:Theme ThemeID="md:themeid:eidr-x:EE48-FE4D-B363-71AF-A3AB-G:id_generated_by_r60_theme_id.3909"/>
+</cpestyle:CPEStyleSet>

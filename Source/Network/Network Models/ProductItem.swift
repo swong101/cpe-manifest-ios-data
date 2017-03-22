@@ -5,7 +5,7 @@
 import Foundation
 
 @objc public protocol ProductItem {
-    
+
     var externalID: String { get }
     var externalURL: URL? { get }
     var name: String { get }
@@ -18,5 +18,5 @@ import Foundation
     var hasExactMatchData: Bool { get }
     var bullseyePoint: CGPoint { get }
     var shareText: String { get }
-    
+
 }
