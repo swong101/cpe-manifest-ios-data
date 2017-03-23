@@ -80,8 +80,7 @@ open class Audio: DigitalAsset {
     private var encoding: AudioEncoding?
     var isDubbed = false
     var channels: String?
-
-    /// Computed values
+    
     open var isCommentary: Bool {
         return isType(.commentary)
     }

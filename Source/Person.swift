@@ -5,14 +5,6 @@
 import Foundation
 import SWXMLHash
 
-public enum TalentType: String {
-    case unknown = "Unknown"
-    case actor = "Actor"
-    case director = "Director"
-    case producer = "Producer"
-    case writer = "Writer"
-}
-
 public enum SocialAccountType: String {
     case unknown = "UNKNOWN"
     case facebook = "FACEBOOK"
@@ -34,8 +26,8 @@ public struct TalentImage {
 public struct Film {
 
     var id: String
-    var title: String
-    var imageURL: URL?
+    public var title: String
+    public var imageURL: URL?
 
     public init(id: String, title: String, imageURL: URL? = nil) {
         self.id = id
@@ -54,7 +46,6 @@ public struct SocialAccount {
     public init(handle: String, urlString: String) {
         self.handle = handle
 
-        var urlString = urlString
         if urlString.contains("twitter") {
             type = .twitter
         } else if urlString.contains("facebook") {
@@ -74,8 +65,12 @@ public enum PersonJobFunction: String {
     case producer = "Producer"
     case writer = "Writer"
 
-    static func build(rawValue: String) -> PersonJobFunction {
-        return (PersonJobFunction(rawValue: rawValue) ?? .actor)
+    public static func build(rawValue: String?) -> PersonJobFunction {
+        if let rawValue = rawValue, let jobFunction = PersonJobFunction(rawValue: rawValue) {
+            return jobFunction
+        }
+
+        return .actor
     }
 }
 
@@ -120,7 +115,11 @@ public struct PersonJob {
 
 }
 
-open class Person: Trackable {
+public func == (lhs: Person, rhs: Person) -> Bool {
+    return (lhs.id == rhs.id)
+}
+
+open class Person: Equatable, Trackable {
 
     private struct Elements {
         static let Job = "Job"
@@ -192,14 +191,14 @@ open class Person: Trackable {
         return nil
     }
 
-    var detailsLoaded = false
+    public var detailsLoaded = false
 
     // Trackable
-    public var analyticsID: String {
+    open var analyticsID: String {
         return id
     }
 
-    init(apiID: String, name: String, jobFunction: PersonJobFunction = .actor, billingBlockOrder: Int = 0, character: String? = nil) {
+    public init(apiID: String, name: String, jobFunction: PersonJobFunction = .actor, billingBlockOrder: Int = 0, character: String? = nil) {
         self.customAPIID = apiID
         self.name = name
         if let character = character {

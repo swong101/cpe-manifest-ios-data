@@ -4,6 +4,7 @@
 
 import Foundation
 import SWXMLHash
+import CoreLocation
 
 open class Location {
 
@@ -23,11 +24,12 @@ open class Location {
     public var address: String?
     public var latitude: Double = 0
     public var longitude: Double = 0
+    public var centerPoint: CLLocationCoordinate2D
 
     var iconImageID: String?
-    open var iconImage: UIImage? {
-        return CPEXMLSuite.current?.appData?.cachedImageWithID(iconImageID)
-    }
+    open lazy var iconImage: UIImage? = { [unowned self] in
+        return CPEXMLSuite.current?.appData?.cachedImageWithID(self.iconImageID)
+    }()
 
     init(indexer: XMLIndexer) throws {
         // Icon
@@ -45,6 +47,9 @@ open class Location {
             latitude = (coordinateIndexer.doubleValue(forElement: Elements.Latitude) ?? 0)
             longitude = (coordinateIndexer.doubleValue(forElement: Elements.Longitude) ?? 0)
         }
+
+        // Custom
+        centerPoint = CLLocationCoordinate2DMake(latitude, longitude)
     }
 
     open func mapImageURL(forZoomLevel zoomLevel: Int? = nil) -> URL? {

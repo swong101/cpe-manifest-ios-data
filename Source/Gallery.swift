@@ -28,14 +28,10 @@ open class Gallery: MetadataDriven, Trackable {
     var pictureGroupID: String?
     var names: [String]?
 
-    var customPictureGroup: PictureGroup?
-    open var pictureGroup: PictureGroup? {
-        if let pictureGroup = customPictureGroup {
-            return pictureGroup
-        }
-
-        return CPEXMLSuite.current?.manifest.pictureGroupWithID(pictureGroupID)
-    }
+    private var _pictureGroup: PictureGroup?
+    open lazy var pictureGroup: PictureGroup? = { [unowned self] in
+        return (self._pictureGroup ?? CPEXMLSuite.current?.manifest.pictureGroupWithID(self.pictureGroupID))
+    }()
 
     override open var title: String? {
         return (names?.first ?? super.title)
@@ -45,22 +41,22 @@ open class Gallery: MetadataDriven, Trackable {
         return (super.thumbnailImageURL ?? pictureGroup?.thumbnailImageURL)
     }
 
-    open var isTurntable: Bool {
-        if let subTypes = subTypes {
-            return subTypes.contains(Constants.SubTypeTurntable)
-        }
+    open lazy var isTurntable: Bool = { [unowned self] in
+        return (self.subTypes?.contains(Constants.SubTypeTurntable) ?? false)
+    }()
 
-        return false
+    open var numPictures: Int {
+        return (pictureGroup?.numPictures ?? 0)
     }
 
     // Trackable
-    public var analyticsID: String {
+    open var analyticsID: String {
         return id
     }
 
-    init?(imageURLs: [URL]) {
+    public init?(imageURLs: [URL]) {
         id = UUID().uuidString
-        customPictureGroup = PictureGroup(imageURLs: imageURLs)
+        _pictureGroup = PictureGroup(imageURLs: imageURLs)
 
         super.init()
     }
@@ -98,6 +94,14 @@ open class Gallery: MetadataDriven, Trackable {
         }
 
         try super.init(indexer: indexer)
+    }
+
+    public func picture(atIndex index: Int) -> Picture? {
+        if let pictures = pictureGroup?.pictures, pictures.count > index {
+            return pictures[index]
+        }
+
+        return nil
     }
 
 }

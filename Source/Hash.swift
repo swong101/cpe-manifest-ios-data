@@ -5,7 +5,7 @@
 import Foundation
 import SWXMLHash
 
-enum HashMethod: String {
+public enum HashMethod: String {
     // Message Digest algorithms
     case md2 = "MD2"
     case md4 = "MD4"
@@ -23,16 +23,16 @@ enum HashMethod: String {
     case crc64 = "CRC64"
 }
 
-struct Hash {
+public struct Hash {
 
     private struct Attributes {
         static let Method = "method"
     }
 
-    var value: String
-    var method: HashMethod
+    public var value: String
+    public var method: HashMethod
 
-    init(indexer: XMLIndexer) throws {
+    public init(indexer: XMLIndexer) throws {
         // value
         guard let value = indexer.stringValue else {
             throw ManifestError.missingRequiredValue(element: indexer.element)

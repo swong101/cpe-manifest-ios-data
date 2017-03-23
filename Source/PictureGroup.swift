@@ -16,22 +16,26 @@ open class Picture {
     }
 
     var id: String
-    var imageID: String?
+    public var imageID: String?
     var thumbnailImageID: String?
     var captions: [String]?
     public var sequence: UInt = 0
+    
+    open lazy var image: Image? = { [unowned self] in
+        return CPEXMLSuite.current?.manifest.imageWithID(self.imageID)
+    }()
 
-    var customImageURL: URL?
+    private var _imageURL: URL?
     open var imageURL: URL? {
-        if let imageURL = customImageURL {
-            return imageURL
-        }
-
-        return CPEXMLSuite.current?.manifest.imageWithID(imageID)?.url
+        return (_imageURL ?? image?.url)
     }
-
+    
+    open lazy var thumbnailImage: Image? = { [unowned self] in
+        return CPEXMLSuite.current?.manifest.imageWithID(self.thumbnailImageID)
+    }()
+    
     open var thumbnailImageURL: URL? {
-        return (CPEXMLSuite.current?.manifest.imageWithID(thumbnailImageID)?.url ?? imageURL)
+        return (thumbnailImage?.url ?? imageURL)
     }
 
     open var caption: String? {
@@ -40,7 +44,7 @@ open class Picture {
 
     init(imageURL: URL) {
         id = UUID().uuidString
-        customImageURL = imageURL
+        _imageURL = imageURL
     }
 
     init(indexer: XMLIndexer) throws {
@@ -89,6 +93,10 @@ public class PictureGroup {
         return pictures.first?.thumbnailImageURL
     }
 
+    open var numPictures: Int {
+        return pictures.count
+    }
+
     init(imageURLs: [URL]) {
         pictures = imageURLs.map({ Picture(imageURL: $0) })
     }
@@ -105,15 +113,8 @@ public class PictureGroup {
         guard indexer.hasElement(Elements.Picture) else {
             throw ManifestError.missingRequiredChildElement(name: Elements.Picture, element: indexer.element)
         }
-
-        var pictures = [Picture]()
-        for indexer in indexer[Elements.Picture] {
-            let picture = try Picture(indexer: indexer)
-            pictures.append(picture)
-            CPEXMLSuite.current?.manifest.addPicture(picture)
-        }
-
-        self.pictures = pictures
+        
+        pictures = try indexer[Elements.Picture].flatMap({ try Picture(indexer: $0) })
     }
 
 }

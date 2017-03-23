@@ -62,17 +62,28 @@ open class Experience: MetadataDriven, Equatable, Trackable {
         static let AudioVisual = "Audiovisual"
         static let Gallery = "Gallery"
         static let App = "App"
+        static let TimedSequenceID = "TimedSequenceID"
         static let ExperienceChild = "ExperienceChild"
     }
 
-    var id: String
-    open var audioVisual: ExperienceAudioVisual?
-    open var gallery: Gallery?
-    open var app: ExperienceApp?
-    open var experienceChildren: [ExperienceChild]?
+    public var id: String
+    var audioVisual: ExperienceAudioVisual?
+    public var gallery: Gallery?
+    public var app: ExperienceApp?
+    var experienceChildren: [ExperienceChild]?
+    private var timedEventSequenceID: String?
+    var sequence: Int = 0
 
-    override open var title: String? {
-        return (super.title ?? location?.title)
+    override open var title: String! {
+        if let title = super.title {
+            return title
+        }
+
+        if let title = location?.title {
+            return title
+        }
+
+        return ""
     }
 
     override open var description: String? {
@@ -112,33 +123,45 @@ open class Experience: MetadataDriven, Equatable, Trackable {
         return childExperiences?.first?.thumbnailImageURL
     }
 
-    open var childExperiences: [Experience]? {
-        if let experienceChildren = experienceChildren {
-            return experienceChildren.flatMap({ CPEXMLSuite.current?.manifest.experienceWithID($0.experienceID) })
+    open lazy var childExperiences: [Experience]? = { [unowned self] in
+        if let experienceChildren = self.experienceChildren {
+            var childExperiences = [Experience]()
+            for experienceChild in experienceChildren {
+                if let experience = CPEXMLSuite.current?.manifest.experienceWithID(experienceChild.experienceID) {
+                    experience.sequence = experienceChild.sequence
+                    childExperiences.append(experience)
+                }
+            }
+            
+            return childExperiences
         }
 
         return nil
-    }
+    }()
 
     open var numChildExperiences: Int {
         return (experienceChildren?.count ?? 0)
     }
 
-    open var location: LocationAppDataItem? {
-        return CPEXMLSuite.current?.appData?.locationWithID(app?.id)
+    open var video: Video? {
+        return audioVisual?.presentation?.video
     }
+
+    open lazy var location: LocationAppDataItem? = { [unowned self] in
+        return CPEXMLSuite.current?.appData?.locationWithID(self.app?.id)
+    }()
 
     open var locationMediaCount: Int {
         return (location?.mediaCount ?? 0)
     }
 
-    open var product: ProductAppDataItem? {
-        return CPEXMLSuite.current?.appData?.productWithID(app?.id)
-    }
+    open lazy var product: ProductAppDataItem? = { [unowned self] in
+        return CPEXMLSuite.current?.appData?.productWithID(self.app?.id)
+    }()
 
-    open var productCategories: [ProductCategory]? {
+    open lazy var productCategories: [ProductCategory]? = { [unowned self] in
         var productCategories: [ProductCategory]?
-        if let childExperiences = childExperiences {
+        if let childExperiences = self.childExperiences {
             for childExperience in childExperiences {
                 if let category = childExperience.product?.category {
                     if productCategories == nil {
@@ -153,22 +176,30 @@ open class Experience: MetadataDriven, Equatable, Trackable {
         }
 
         return productCategories
-    }
+    }()
+    
+    open lazy var timedEventSequence: TimedEventSequence? = { [unowned self] in
+        return CPEXMLSuite.current?.manifest.timedEventSequenceWithID(self.timedEventSequenceID)
+    }()
 
-    open var isMainExperience: Bool {
-        return (audioVisual?.type == .main)
-    }
+    open lazy var isMainExperience: Bool = { [unowned self] in
+        return (self.audioVisual?.type == .main)
+    }()
 
-    open var isInMovieExperience: Bool {
+    open lazy var isInMovieExperience: Bool = { [unowned self] in
         return (CPEXMLSuite.current?.manifest.inMovieExperience == self)
-    }
+    }()
 
-    open var isOutOfMovieExperience: Bool {
+    open lazy var isOutOfMovieExperience: Bool = { [unowned self] in
         return (CPEXMLSuite.current?.manifest.outOfMovieExperience == self)
-    }
+    }()
+    
+    open lazy var isClipShareExperience: Bool = { [unowned self] in
+        return ((self.audioVisual?.isClipShare ?? false) || self.id.contains("clipshare"))
+    }()
 
     // Trackable
-    public var analyticsID: String {
+    open var analyticsID: String {
         return id
     }
 
@@ -199,29 +230,21 @@ open class Experience: MetadataDriven, Equatable, Trackable {
 
         // AudioVisual
         if indexer.hasElement(Elements.AudioVisual) {
-            if let audioVisual = try ExperienceAudioVisual(indexer: indexer[Elements.AudioVisual]) {
-                self.audioVisual = audioVisual
-                if let presentationID = audioVisual.presentationID {
-                    CPEXMLSuite.current?.manifest.addMapping(forPresentationID: presentationID, audioVisual: audioVisual)
-                }
-            }
+            audioVisual = try ExperienceAudioVisual(indexer: indexer[Elements.AudioVisual])
         }
 
         // Gallery
         if indexer.hasElement(Elements.Gallery) {
-            if let gallery = try Gallery(indexer: indexer[Elements.Gallery]) {
-                CPEXMLSuite.current?.manifest.addGallery(gallery)
-                self.gallery = gallery
-            }
+            gallery = try Gallery(indexer: indexer[Elements.Gallery])
         }
 
         // App
         if indexer.hasElement(Elements.App) {
-            if let app = try ExperienceApp(indexer: indexer[Elements.App]) {
-                CPEXMLSuite.current?.manifest.addExperienceApp(app)
-                self.app = app
-            }
+            app = try ExperienceApp(indexer: indexer[Elements.App])
         }
+        
+        // TimedSequenceID
+        timedEventSequenceID = indexer.stringValue(forElement: Elements.TimedSequenceID)
 
         // ExperienceChild
         if indexer.hasElement(Elements.ExperienceChild) {

@@ -19,9 +19,9 @@ open class PlayableSequence {
     var id: String
     var presentationIDs: [String]
 
-    open var presentations: [Presentation] {
-        return presentationIDs.flatMap({ CPEXMLSuite.current?.manifest.presentationWithID($0) })
-    }
+    open lazy var presentations: [Presentation] = { [unowned self] in
+        return self.presentationIDs.flatMap({ CPEXMLSuite.current?.manifest.presentationWithID($0) })
+    }()
 
     init(indexer: XMLIndexer) throws {
         // PlayableSequenceID

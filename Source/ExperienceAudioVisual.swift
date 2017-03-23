@@ -32,16 +32,19 @@ open class ExperienceAudioVisual: MetadataDriven {
     var type: ExperienceAudioVisualType
     var subTypes: [String]?
     var presentationID: String?
-    var playableSequenceID: String?
+    private var playableSequenceID: String?
 
-    // Computed values
-    var presentation: Presentation? {
-        return CPEXMLSuite.current?.manifest.presentationWithID(presentationID)
-    }
+    open lazy var presentation: Presentation? = { [unowned self] in
+        return CPEXMLSuite.current?.manifest.presentationWithID(self.presentationID)
+    }()
 
-    var playableSequence: PlayableSequence? {
-        return CPEXMLSuite.current?.manifest.playableSequenceWithID(playableSequenceID)
-    }
+    open lazy var playableSequence: PlayableSequence? = { [unowned self] in
+        return CPEXMLSuite.current?.manifest.playableSequenceWithID(self.playableSequenceID)
+    }()
+    
+    open lazy var isClipShare: Bool = { [unowned self] in
+        return (self.subTypes?.contains("Shareable Clip") ?? false)
+    }()
 
     override init?(indexer: XMLIndexer) throws {
         // Type

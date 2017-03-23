@@ -116,5 +116,9 @@ open class Theme {
     open func baseImageForButton(_ label: String) -> Image? {
         return buttons?[label]?.baseImage
     }
+    
+    open func baseImageURLForButton(_ label: String) -> URL? {
+        return baseImageForButton(label)?.url
+    }
 
 }

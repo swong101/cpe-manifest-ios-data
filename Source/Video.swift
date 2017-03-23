@@ -5,22 +5,41 @@
 import Foundation
 import SWXMLHash
 
+/**
+    Supported video track types
+ 
+    - primary: Primary video track
+ */
 public enum VideoType: String {
-    case primary                // primary video track
+    case primary
 }
 
-private enum VideoCodec: String {
-    case h264       = "H.264"   // H.264, MPEG-4 Part 10
+/**
+    Supported video track codecs
+ 
+    - h264: H.264, MPEG-4 Part 10
+ */
+public enum VideoCodec: String {
+    case h264 = "H.264"
 }
 
-private class VideoEncoding: DigitalAssetEncoding {
+/// Encoding details of a video asset
+open class VideoEncoding: DigitalAssetEncoding {
 
+    /// Supported XML element tags
     private struct Elements {
         static let Codec = "Codec"
     }
 
-    var codec: VideoCodec
+    /// Codec used during encoding
+    public var codec: VideoCodec
 
+    /**
+        Initializes a new video encoding details wrapper with the provided XML indexer
+     
+        - Parameter indexer: The root XML node
+        - Throws: `ManiefstError.missingRequiredChildElement` if an expected XML element is not present
+    */
     override init?(indexer: XMLIndexer) throws {
         // Codec
         guard let codecString = indexer.stringValue(forElement: Elements.Codec) else {
@@ -40,12 +59,15 @@ private class VideoEncoding: DigitalAssetEncoding {
 
 }
 
+/// Playable video asset
 open class Video: DigitalAsset, Trackable {
 
+    /// Supported XML attribute keys
     private struct Attributes {
         static let VideoTrackID = "VideoTrackID"
     }
 
+    /// Supported XML element tags
     private struct Elements {
         static let VideoType = "Type"
         static let Encoding = "Encoding"
@@ -54,22 +76,37 @@ open class Video: DigitalAsset, Trackable {
         static let HeightPixels = "HeightPixels"
     }
 
-    var id: String
-    var type: VideoType
-    private var encoding: VideoEncoding?
+    /// Unique identifier
+    public var id: String
+    
+    /// Type of video
+    public var type: VideoType
+    
+    /// Details of the video's encoding process
+    public var encoding: VideoEncoding?
+    
+    /// Size of the video
     public var size: CGSize?
 
-    // Computed values
+    /// Runtime (in seconds) of the video
     open var runtimeInSeconds: TimeInterval {
         return (encoding?.actualLength ?? 0)
     }
 
-    // Trackable
-    public var analyticsID: String {
+    /// Tracking identifier
+    open var analyticsID: String {
         return id
     }
-
-    override init?(indexer: XMLIndexer) throws {
+    
+    /**
+        Initializes a new video asset with the provided XML indexer
+     
+        - Parameter indexer: The root XML node
+        - Throws:
+            - `ManifestError.missingRequiredAttribute` if an expected XML attribute is not present
+            - `ManiefstError.missingRequiredChildElement` if an expected XML element is not present
+     */
+    override public init?(indexer: XMLIndexer) throws {
         // AudioTrackID
         guard let id = indexer.stringValue(forAttribute: Attributes.VideoTrackID) else {
             throw ManifestError.missingRequiredAttribute(Attributes.VideoTrackID, element: indexer.element)

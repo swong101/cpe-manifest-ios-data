@@ -5,8 +5,10 @@
 import Foundation
 import SWXMLHash
 
-class DigitalAssetEncoding {
+/// Encoding details of a digital asset
+open class DigitalAssetEncoding {
 
+    /// Supported XML element tags
     private struct Elements {
         static let CodecType = "CodecType"
         static let BitrateMax = "BitrateMax"
@@ -15,13 +17,28 @@ class DigitalAssetEncoding {
         static let ActualLength = "ActualLength"
     }
 
-    var codecTypes: [String]?
-    var bitrateMax: Int?
-    var bitrateAverage: Int?
-    var vbr: String?
-    var actualLength: TimeInterval = 0
-
-    init?(indexer: XMLIndexer) throws {
+    /// Formal reference identification of codec
+    public var codecTypes: [String]?
+    
+    /// Peak Bitrate (bits/second) averaged over a short period
+    public var bitrateMax: Int?
+    
+    /// Bitrate averaged over the entire track
+    public var bitrateAverage: Int?
+    
+    /// Variable BitRate information
+    public var vbr: String?
+    
+    /// The actual encoded length of the track (in ISO 8601 format)
+    public var actualLength: TimeInterval = 0
+    
+    /**
+        Initializes a new digital asset encoding details wrapper with the provided XML indexer
+     
+        - Parameter indexer: The root XML node
+        - Throws: `ManiefstError.missingRequiredChildElement` if an expected XML element is not present
+     */
+    public init?(indexer: XMLIndexer) throws {
         // CodecType
         if indexer[Elements.CodecType].hasChildren {
             codecTypes = indexer[Elements.CodecType].flatMap({ $0.stringValue })
@@ -44,8 +61,10 @@ class DigitalAssetEncoding {
 
 }
 
+/// Playable digital asset
 open class DigitalAsset {
 
+    /// Supported XML element tags
     private struct Elements {
         static let Description = "Description"
         static let Language = "Language"
@@ -55,19 +74,33 @@ open class DigitalAsset {
         static let ContainerReference = "ContainerReference"
     }
 
-    var description: String?
-    var languages: [String]
-    var trackReference: String?
-    var trackIdentifiers: [ContentIdentifier]?
-    var customData: XMLIndexer?
-    var containerReference: ContainerReference?
+    /// Text description of the digital asset
+    public var description: String?
+    
+    /// Language of text visible in the video
+    public var languages: [String]
+    
+    /// Track cross-reference to be used in conjunction with container-specific metadata
+    public var trackReference: String?
+    
+    /// Identifiers, such as EIDR, for this track
+    public var trackIdentifiers: [ContentIdentifier]?
+    
+    /// Reference to Container with file name
+    public var containerReference: ContainerReference?
 
-    /// Computed values
-    public var url: URL? {
+    /// The remote digital asset's file location
+    open var url: URL? {
         return containerReference?.url
     }
-
-    init?(indexer: XMLIndexer) throws {
+    
+    /**
+        Initializes a new digital asset with the provided XML indexer
+     
+        - Parameter indexer: The root XML node
+        - Throws: `ManiefstError.missingRequiredChildElement` if an expected XML element is not present
+     */
+    public init?(indexer: XMLIndexer) throws {
         // Description
         description = indexer.stringValue(forElement: Elements.Description)
 
@@ -85,9 +118,6 @@ open class DigitalAsset {
         if indexer.hasElement(Elements.TrackIdentifier) {
             trackIdentifiers = try indexer[Elements.TrackIdentifier].map({ try ContentIdentifier(indexer: $0) })
         }
-
-        // Private
-        customData = indexer[Elements.Private]
 
         // ContainerReference
         if indexer.hasElement(Elements.ContainerReference) {

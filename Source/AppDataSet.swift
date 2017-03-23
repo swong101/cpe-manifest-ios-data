@@ -28,7 +28,6 @@ open class AppDataSet {
             throw ManifestError.missingRequiredChildElement(name: Elements.ManifestAppData, element: indexer.element)
         }
 
-        var imageIDs = [String]()
         for indexer in indexer[Elements.ManifestAppData] {
             if try indexer[Elements.NVPair].withAttr(Attributes.Name, "type").stringValue(forElement: Elements.Text) == "PRODUCT" {
                 if products == nil {

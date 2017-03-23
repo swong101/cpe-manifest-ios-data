@@ -35,7 +35,7 @@ public struct AppDataNVPairName {
     static let SceneImageBullseyeY = "scene_image_bullseye_y"
 }
 
-open class AppDataItem {
+open class AppDataItem: Trackable {
 
     internal struct Attributes {
         static let AppID = "AppID"
@@ -62,16 +62,20 @@ open class AppDataItem {
     var contentID: String?
     var parentContentID: String?
 
-    var metadata: Metadata? {
-        return CPEXMLSuite.current?.manifest.metadataWithID(contentID)
-    }
+    lazy var metadata: Metadata? = { [unowned self] in
+        return CPEXMLSuite.current?.manifest.metadataWithID(self.contentID)
+    }()
 
-    var parentMetadata: Metadata? {
-        return CPEXMLSuite.current?.manifest.metadataWithID(parentContentID)
-    }
+    lazy var parentMetadata: Metadata? = { [unowned self] in
+        return CPEXMLSuite.current?.manifest.metadataWithID(self.parentContentID)
+    }()
 
     open var title: String? {
-        return (experience?.title ?? metadata?.title)
+        if let title = experience?.title {
+            return title
+        }
+
+        return metadata?.title
     }
 
     open var description: String? {
@@ -84,12 +88,17 @@ open class AppDataItem {
 
     open var displayOrder: Int = 0
 
-    open var experience: Experience? {
-        return CPEXMLSuite.current?.manifest.experienceWithID(experienceID)
-    }
+    open lazy var experience: Experience? = { [unowned self] in
+        return CPEXMLSuite.current?.manifest.experienceWithID(self.experienceID)
+    }()
 
     open var mediaCount: Int {
         return (experience?.experienceChildren?.count ?? 0)
+    }
+    
+    // Trackable
+    open var analyticsID: String {
+        return id
     }
 
     init(indexer: XMLIndexer) throws {

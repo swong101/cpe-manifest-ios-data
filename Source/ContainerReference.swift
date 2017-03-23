@@ -5,12 +5,15 @@
 import Foundation
 import SWXMLHash
 
-class ContainerReference {
+/// A reference to Container within another object
+public class ContainerReference {
 
+    /// Supported XML attribute keys
     private struct Attributes {
         static let Priority = "priority"
     }
 
+    /// Supported XML element tags
     private struct Elements {
         static let ContainerLocation = "ContainerLocation"
         static let ParentContainer = "ParentContainer"
@@ -19,18 +22,35 @@ class ContainerReference {
         static let Hash = "Hash"
     }
 
-    private var locations: [URL]?
-    private var parentContainer: ContainerReference?
-    private var identifiers: [ContentIdentifier]?
-    private var length: UInt?
-    private var hashes: [Hash]?
+    /// List of file locations
+    public var locations: [URL]?
+    
+    /// Container's parent if it's located within another Container
+    public var parentContainer: ContainerReference?
+    
+    /// Identifiers for the Container
+    public var identifiers: [ContentIdentifier]?
+    
+    /// Length of Container in bytes
+    public var length: UInt?
+    
+    /// Hash of Container
+    public var hashes: [Hash]?
 
-    // Computed values
-    var url: URL? {
+    /// Container's primary file location
+    open var url: URL? {
         return locations?.first
     }
-
-    init(indexer: XMLIndexer) throws {
+    
+    /**
+        Initializes a new file reference Container with the provided XML indexer
+     
+        - Parameter indexer: The root XML node
+        - Throws:
+            - `ManifestError.missingRequiredAttribute` if an expected XML attribute is not present
+            - `ManiefstError.missingRequiredChildElement` if an expected XML element is not present
+     */
+    public init(indexer: XMLIndexer) throws {
         // ContainerLocation
         if indexer.hasElement(Elements.ContainerLocation) {
             var locations = [URL?](repeating: nil, count: indexer[Elements.ContainerLocation].all.count)

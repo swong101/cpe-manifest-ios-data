@@ -4,6 +4,7 @@
 
 import Foundation
 import SWXMLHash
+import CoreLocation
 
 open class LocationAppDataItem: AppDataItem {
 
@@ -19,12 +20,20 @@ open class LocationAppDataItem: AppDataItem {
         return location.address
     }
 
+    open var centerPoint: CLLocationCoordinate2D {
+        return location.centerPoint
+    }
+
     override open var thumbnailImageURL: URL? {
         return (super.thumbnailImageURL ?? mapImageURL)
     }
 
     open var mapImageURL: URL? {
         return location.mapImageURL(forZoomLevel: zoomLevel)
+    }
+
+    open var iconImage: UIImage? {
+        return location.iconImage
     }
 
     open var iconImageID: String? {

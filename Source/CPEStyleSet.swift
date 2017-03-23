@@ -127,14 +127,78 @@ open class CPEStyleSet {
             }
         }
     }
-
-    open func nodeStylesForExperienceID(_ id: String?) -> [NodeStyle]? {
-        if let id = id, let nodeStyleIDs = experienceToNodeStyleMapping[id] {
-            return nodeStyleIDs.flatMap({ nodeStyleWithID($0) })
+    
+    open func nodeStyle(withExperienceID experienceID: String, interfaceOrientation: UIInterfaceOrientation) -> NodeStyle? {
+        if let nodeStyleIDs = experienceToNodeStyleMapping[experienceID] {
+            var tabletLandscapeNodeStyle: NodeStyle?
+            var tabletPortraitNodeStyle: NodeStyle?
+            var phoneLandscapeNodeStyle: NodeStyle?
+            var phonePortraitNodeStyle: NodeStyle?
+            
+            for nodeStyleID in nodeStyleIDs {
+                if let nodeStyle = nodeStyleWithID(nodeStyleID) {
+                    if nodeStyle.supportsTablet {
+                        if nodeStyle.supportsLandscape {
+                            tabletLandscapeNodeStyle = nodeStyle
+                        } else if nodeStyle.supportsPortrait {
+                            tabletPortraitNodeStyle = nodeStyle
+                        }
+                    }
+                    
+                    if nodeStyle.supportsPhone {
+                        if nodeStyle.supportsLandscape {
+                            phoneLandscapeNodeStyle = nodeStyle
+                        } else if nodeStyle.supportsPortrait {
+                            phonePortraitNodeStyle = nodeStyle
+                        }
+                    }
+                }
+            }
+            
+            let isLandscape = UIInterfaceOrientationIsLandscape(interfaceOrientation)
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                return (isLandscape ? (tabletLandscapeNodeStyle ?? tabletPortraitNodeStyle) : (tabletPortraitNodeStyle ?? tabletLandscapeNodeStyle))
+            }
+            
+            return (isLandscape ? (phoneLandscapeNodeStyle ?? phonePortraitNodeStyle) : (phonePortraitNodeStyle ?? phoneLandscapeNodeStyle))
         }
-
+        
         return nil
     }
+    
+    /*public func getNodeStyle(_ interfaceOrientation: UIInterfaceOrientation) -> NGDMNodeStyle? {
+        var tabletLandscapeNodeStyle: NGDMNodeStyle?
+        var tabletPortraitNodeStyle: NGDMNodeStyle?
+        var phoneLandscapeNodeStyle: NGDMNodeStyle?
+        var phonePortraitNodeStyle: NGDMNodeStyle?
+        
+        if let nodeStyles = nodeStyles {
+            for nodeStyle in nodeStyles {
+                if nodeStyle.supportsTablet {
+                    if nodeStyle.supportsLandscape {
+                        tabletLandscapeNodeStyle = nodeStyle
+                    } else if nodeStyle.supportsPortrait {
+                        tabletPortraitNodeStyle = nodeStyle
+                    }
+                }
+                
+                if nodeStyle.supportsPhone {
+                    if nodeStyle.supportsLandscape {
+                        phoneLandscapeNodeStyle = nodeStyle
+                    } else if nodeStyle.supportsPortrait {
+                        phonePortraitNodeStyle = nodeStyle
+                    }
+                }
+            }
+        }
+        
+        let isLandscape = UIInterfaceOrientationIsLandscape(interfaceOrientation)
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            return (isLandscape ? (tabletLandscapeNodeStyle ?? tabletPortraitNodeStyle) : (tabletPortraitNodeStyle ?? tabletLandscapeNodeStyle))
+        }
+        
+        return (isLandscape ? (phoneLandscapeNodeStyle ?? phonePortraitNodeStyle) : (phonePortraitNodeStyle ?? phoneLandscapeNodeStyle))
+    }*/
 
     open func nodeStyleWithID(_ id: String?) -> NodeStyle? {
         return (id != nil ? nodeStyles[id!] : nil)

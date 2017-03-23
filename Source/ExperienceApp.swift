@@ -5,7 +5,7 @@
 import Foundation
 import SWXMLHash
 
-open class ExperienceApp: MetadataDriven {
+open class ExperienceApp: MetadataDriven, Trackable {
 
     private struct Attributes {
         static let AppID = "AppID"
@@ -26,6 +26,19 @@ open class ExperienceApp: MetadataDriven {
 
     override open var title: String? {
         return (names?.first ?? super.title)
+    }
+
+    open lazy var appGroup: AppGroup? = { [unowned self] in
+        return CPEXMLSuite.current?.manifest.appGroupWithID(self.appGroupID)
+    }()
+    
+    open var url: URL? {
+        return appGroup?.url
+    }
+    
+    // Trackable
+    open var analyticsID: String {
+        return id
     }
 
     override init?(indexer: XMLIndexer) throws {

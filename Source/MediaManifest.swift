@@ -75,10 +75,53 @@ open class MediaManifest {
     open var experienceApps: [String: ExperienceApp]?
     open var experiences = [String: Experience]()
     open var timedEventSequences: [String: TimedEventSequence]?
+    open var timedEvents: [TimedEvent]?
 
     open var mainExperience: Experience!
     open var inMovieExperience: Experience!
     open var outOfMovieExperience: Experience!
+
+    open var title: String {
+        return (mainExperience.title ?? "Unknown")
+    }
+
+    open var titleTreatmentImageURL: URL? {
+        return inMovieExperience.thumbnailImageURL
+    }
+    
+    open var featureVideo: Video {
+        return mainExperience.video!
+    }
+    
+    open var interstitialVideo: Video? {
+        return nil
+    }
+
+    open var backgroundImageURL: URL? {
+        return outOfMovieExperience.thumbnailImageURL
+    }
+
+    open var people: [Person]? {
+        get {
+            return mainExperience.metadata?.people
+        }
+        
+        set {
+            mainExperience.metadata?.people = newValue
+        }
+    }
+
+    open var actors: [Person]? {
+        return mainExperience.metadata?.actors
+    }
+
+    open var numActors: Int {
+        return (actors?.count ?? 0)
+    }
+
+    open var hasActors: Bool {
+        return (numActors > 0)
+    }
 
     init(indexer: XMLIndexer) throws {
         // Compatibility
@@ -257,7 +300,10 @@ open class MediaManifest {
     }
 
     open func postProcess() throws {
-        guard let mainExperience = Array(experiences.values).first(where: { $0.isMainExperience }) else {
+        let experiences = Array(self.experiences.values)
+        
+        // Process Experiences
+        guard let mainExperience = experiences.first(where: { $0.isMainExperience }) else {
             throw ManifestError.missingMainExperience
         }
 
@@ -269,38 +315,84 @@ open class MediaManifest {
 
         outOfMovieExperience = childExperiences.first!
         inMovieExperience = childExperiences.last!
-    }
-
-    open func addPicture(_ picture: Picture) {
-        if pictures == nil {
-            pictures = [String: Picture]()
+        
+        // Process Experience children
+        var timedEvents = [TimedEvent]()
+        var galleries = [String: Gallery]()
+        var experienceApps = [String: ExperienceApp]()
+        var presentationToAudioVisualMapping = [String: ExperienceAudioVisual]()
+        for experience in experiences {
+            if let experienceTimedEvents = experience.timedEventSequence?.timedEvents {
+                for timedEvent in experienceTimedEvents {
+                    timedEvent.experienceID = experience.id
+                    timedEvents.append(timedEvent)
+                }
+            }
+            
+            if let gallery = experience.gallery {
+                galleries[gallery.id] = gallery
+            }
+            
+            if let app = experience.app {
+                experienceApps[app.id] = app
+            }
+            
+            if let audioVisual = experience.audioVisual, let presentationID = audioVisual.presentationID {
+                presentationToAudioVisualMapping[presentationID] = audioVisual
+            }
         }
-
-        pictures![picture.id] = picture
-    }
-
-    open func addGallery(_ gallery: Gallery) {
-        if galleries == nil {
-            galleries = [String: Gallery]()
+        
+        if timedEvents.count > 0 {
+            self.timedEvents = timedEvents
         }
-
-        galleries![gallery.id] = gallery
-    }
-
-    open func addExperienceApp(_ experienceApp: ExperienceApp) {
-        if experienceApps == nil {
-            experienceApps = [String: ExperienceApp]()
+        
+        if galleries.count > 0 {
+            self.galleries = galleries
         }
-
-        experienceApps![experienceApp.id] = experienceApp
-    }
-
-    open func addMapping(forPresentationID presentationID: String, audioVisual: ExperienceAudioVisual) {
-        if presentationToAudioVisualMapping == nil {
-            presentationToAudioVisualMapping = [String: ExperienceAudioVisual]()
+        
+        if experienceApps.count > 0 {
+            self.experienceApps = experienceApps
         }
-
-        presentationToAudioVisualMapping![presentationID] = audioVisual
+        
+        if presentationToAudioVisualMapping.count > 0 {
+            self.presentationToAudioVisualMapping = presentationToAudioVisualMapping
+        }
+        
+        // Process Pictures
+        if let pictureGroups = pictureGroups {
+            var pictures = [String: Picture]()
+            for pictureGroup in Array(pictureGroups.values) {
+                for picture in pictureGroup.pictures {
+                    pictures[picture.id] = picture
+                }
+            }
+            
+            self.pictures = pictures
+        }
+        
+        // Pre-load talent images
+        if let talentAPIUtil = NGDMConfiguration.talentAPIUtil {
+            let loadTalentImages = { [weak self] in
+                if let people = self?.people {
+                    for person in people {
+                        if person.images == nil, let id = person.apiID {
+                            talentAPIUtil.getTalentImages(id, completion: { (images) in
+                                person.images = images
+                            })
+                        }
+                    }
+                }
+            }
+            
+            if people == nil {
+                talentAPIUtil.prefetchCredits({ [weak self] (people) in
+                    self?.people = people
+                    loadTalentImages()
+                })
+            } else {
+                loadTalentImages()
+            }
+        }
     }
 
     open func audioWithID(_ id: String?) -> Audio? {
@@ -358,9 +450,23 @@ open class MediaManifest {
     open func experienceWithID(_ id: String?) -> Experience? {
         return (id != nil ? experiences[id!] : nil)
     }
+    
+    open func timedEventSequenceWithID(_ id: String?) -> TimedEventSequence? {
+        return (id != nil ? timedEventSequences?[id!] : nil)
+    }
 
     open func personWithID(_ id: String?) -> Person? {
         return mainExperience.metadata?.personWithID(id)
+    }
+    
+    open func timedEvents(atTimecode timecode: Double, type: TimedEventType = .any) -> [TimedEvent]? {
+        return timedEvents?.filter({ $0.isType(type) && timecode >= $0.startTime && timecode <= $0.endTime }).sorted(by: {
+            ($0.experience != nil && $1.experience != nil && $0.experience!.sequence < $1.experience!.sequence)
+        })
+    }
+    
+    open func closedTimedEvent(toTimecode timecode: Double, type: TimedEventType = .any) -> TimedEvent? {
+        return timedEvents?.first(where: { $0.isType(type) && timecode <= $0.endTime })
     }
 
 }

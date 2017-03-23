@@ -5,13 +5,32 @@
 import Foundation
 import SWXMLHash
 
-public class AppGroup {
+public class AppGroup: Trackable {
 
     private struct Attributes {
         static let AppGroupID = "AppGroupID"
     }
+    
+    private struct Elements {
+        static let InteractiveTrackReference = "InteractiveTrackReference"
+        static let InteractiveTrackID = "InteractiveTrackID"
+    }
 
     var id: String
+    private var interactiveTrackIDs: [String]
+    
+    private lazy var interactives: [Interactive]? = { [unowned self] in
+        return self.interactiveTrackIDs.flatMap({ CPEXMLSuite.current?.manifest.interactiveWithID($0) })
+    }()
+    
+    public var url: URL? {
+        return interactives?.first?.url
+    }
+    
+    // Trackable
+    open var analyticsID: String {
+        return id
+    }
 
     init(indexer: XMLIndexer) throws {
         // AppGroupID
@@ -20,6 +39,22 @@ public class AppGroup {
         }
 
         self.id = id
+        
+        // InteractiveTrackReference
+        guard indexer.hasElement(Elements.InteractiveTrackReference) else {
+            throw ManifestError.missingRequiredChildElement(name: Elements.InteractiveTrackReference, element: indexer.element)
+        }
+        
+        interactiveTrackIDs = [String]()
+        
+        for indexer in indexer[Elements.InteractiveTrackReference] {
+            // InteractiveTrackID
+            guard let id = indexer.stringValue(forElement: Elements.InteractiveTrackID) else {
+                throw ManifestError.missingRequiredChildElement(name: Elements.InteractiveTrackID, element: indexer.element)
+            }
+            
+            interactiveTrackIDs.append(id)
+        }
     }
 
 }

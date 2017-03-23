@@ -44,14 +44,13 @@ open class ProductAppDataItem: AppDataItem, ProductItem {
         return description
     }
 
-    private var _category: NGDMProductCategory?
-    public var category: NGDMProductCategory? {
-        if _category == nil, let metadata = parentMetadata {
-            _category = NGDMProductCategory(metadata: metadata)
+    public lazy var category: NGDMProductCategory? = { [unowned self] in
+        if let metadata = self.parentMetadata {
+            return NGDMProductCategory(metadata: metadata)
         }
 
-        return _category
-    }
+        return nil
+    }()
 
     private var price: Double?
     private var currencyCode = "USD"

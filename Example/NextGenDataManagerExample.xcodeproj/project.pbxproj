@@ -8,11 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		245DEC7745E787A4B8E9949B /* Pods_NextGenDataManagerExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EAD70087CA625747C6940404 /* Pods_NextGenDataManagerExample.framework */; };
-		703D061D1E819EC4003F5596 /* FantasticBeasts_V1.1_AppData.xml in Resources */ = {isa = PBXBuildFile; fileRef = 703D061A1E819EC4003F5596 /* FantasticBeasts_V1.1_AppData.xml */; };
-		703D061E1E819EC4003F5596 /* FantasticBeasts_V1.1_style.xml in Resources */ = {isa = PBXBuildFile; fileRef = 703D061B1E819EC4003F5596 /* FantasticBeasts_V1.1_style.xml */; };
-		703D061F1E819EC4003F5596 /* FantasticBeasts_V1.2_Manifest.xml in Resources */ = {isa = PBXBuildFile; fileRef = 703D061C1E819EC4003F5596 /* FantasticBeasts_V1.2_Manifest.xml */; };
 		703D06231E81F88C003F5596 /* ResultsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 703D06221E81F88C003F5596 /* ResultsTableViewController.swift */; };
-		703D06251E82E1EE003F5596 /* sisters_extended_manifest-2.2.xml in Resources */ = {isa = PBXBuildFile; fileRef = 703D06241E82E1EE003F5596 /* sisters_extended_manifest-2.2.xml */; };
+		7044F14E1E8487D500DE01A3 /* ManifestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7044F14D1E8487D500DE01A3 /* ManifestUtils.swift */; };
 		70A411921C6026EC003A65D2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70A411911C6026EC003A65D2 /* AppDelegate.swift */; };
 		70A411941C6026EC003A65D2 /* InputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70A411931C6026EC003A65D2 /* InputViewController.swift */; };
 		70A411971C6026EC003A65D2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 70A411951C6026EC003A65D2 /* Main.storyboard */; };
@@ -22,11 +19,8 @@
 
 /* Begin PBXFileReference section */
 		6391694651CCDA44F10369EB /* Pods-NextGenDataManagerExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NextGenDataManagerExample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NextGenDataManagerExample/Pods-NextGenDataManagerExample.debug.xcconfig"; sourceTree = "<group>"; };
-		703D061A1E819EC4003F5596 /* FantasticBeasts_V1.1_AppData.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = FantasticBeasts_V1.1_AppData.xml; sourceTree = "<group>"; };
-		703D061B1E819EC4003F5596 /* FantasticBeasts_V1.1_style.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = FantasticBeasts_V1.1_style.xml; sourceTree = "<group>"; };
-		703D061C1E819EC4003F5596 /* FantasticBeasts_V1.2_Manifest.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = FantasticBeasts_V1.2_Manifest.xml; sourceTree = "<group>"; };
 		703D06221E81F88C003F5596 /* ResultsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResultsTableViewController.swift; sourceTree = "<group>"; };
-		703D06241E82E1EE003F5596 /* sisters_extended_manifest-2.2.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "sisters_extended_manifest-2.2.xml"; sourceTree = "<group>"; };
+		7044F14D1E8487D500DE01A3 /* ManifestUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManifestUtils.swift; sourceTree = "<group>"; };
 		70A4118E1C6026EC003A65D2 /* NextGenDataManagerExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NextGenDataManagerExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		70A411911C6026EC003A65D2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		70A411931C6026EC003A65D2 /* InputViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputViewController.swift; sourceTree = "<group>"; };
@@ -50,17 +44,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		704581971E79C1C8006AFF70 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				703D061A1E819EC4003F5596 /* FantasticBeasts_V1.1_AppData.xml */,
-				703D061B1E819EC4003F5596 /* FantasticBeasts_V1.1_style.xml */,
-				703D061C1E819EC4003F5596 /* FantasticBeasts_V1.2_Manifest.xml */,
-				703D06241E82E1EE003F5596 /* sisters_extended_manifest-2.2.xml */,
-			);
-			path = Resources;
-			sourceTree = "<group>";
-		};
 		70A411851C6026EC003A65D2 = {
 			isa = PBXGroup;
 			children = (
@@ -85,11 +68,11 @@
 				70A411911C6026EC003A65D2 /* AppDelegate.swift */,
 				70A411931C6026EC003A65D2 /* InputViewController.swift */,
 				703D06221E81F88C003F5596 /* ResultsTableViewController.swift */,
+				7044F14D1E8487D500DE01A3 /* ManifestUtils.swift */,
 				70A411951C6026EC003A65D2 /* Main.storyboard */,
 				70A4119A1C6026EC003A65D2 /* LaunchScreen.storyboard */,
 				70A411981C6026EC003A65D2 /* Assets.xcassets */,
 				70A4119D1C6026EC003A65D2 /* Info.plist */,
-				704581971E79C1C8006AFF70 /* Resources */,
 			);
 			path = NextGenDataManagerExample;
 			sourceTree = "<group>";
@@ -178,11 +161,7 @@
 			files = (
 				70A4119C1C6026EC003A65D2 /* LaunchScreen.storyboard in Resources */,
 				70A411991C6026EC003A65D2 /* Assets.xcassets in Resources */,
-				703D061D1E819EC4003F5596 /* FantasticBeasts_V1.1_AppData.xml in Resources */,
-				703D06251E82E1EE003F5596 /* sisters_extended_manifest-2.2.xml in Resources */,
 				70A411971C6026EC003A65D2 /* Main.storyboard in Resources */,
-				703D061E1E819EC4003F5596 /* FantasticBeasts_V1.1_style.xml in Resources */,
-				703D061F1E819EC4003F5596 /* FantasticBeasts_V1.2_Manifest.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -288,6 +267,7 @@
 			files = (
 				703D06231E81F88C003F5596 /* ResultsTableViewController.swift in Sources */,
 				70A411941C6026EC003A65D2 /* InputViewController.swift in Sources */,
+				7044F14E1E8487D500DE01A3 /* ManifestUtils.swift in Sources */,
 				70A411921C6026EC003A65D2 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -10,6 +10,7 @@ public enum TimedEventType {
     case appGroup
     case gallery
     case video
+    case clipShare
     case location
     case product
     case person
@@ -20,12 +21,15 @@ public func == (lhs: TimedEvent, rhs: TimedEvent) -> Bool {
     return (lhs.id == rhs.id && lhs.startTime == rhs.startTime)
 }
 
-open class TimedEvent: Equatable {
+/// An event tied to a playback timecode
+open class TimedEvent: Equatable, Trackable {
 
+    /// Supported XML attribute keys
     private struct Attributes {
         static let Index = "index"
     }
 
+    /// Supported XML element tags
     private struct Elements {
         static let StartTimecode = "StartTimecode"
         static let EndTimecode = "EndTimecode"
@@ -36,65 +40,177 @@ open class TimedEvent: Equatable {
         static let TextGroupID = "TextGroupID"
         static let ProductID = "ProductID"
         static let OtherID = "OtherID"
+        static let Initialization = "Initialization"
     }
 
-    var id: String
-    var startTime: Double
-    var endTime: Double
-    var presentationID: String?
-    var pictureID: String?
-    var galleryID: String?
-    var appGroupID: String?
-    var textGroupMappings: [(textGroupID: String, index: Int)]?
-    var productID: ContentIdentifier?
-    var otherID: ContentIdentifier?
+    /// Unique identifier
+    public var id: String
+    
+    /// Start time of this event (in seconds)
+    public var startTime: Double
+    
+    /// End time of this event (in seconds)
+    public var endTime: Double
+    
+    /// ID for associated `Presentation`
+    public var presentationID: String?
+    
+    /// ID for associated `Picture`
+    public var pictureID: String?
+    
+    /// ID for associated `Gallery`
+    public var galleryID: String?
+    
+    /// ID for associated `AppGroup`
+    public var appGroupID: String?
+    
+    public var textGroupMappings: [(textGroupID: String, index: Int)]?
+    
+    /// ID for associated `ProductItem`
+    public var productID: ContentIdentifier?
+    
+    /// ID for other associated content (e.g. Person)
+    public var otherID: ContentIdentifier?
+    
+    /// ID for parent `Experience`
+    public var experienceID: String?
 
-    open var presentation: Presentation? {
-        return CPEXMLSuite.current?.manifest.presentationWithID(presentationID)
-    }
+    /// Tracking identifier
+    open lazy var analyticsID: String = { [unowned self] in
+        if let id = self.presentationID {
+            return id
+        }
 
-    open var picture: Picture? {
-        return CPEXMLSuite.current?.manifest.pictureWithID(pictureID)
-    }
+        if let id = self.pictureID {
+            return id
+        }
 
-    open var gallery: Gallery? {
-        return CPEXMLSuite.current?.manifest.galleryWithID(galleryID)
-    }
+        if let id = self.galleryID {
+            return id
+        }
 
-    open var appGroup: AppGroup? {
-        return CPEXMLSuite.current?.manifest.appGroupWithID(appGroupID)
-    }
+        if let id = self.appGroupID {
+            return id
+        }
 
-    open var person: Person? {
-        if let otherID = otherID, otherID.namespace == Namespaces.PeopleID {
+        if let id = self.productID?.identifier {
+            return id
+        }
+
+        if let id = self.otherID?.identifier {
+            return id
+        }
+
+        return self.id
+    }()
+    
+    /// Parent `Experience`
+    open lazy var experience: Experience? = { [unowned self] in
+        return CPEXMLSuite.current?.manifest.experienceWithID(self.experienceID)
+    }()
+
+    /// Associated `ExperienceAudioVisual` (used for video clips)
+    lazy var audioVisual: ExperienceAudioVisual? = { [unowned self] in
+        if let id = self.presentationID {
+            return CPEXMLSuite.current?.manifest.presentationToAudioVisualMapping?[id]
+        }
+
+        return nil
+    }()
+
+    /// Associated `Picture` (used for single/supplemental image)
+    open lazy var picture: Picture? = { [unowned self] in
+        return CPEXMLSuite.current?.manifest.pictureWithID(self.pictureID)
+    }()
+
+    /// Associated `Gallery` (used for gallery of images)
+    open lazy var gallery: Gallery? = { [unowned self] in
+        return CPEXMLSuite.current?.manifest.galleryWithID(self.galleryID)
+    }()
+
+    /// Associated `AppGroup` (used for HTML5 apps)
+    open lazy var appGroup: AppGroup? = { [unowned self] in
+        return CPEXMLSuite.current?.manifest.appGroupWithID(self.appGroupID)
+    }()
+
+    /// Associated `Person` (used for talent details)
+    open lazy var person: Person? = { [unowned self] in
+        if let otherID = self.otherID, otherID.namespace == Namespaces.PeopleID {
             return CPEXMLSuite.current?.manifest.personWithID(otherID.identifier)
         }
 
         return nil
-    }
+    }()
 
-    open var location: LocationAppDataItem? {
-        if let otherID = otherID, otherID.namespace == Namespaces.AppDataID {
+    /// Associated `LocationAppDataItem` (used for scene loations)
+    open lazy var location: LocationAppDataItem? = { [unowned self] in
+        if let otherID = self.otherID, otherID.namespace == Namespaces.AppDataID {
             return CPEXMLSuite.current?.appData?.locationWithID(otherID.identifier)
         }
 
         return nil
-    }
+    }()
 
-    open var product: ProductAppDataItem? {
-        if let otherID = otherID, otherID.namespace == Namespaces.AppDataID {
+    /// Associated `ProductAppDataItem` (used for scene products)
+    open lazy var product: ProductAppDataItem? = { [unowned self] in
+        if let otherID = self.otherID, otherID.namespace == Namespaces.AppDataID {
             return CPEXMLSuite.current?.appData?.productWithID(otherID.identifier)
         }
 
         return nil
+    }()
+    
+    /// Namespace of the associated product
+    open var productNamespace: String? {
+        return productID?.namespace
     }
 
-    open var textItem: String? {
-        if let textGroupMapping = textGroupMappings?.first {
+    /// Associated text item (used for trivia)
+    open lazy var textItem: String? = { [unowned self] in
+        if let textGroupMapping = self.textGroupMappings?.first {
             return CPEXMLSuite.current?.manifest.textGroupWithID(textGroupMapping.textGroupID)?.textObject?.textItem(textGroupMapping.index)
         }
 
         return nil
+    }()
+    
+    open var description: String? {
+        return (isType(.textItem) ? textItem : audioVisual?.title)
+    }
+    
+    open var imageURL: URL? {
+        return picture?.imageURL
+    }
+
+    private var _thumbnailImageURL: URL?
+    open var thumbnailImageURL: URL? {
+        if _thumbnailImageURL == nil {
+            if let url = gallery?.thumbnailImageURL {
+                _thumbnailImageURL = url
+            } else if let url = picture?.thumbnailImageURL {
+                _thumbnailImageURL = url
+            }
+
+            /*if let url = presentation?.thumbnailImageURL {
+                return url
+            }
+            
+            if let url = appGroup?.thumbnailImageURL {
+                return url
+            }
+            
+            if let location = location.thumbnailImageURL {
+                return url
+            }
+            
+            return imageURL*/
+        }
+
+        return (_thumbnailImageURL ?? imageURL)
+    }
+
+    open var video: Video? {
+        return presentation?.video
     }
 
     init(indexer: XMLIndexer) throws {
@@ -138,6 +254,11 @@ open class TimedEvent: Equatable {
         } else if indexer.hasElement(Elements.OtherID) {
             otherID = try ContentIdentifier(indexer: indexer[Elements.OtherID])
         }
+
+        // Initialization
+        if pictureID == nil { // Making assumption that supplemental PictureID is in the Initialization property
+            pictureID = indexer.stringValue(forElement: Elements.Initialization)
+        }
     }
 
     // MARK: Helper Methods
@@ -156,6 +277,9 @@ open class TimedEvent: Equatable {
 
         case .video:
             return (presentation != nil)
+            
+        case .clipShare:
+            return (experience?.isClipShareExperience ?? false)
 
         case .gallery:
             return (gallery != nil)
@@ -164,8 +288,8 @@ open class TimedEvent: Equatable {
             return (location != nil)
 
         case .product:
-            if let productAPIUtil = NGDMConfiguration.productAPIUtil, let productNamespace = productID?.namespace {
-                return (productNamespace == type(of: productAPIUtil).APINamespace)
+            if let productAPIUtil = NGDMConfiguration.productAPIUtil {
+                return (productNamespace != nil && (productNamespace == type(of: productAPIUtil).APINamespace))
             }
 
             return (product != nil)

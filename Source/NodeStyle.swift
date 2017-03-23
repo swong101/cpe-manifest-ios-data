@@ -11,7 +11,7 @@ public enum BackgroundScaleMethod: String {
     case tiled = "Tiled"
 }
 
-public enum BackgroundPositionMethod: String {
+public enum BackgroundPositioningMethod: String {
     case upperLeft = "upperleft"
     case upperRight = "upperright"
     case centered = "centered"
@@ -26,8 +26,8 @@ public struct OverlayArea {
         static let PixelsFromBottom = "PixelsFromBottom"
     }
 
-    var size: CGSize
-    var bottomLeftPoint: CGPoint
+    public var size: CGSize
+    public var bottomLeftPoint: CGPoint
 
     init(indexer: XMLIndexer) throws {
         // WidthPixels
@@ -70,7 +70,7 @@ open class NodeStyle {
         static let Color = "Color"
         static let Adaptation = "Adaptation"
         static let ScaleMethod = "ScaleMethod"
-        static let PositionMethod = "PositionMethod"
+        static let PositioningMethod = "PositioningMethod"
         static let Video = "Video"
         static let PresentationID = "PresentationID"
         static let LoopTimecode = "LoopTimecode"
@@ -98,18 +98,22 @@ open class NodeStyle {
 
     /// General theme (includes buttons)
     private var themeID: String
-    open var theme: Theme! {
-        return CPEXMLSuite.current?.cpeStyle?.themeWithID(themeID)!
-    }
+    open lazy var theme: Theme = { [unowned self] in
+        return (CPEXMLSuite.current?.cpeStyle?.themeWithID(self.themeID))!
+    }()
 
     /// Background properties
     public var backgroundColor = UIColor.black
     public var backgroundScaleMethod = BackgroundScaleMethod.bestFit
-    public var backgroundPositionMethod = BackgroundPositionMethod.centered
+    public var backgroundPositioningMethod = BackgroundPositioningMethod.centered
 
     /// Background image
     private var backgroundImagePictureGroupID: String?
-    private var backgroundImage: Image?
+    
+    private lazy var backgroundImage: Image? = { [unowned self] in
+        return CPEXMLSuite.current?.manifest.pictureGroupWithID(self.backgroundImagePictureGroupID)?.pictures.first?.image
+    }()
+    
     open var backgroundImageSize: CGSize {
         return (backgroundImage?.size ?? CGSize.zero)
     }
@@ -178,9 +182,9 @@ open class NodeStyle {
                     backgroundScaleMethod = scaleMethod
                 }
 
-                // PositionMethod
-                if let string = backgroundIndexer[Elements.Adaptation].stringValue(forElement: Elements.PositionMethod), let positionMethod = BackgroundPositionMethod(rawValue: string) {
-                    backgroundPositionMethod = positionMethod
+                // PositioningMethod
+                if let string = backgroundIndexer[Elements.Adaptation].stringValue(forElement: Elements.PositioningMethod), let positioningMethod = BackgroundPositioningMethod(rawValue: string) {
+                    backgroundPositioningMethod = positioningMethod
                 }
             }
 

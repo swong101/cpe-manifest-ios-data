@@ -7,6 +7,7 @@ import SWXMLHash
 
 private enum ImageEncoding: String {
     case jpeg = "image/jpeg"
+    case jpg = "image/jpg"
     case png = "image/png"
 }
 

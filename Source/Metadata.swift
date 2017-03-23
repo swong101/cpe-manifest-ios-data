@@ -113,7 +113,6 @@ open class Metadata {
     public var people: [Person]?
     private var personMapping: [String: Person]?
 
-    // Computed values
     private var defaultLocalizedInfo: LocalizedInfo {
         return (localizedInfos.first(where: { $0.isDefault }) ?? localizedInfos.first!)
     }
@@ -130,6 +129,10 @@ open class Metadata {
         return imageURL(forLanguage: Locale.deviceLanguage)
     }
 
+    open lazy var actors: [Person]? = { [unowned self] in
+        return self.people?.filter({ $0.isActor })
+    }()
+
     init(indexer: XMLIndexer) throws {
         // ContentID
         guard let id = indexer.stringValue(forAttribute: Attributes.ContentID) else {
@@ -143,23 +146,23 @@ open class Metadata {
             throw ManifestError.missingRequiredChildElement(name: Elements.BasicMetadata, element: indexer.element)
         }
 
-        var indexer = indexer[Elements.BasicMetadata]
+        let metadataIndexer = indexer[Elements.BasicMetadata]
 
         // LocalizedInfo
-        guard indexer.hasElement(Elements.LocalizedInfo) else {
-            throw ManifestError.missingRequiredChildElement(name: Elements.LocalizedInfo, element: indexer.element)
+        guard metadataIndexer.hasElement(Elements.LocalizedInfo) else {
+            throw ManifestError.missingRequiredChildElement(name: Elements.LocalizedInfo, element: metadataIndexer.element)
         }
 
-        localizedInfos = try indexer[Elements.LocalizedInfo].flatMap({ try LocalizedInfo(indexer: $0) })
+        localizedInfos = try metadataIndexer[Elements.LocalizedInfo].flatMap({ try LocalizedInfo(indexer: $0) })
 
         // AltIdentifier
-        if indexer.hasElement(Elements.AltIdentifier) {
-            contentIdentifiers = try indexer[Elements.AltIdentifier].flatMap({ try ContentIdentifier(indexer: $0) })
+        if metadataIndexer.hasElement(Elements.AltIdentifier) {
+            contentIdentifiers = try metadataIndexer[Elements.AltIdentifier].flatMap({ try ContentIdentifier(indexer: $0) })
         }
 
         // People
-        if indexer.hasElement(Elements.People) {
-            people = try indexer[Elements.People].flatMap({ try Person(indexer: $0) }).sorted(by: { (person1, person2) -> Bool in
+        if metadataIndexer.hasElement(Elements.People) {
+            people = try metadataIndexer[Elements.People].flatMap({ try Person(indexer: $0) }).sorted(by: { (person1, person2) -> Bool in
                 return person1.billingBlockOrder < person2.billingBlockOrder
             })
         }
