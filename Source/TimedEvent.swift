@@ -160,11 +160,6 @@ open class TimedEvent: Equatable, Trackable {
         return nil
     }()
 
-    /// Namespace of the associated product
-    open var productNamespace: String? {
-        return productID?.namespace
-    }
-
     /// Associated text item (used for trivia)
     open lazy var textItem: String? = { [unowned self] in
         if let textGroupMapping = self.textGroupMappings?.first {
@@ -294,8 +289,8 @@ open class TimedEvent: Equatable, Trackable {
             return (location != nil)
 
         case .product:
-            if let productAPIUtil = CPEXMLSuite.Settings.productAPIUtil {
-                return (productNamespace != nil && (productNamespace == type(of: productAPIUtil).APINamespace))
+            if let productAPIUtil = CPEXMLSuite.Settings.productAPIUtil, let productNamespace = productID?.namespace {
+                return (productNamespace == type(of: productAPIUtil).APINamespace)
             }
 
             return (product != nil)

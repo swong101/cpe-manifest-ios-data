@@ -381,9 +381,6 @@ open class MediaManifest {
 
         // Pre-load talent info
         if var talentAPIUtil = CPEXMLSuite.Settings.talentAPIUtil {
-            // Find the API ID for this feature in the main Experience's identifiers
-            talentAPIUtil.featureAPIID = mainExperience.audioVisual?.metadata?.contentIdentifier(type(of: talentAPIUtil).APINamespace)
-
             let loadTalentImages = { [weak self] in
                 if let people = self?.people {
                     for person in people {
@@ -395,39 +392,44 @@ open class MediaManifest {
                     }
                 }
             }
-
-            if people == nil {
+            
+            if people != nil {
+                loadTalentImages()
+            } else if let featureAPIID = mainExperience.audioVisual?.metadata?.contentIdentifier(type(of: talentAPIUtil).APINamespace) {
+                // Find the API ID for this feature in the main Experience's identifiers
+                talentAPIUtil.featureAPIID = featureAPIID
+                
                 talentAPIUtil.prefetchCredits({ [weak self] (people) in
                     self?.people = people
                     loadTalentImages()
                 })
-            } else {
-                loadTalentImages()
             }
         }
 
         // Pre-load product info
         if var productAPIUtil = CPEXMLSuite.Settings.productAPIUtil {
             // Find the API ID for this feature in the main Experience's identifiers
-            productAPIUtil.featureAPIID = mainExperience.audioVisual?.metadata?.contentIdentifier(type(of: productAPIUtil).APINamespace)
-
-            /*productAPIUtil.getProductFrameTimes(completion: { [weak self] (frameTimes) in
-                if let frameTimes = frameTimes {
-                    for (index, frameTime) in frameTimes.enumerated() {
-                        let startTime = (frameTime / 1000)
-                        var endTime: Double = 0
-                        if frameTimes.count > index + 1 {
-                            endTime = (frameTimes[index + 1] / 1000)
-                        } else {
-                            endTime = (mainExperience.video?.runtimeInSeconds ?? 0)
-                        }
-                        
-                        if (endTime > startTime) {
-                            self?.timedEvents?.append(TimedEvent(startTime: startTime, endTime: endTime))
+            if let featureAPIID = mainExperience.audioVisual?.metadata?.contentIdentifier(type(of: productAPIUtil).APINamespace) {
+                productAPIUtil.featureAPIID = featureAPIID
+                
+                /*productAPIUtil.getProductFrameTimes(completion: { [weak self] (frameTimes) in
+                    if let frameTimes = frameTimes {
+                        for (index, frameTime) in frameTimes.enumerated() {
+                            let startTime = (frameTime / 1000)
+                            var endTime: Double = 0
+                            if frameTimes.count > index + 1 {
+                                endTime = (frameTimes[index + 1] / 1000)
+                            } else {
+                                endTime = (mainExperience.video?.runtimeInSeconds ?? 0)
+                            }
+                            
+                            if (endTime > startTime) {
+                                self?.timedEvents?.append(TimedEvent(startTime: startTime, endTime: endTime))
+                            }
                         }
                     }
-                }
-            })*/
+                })*/
+            }
         }
     }
 
