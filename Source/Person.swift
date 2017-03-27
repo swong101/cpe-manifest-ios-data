@@ -146,7 +146,7 @@ open class Person: Equatable, Trackable {
             return apiID
         }
 
-        if let talentAPIUtil = NGDMConfiguration.talentAPIUtil {
+        if let talentAPIUtil = CPEXMLSuite.Settings.talentAPIUtil {
             let apiNamespace = type(of: talentAPIUtil).APINamespace
             return contentIdentifiers?.first(where: { $0.namespace == apiNamespace })?.identifier
         }
@@ -230,7 +230,7 @@ open class Person: Equatable, Trackable {
     open func getTalentDetails(_ successBlock: @escaping (_ biography: String?, _ socialAccounts: [SocialAccount]?, _ films: [Film]?) -> Void) {
         if detailsLoaded {
             successBlock(biography, socialAccounts, films)
-        } else if let talentAPIUtil = NGDMConfiguration.talentAPIUtil, let id = apiID {
+        } else if let talentAPIUtil = CPEXMLSuite.Settings.talentAPIUtil, let id = apiID {
             talentAPIUtil.getTalentDetails(id, completion: { [weak self] (biography, socialAccounts, films) in
                 if let strongSelf = self {
                     strongSelf.biography = biography

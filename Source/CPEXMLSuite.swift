@@ -15,6 +15,11 @@ public enum ManifestError: Error {
     case missingSupplementalExperiences
 }
 
+public enum MapsAPIService {
+    case googleMaps
+    case appleMaps
+}
+
 public struct Namespaces {
     static let AppDataID = "AppID"
     static let PeopleID = "PeopleOtherID"
@@ -32,12 +37,34 @@ public enum ManifestProfile: String {
 
 open class CPEXMLSuite {
 
+    /// Supported XML element tags
     private struct Elements {
         static let MediaManifest = "MediaManifest"
         static let ManifestAppDataSet = "ManifestAppDataSet"
         static let CPEStyleSet = "CPEStyleSet"
     }
 
+    /// Various configurable data options
+    public struct Settings {
+
+        /// The `APIUtil` to be used to fetch talent details from a third party API
+        public static var talentAPIUtil: TalentAPIUtil?
+
+        /// The `APIUtil` to be used to fetch shopping experience product details from a third party API
+        public static var productAPIUtil: ProductAPIUtil?
+
+        /// The maps API service that will be used to display any interactive maps in the UI
+        public static var mapsAPIService = MapsAPIService.appleMaps
+
+        /// API key for the current maps SDK service if needed
+        public static var mapsAPIKey: String?
+
+        /// User country code to override detected device region
+        public static var countryCoude = Locale.current.regionCode
+
+    }
+
+    /// Reference to the currently presented XML suite
     open static var current: CPEXMLSuite?
 
     open static func load(manifestXMLURL: URL, appDataXMLURL: URL? = nil, cpeStyleXMLURL: URL? = nil, completionHandler: @escaping () -> Void) throws {

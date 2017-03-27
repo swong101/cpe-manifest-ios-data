@@ -45,33 +45,33 @@ open class TimedEvent: Equatable, Trackable {
 
     /// Unique identifier
     public var id: String
-    
+
     /// Start time of this event (in seconds)
     public var startTime: Double
-    
+
     /// End time of this event (in seconds)
     public var endTime: Double
-    
+
     /// ID for associated `Presentation`
     public var presentationID: String?
-    
+
     /// ID for associated `Picture`
     public var pictureID: String?
-    
+
     /// ID for associated `Gallery`
     public var galleryID: String?
-    
+
     /// ID for associated `AppGroup`
     public var appGroupID: String?
-    
+
     public var textGroupMappings: [(textGroupID: String, index: Int)]?
-    
+
     /// ID for associated `ProductItem`
     public var productID: ContentIdentifier?
-    
+
     /// ID for other associated content (e.g. Person)
     public var otherID: ContentIdentifier?
-    
+
     /// ID for parent `Experience`
     public var experienceID: String?
 
@@ -103,7 +103,7 @@ open class TimedEvent: Equatable, Trackable {
 
         return self.id
     }()
-    
+
     /// Parent `Experience`
     open lazy var experience: Experience? = { [unowned self] in
         return CPEXMLSuite.current?.manifest.experienceWithID(self.experienceID)
@@ -142,8 +142,8 @@ open class TimedEvent: Equatable, Trackable {
         return nil
     }()
 
-    /// Associated `LocationAppDataItem` (used for scene loations)
-    open lazy var location: LocationAppDataItem? = { [unowned self] in
+    /// Associated `AppDataItemLocation` (used for scene loations)
+    open lazy var location: AppDataItemLocation? = { [unowned self] in
         if let otherID = self.otherID, otherID.namespace == Namespaces.AppDataID {
             return CPEXMLSuite.current?.appData?.locationWithID(otherID.identifier)
         }
@@ -151,15 +151,15 @@ open class TimedEvent: Equatable, Trackable {
         return nil
     }()
 
-    /// Associated `ProductAppDataItem` (used for scene products)
-    open lazy var product: ProductAppDataItem? = { [unowned self] in
+    /// Associated `AppDataItemProduct` (used for scene products)
+    open lazy var product: AppDataItemProduct? = { [unowned self] in
         if let otherID = self.otherID, otherID.namespace == Namespaces.AppDataID {
             return CPEXMLSuite.current?.appData?.productWithID(otherID.identifier)
         }
 
         return nil
     }()
-    
+
     /// Namespace of the associated product
     open var productNamespace: String? {
         return productID?.namespace
@@ -173,12 +173,20 @@ open class TimedEvent: Equatable, Trackable {
 
         return nil
     }()
-    
+
     open var description: String? {
-        return (isType(.textItem) ? textItem : audioVisual?.title)
+        if isType(.textItem) {
+            return textItem
+        }
+
+        return (gallery?.title ?? location?.title ?? audioVisual?.title)
     }
-    
+
     open var imageURL: URL? {
+        if isType(.clipShare) {
+            return audioVisual?.metadata?.largeImageURL
+        }
+
         return picture?.imageURL
     }
 
@@ -189,28 +197,26 @@ open class TimedEvent: Equatable, Trackable {
                 _thumbnailImageURL = url
             } else if let url = picture?.thumbnailImageURL {
                 _thumbnailImageURL = url
+            } else if let url = audioVisual?.thumbnailImageURL {
+                _thumbnailImageURL = url
+            } else if let url = location?.thumbnailImageURL {
+                _thumbnailImageURL = url
+            } else if let url = appGroup?.thumbnailImageURL {
+                _thumbnailImageURL = url
             }
-
-            /*if let url = presentation?.thumbnailImageURL {
-                return url
-            }
-            
-            if let url = appGroup?.thumbnailImageURL {
-                return url
-            }
-            
-            if let location = location.thumbnailImageURL {
-                return url
-            }
-            
-            return imageURL*/
         }
 
         return (_thumbnailImageURL ?? imageURL)
     }
 
     open var video: Video? {
-        return presentation?.video
+        return audioVisual?.presentation?.video
+    }
+
+    init(startTime: Double, endTime: Double) {
+        id = UUID().uuidString
+        self.startTime = startTime
+        self.endTime = endTime
     }
 
     init(indexer: XMLIndexer) throws {
@@ -276,8 +282,8 @@ open class TimedEvent: Equatable, Trackable {
             return (appGroup != nil)
 
         case .video:
-            return (presentation != nil)
-            
+            return (audioVisual != nil)
+
         case .clipShare:
             return (experience?.isClipShareExperience ?? false)
 
@@ -288,7 +294,7 @@ open class TimedEvent: Equatable, Trackable {
             return (location != nil)
 
         case .product:
-            if let productAPIUtil = NGDMConfiguration.productAPIUtil {
+            if let productAPIUtil = CPEXMLSuite.Settings.productAPIUtil {
                 return (productNamespace != nil && (productNamespace == type(of: productAPIUtil).APINamespace))
             }
 

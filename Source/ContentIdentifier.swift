@@ -18,10 +18,10 @@ public struct ContentIdentifier {
 
     /// Identifier's namespace
     public var namespace: String
-    
+
     /// Identifier's value
     public var identifier: String
-    
+
     /// URL associated with the identifier
     public var location: URL?
 

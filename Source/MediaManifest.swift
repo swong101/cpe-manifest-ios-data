@@ -88,13 +88,17 @@ open class MediaManifest {
     open var titleTreatmentImageURL: URL? {
         return inMovieExperience.thumbnailImageURL
     }
-    
+
+    open var interstitialVideo: Video? {
+        if let presentations = mainExperience.audioVisual?.playableSequence?.presentations, presentations.count > 1 {
+            return presentations.first!.video
+        }
+
+        return nil
+    }
+
     open var featureVideo: Video {
         return mainExperience.video!
-    }
-    
-    open var interstitialVideo: Video? {
-        return nil
     }
 
     open var backgroundImageURL: URL? {
@@ -105,7 +109,7 @@ open class MediaManifest {
         get {
             return mainExperience.metadata?.people
         }
-        
+
         set {
             mainExperience.metadata?.people = newValue
         }
@@ -186,8 +190,9 @@ open class MediaManifest {
         if indexer.hasElement(Elements.AppGroups) {
             var appGroups = [String: AppGroup]()
             for indexer in indexer[Elements.AppGroups][Elements.AppGroup] {
-                let appGroup = try AppGroup(indexer: indexer)
-                appGroups[appGroup.id] = appGroup
+                if let appGroup = try AppGroup(indexer: indexer) {
+                    appGroups[appGroup.id] = appGroup
+                }
             }
 
             self.appGroups = appGroups
@@ -301,7 +306,7 @@ open class MediaManifest {
 
     open func postProcess() throws {
         let experiences = Array(self.experiences.values)
-        
+
         // Process Experiences
         guard let mainExperience = experiences.first(where: { $0.isMainExperience }) else {
             throw ManifestError.missingMainExperience
@@ -315,7 +320,7 @@ open class MediaManifest {
 
         outOfMovieExperience = childExperiences.first!
         inMovieExperience = childExperiences.last!
-        
+
         // Process Experience children
         var timedEvents = [TimedEvent]()
         var galleries = [String: Gallery]()
@@ -328,36 +333,40 @@ open class MediaManifest {
                     timedEvents.append(timedEvent)
                 }
             }
-            
+
             if let gallery = experience.gallery {
                 galleries[gallery.id] = gallery
             }
-            
+
             if let app = experience.app {
                 experienceApps[app.id] = app
+
+                // Sync App and related AppGroup details
+                app.appGroup?.metadata = app.metadata
+                app.appGroup?.isProductApp = app.isProductApp
             }
-            
+
             if let audioVisual = experience.audioVisual, let presentationID = audioVisual.presentationID {
                 presentationToAudioVisualMapping[presentationID] = audioVisual
             }
         }
-        
+
         if timedEvents.count > 0 {
             self.timedEvents = timedEvents
         }
-        
+
         if galleries.count > 0 {
             self.galleries = galleries
         }
-        
+
         if experienceApps.count > 0 {
             self.experienceApps = experienceApps
         }
-        
+
         if presentationToAudioVisualMapping.count > 0 {
             self.presentationToAudioVisualMapping = presentationToAudioVisualMapping
         }
-        
+
         // Process Pictures
         if let pictureGroups = pictureGroups {
             var pictures = [String: Picture]()
@@ -366,12 +375,15 @@ open class MediaManifest {
                     pictures[picture.id] = picture
                 }
             }
-            
+
             self.pictures = pictures
         }
-        
-        // Pre-load talent images
-        if let talentAPIUtil = NGDMConfiguration.talentAPIUtil {
+
+        // Pre-load talent info
+        if var talentAPIUtil = CPEXMLSuite.Settings.talentAPIUtil {
+            // Find the API ID for this feature in the main Experience's identifiers
+            talentAPIUtil.featureAPIID = mainExperience.audioVisual?.metadata?.contentIdentifier(type(of: talentAPIUtil).APINamespace)
+
             let loadTalentImages = { [weak self] in
                 if let people = self?.people {
                     for person in people {
@@ -383,7 +395,7 @@ open class MediaManifest {
                     }
                 }
             }
-            
+
             if people == nil {
                 talentAPIUtil.prefetchCredits({ [weak self] (people) in
                     self?.people = people
@@ -392,6 +404,30 @@ open class MediaManifest {
             } else {
                 loadTalentImages()
             }
+        }
+
+        // Pre-load product info
+        if var productAPIUtil = CPEXMLSuite.Settings.productAPIUtil {
+            // Find the API ID for this feature in the main Experience's identifiers
+            productAPIUtil.featureAPIID = mainExperience.audioVisual?.metadata?.contentIdentifier(type(of: productAPIUtil).APINamespace)
+
+            /*productAPIUtil.getProductFrameTimes(completion: { [weak self] (frameTimes) in
+                if let frameTimes = frameTimes {
+                    for (index, frameTime) in frameTimes.enumerated() {
+                        let startTime = (frameTime / 1000)
+                        var endTime: Double = 0
+                        if frameTimes.count > index + 1 {
+                            endTime = (frameTimes[index + 1] / 1000)
+                        } else {
+                            endTime = (mainExperience.video?.runtimeInSeconds ?? 0)
+                        }
+                        
+                        if (endTime > startTime) {
+                            self?.timedEvents?.append(TimedEvent(startTime: startTime, endTime: endTime))
+                        }
+                    }
+                }
+            })*/
         }
     }
 
@@ -450,7 +486,7 @@ open class MediaManifest {
     open func experienceWithID(_ id: String?) -> Experience? {
         return (id != nil ? experiences[id!] : nil)
     }
-    
+
     open func timedEventSequenceWithID(_ id: String?) -> TimedEventSequence? {
         return (id != nil ? timedEventSequences?[id!] : nil)
     }
@@ -458,13 +494,13 @@ open class MediaManifest {
     open func personWithID(_ id: String?) -> Person? {
         return mainExperience.metadata?.personWithID(id)
     }
-    
+
     open func timedEvents(atTimecode timecode: Double, type: TimedEventType = .any) -> [TimedEvent]? {
         return timedEvents?.filter({ $0.isType(type) && timecode >= $0.startTime && timecode <= $0.endTime }).sorted(by: {
             ($0.experience != nil && $1.experience != nil && $0.experience!.sequence < $1.experience!.sequence)
         })
     }
-    
+
     open func closedTimedEvent(toTimecode timecode: Double, type: TimedEventType = .any) -> TimedEvent? {
         return timedEvents?.first(where: { $0.isType(type) && timecode <= $0.endTime })
     }

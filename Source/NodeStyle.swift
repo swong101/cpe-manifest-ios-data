@@ -109,11 +109,11 @@ open class NodeStyle {
 
     /// Background image
     private var backgroundImagePictureGroupID: String?
-    
+
     private lazy var backgroundImage: Image? = { [unowned self] in
         return CPEXMLSuite.current?.manifest.pictureGroupWithID(self.backgroundImagePictureGroupID)?.pictures.first?.image
     }()
-    
+
     open var backgroundImageSize: CGSize {
         return (backgroundImage?.size ?? CGSize.zero)
     }

@@ -41,7 +41,7 @@ open class ExperienceAudioVisual: MetadataDriven {
     open lazy var playableSequence: PlayableSequence? = { [unowned self] in
         return CPEXMLSuite.current?.manifest.playableSequenceWithID(self.playableSequenceID)
     }()
-    
+
     open lazy var isClipShare: Bool = { [unowned self] in
         return (self.subTypes?.contains("Shareable Clip") ?? false)
     }()

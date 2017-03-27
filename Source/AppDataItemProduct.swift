@@ -1,13 +1,13 @@
 //
-//  ProductAppDataItem.swift
+//  AppDataItemProduct.swift
 //
 
 import Foundation
 import SWXMLHash
 
-public class NGDMProductCategory: ProductCategory {
+open class AppDataItemProductCategory: ProductCategory {
 
-    private var metadata: Metadata
+    public var metadata: Metadata
 
     public var id: String {
         return metadata.id
@@ -23,16 +23,7 @@ public class NGDMProductCategory: ProductCategory {
 
 }
 
-public func == (lhs: NGDMProductCategory, rhs: NGDMProductCategory) -> Bool {
-    return (lhs.id == rhs.id)
-}
-
-open class ProductAppDataItem: AppDataItem, ProductItem {
-
-    // MARK: Instance Variables
-    public var externalID: String {
-        return id
-    }
+open class AppDataItemProduct: AppDataItem, ProductItem {
 
     public var externalURL: URL?
 
@@ -44,16 +35,16 @@ open class ProductAppDataItem: AppDataItem, ProductItem {
         return description
     }
 
-    public lazy var category: NGDMProductCategory? = { [unowned self] in
+    public lazy var category: AppDataItemProductCategory? = { [unowned self] in
         if let metadata = self.parentMetadata {
-            return NGDMProductCategory(metadata: metadata)
+            return AppDataItemProductCategory(metadata: metadata)
         }
 
         return nil
     }()
 
-    private var price: Double?
-    private var currencyCode = "USD"
+    public var price: Double?
+    public var currencyCode = "USD"
     public var displayPrice: String? {
         if let price = price {
             let formatter = NumberFormatter()
@@ -69,7 +60,7 @@ open class ProductAppDataItem: AppDataItem, ProductItem {
         return thumbnailImageURL
     }
 
-    private var sceneImagePictureID: String?
+    public var sceneImagePictureID: String?
     public var sceneImageURL: URL? {
         return CPEXMLSuite.current?.manifest.pictureWithID(sceneImagePictureID)?.imageURL
     }

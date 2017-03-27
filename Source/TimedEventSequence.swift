@@ -22,23 +22,23 @@ open class TimedEventSequence {
 
     /// Unique identifier
     public var id: String
-    
+
     /// ID for associated `Presentation`
     public var presentationID: String?
-    
+
     /// Associated `Presentation`
     open lazy var presentation: Presentation? = { [unowned self] in
         return CPEXMLSuite.current?.manifest.presentationWithID(self.presentationID)
     }()
-    
+
     /// ID for associated `PlayableSequence`
     public var playableSequenceID: String?
-    
+
     /// Associated `PlayableSequence`
     open lazy var playableSequence: PlayableSequence? = { [unowned self] in
         return CPEXMLSuite.current?.manifest.playableSequenceWithID(self.playableSequenceID)
     }()
-    
+
     /// Series of `TimedEvents` tied to playback
     public var timedEvents: [TimedEvent]
 

@@ -90,6 +90,10 @@ open class Experience: MetadataDriven, Equatable, Trackable {
         return (super.description ?? location?.description)
     }
 
+    open var largeImageURL: URL? {
+        return (metadata?.largeImageURL ?? audioVisual?.metadata?.largeImageURL ?? thumbnailImageURL)
+    }
+
     override open var thumbnailImageURL: URL? {
         if let imageURL = super.thumbnailImageURL {
             return imageURL
@@ -132,7 +136,7 @@ open class Experience: MetadataDriven, Equatable, Trackable {
                     childExperiences.append(experience)
                 }
             }
-            
+
             return childExperiences
         }
 
@@ -144,10 +148,14 @@ open class Experience: MetadataDriven, Equatable, Trackable {
     }
 
     open var video: Video? {
+        if let presentations = audioVisual?.playableSequence?.presentations, presentations.count > 0 {
+            return presentations.last!.video
+        }
+
         return audioVisual?.presentation?.video
     }
 
-    open lazy var location: LocationAppDataItem? = { [unowned self] in
+    open lazy var location: AppDataItemLocation? = { [unowned self] in
         return CPEXMLSuite.current?.appData?.locationWithID(self.app?.id)
     }()
 
@@ -155,7 +163,7 @@ open class Experience: MetadataDriven, Equatable, Trackable {
         return (location?.mediaCount ?? 0)
     }
 
-    open lazy var product: ProductAppDataItem? = { [unowned self] in
+    open lazy var product: AppDataItemProduct? = { [unowned self] in
         return CPEXMLSuite.current?.appData?.productWithID(self.app?.id)
     }()
 
@@ -177,7 +185,7 @@ open class Experience: MetadataDriven, Equatable, Trackable {
 
         return productCategories
     }()
-    
+
     open lazy var timedEventSequence: TimedEventSequence? = { [unowned self] in
         return CPEXMLSuite.current?.manifest.timedEventSequenceWithID(self.timedEventSequenceID)
     }()
@@ -193,7 +201,7 @@ open class Experience: MetadataDriven, Equatable, Trackable {
     open lazy var isOutOfMovieExperience: Bool = { [unowned self] in
         return (CPEXMLSuite.current?.manifest.outOfMovieExperience == self)
     }()
-    
+
     open lazy var isClipShareExperience: Bool = { [unowned self] in
         return ((self.audioVisual?.isClipShare ?? false) || self.id.contains("clipshare"))
     }()
@@ -242,7 +250,7 @@ open class Experience: MetadataDriven, Equatable, Trackable {
         if indexer.hasElement(Elements.App) {
             app = try ExperienceApp(indexer: indexer[Elements.App])
         }
-        
+
         // TimedSequenceID
         timedEventSequenceID = indexer.stringValue(forElement: Elements.TimedSequenceID)
 
@@ -288,7 +296,7 @@ open class Experience: MetadataDriven, Equatable, Trackable {
             return false
 
         case .product:
-            if product != nil {
+            if product != nil || (app != nil && app!.isProductApp) {
                 return true
             }
 

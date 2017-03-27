@@ -31,11 +31,19 @@ open class ExperienceApp: MetadataDriven, Trackable {
     open lazy var appGroup: AppGroup? = { [unowned self] in
         return CPEXMLSuite.current?.manifest.appGroupWithID(self.appGroupID)
     }()
-    
+
     open var url: URL? {
         return appGroup?.url
     }
-    
+
+    open lazy var isProductApp: Bool = { [unowned self] in
+        if let names = self.names, let productAPIUtil = CPEXMLSuite.Settings.productAPIUtil {
+            return names.contains(type(of: productAPIUtil).APINamespace)
+        }
+
+        return false
+    }()
+
     // Trackable
     open var analyticsID: String {
         return id

@@ -57,7 +57,7 @@ open class AppDataItem: Trackable {
         static let Integer = "Integer"
     }
 
-    var id: String
+    @objc public var id: String
     var experienceID: String?
     var contentID: String?
     var parentContentID: String?
@@ -95,7 +95,7 @@ open class AppDataItem: Trackable {
     open var mediaCount: Int {
         return (experience?.experienceChildren?.count ?? 0)
     }
-    
+
     // Trackable
     open var analyticsID: String {
         return id

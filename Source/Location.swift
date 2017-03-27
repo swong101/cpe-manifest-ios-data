@@ -53,7 +53,7 @@ open class Location {
     }
 
     open func mapImageURL(forZoomLevel zoomLevel: Int? = nil) -> URL? {
-        if let key = NGDMConfiguration.googleMapsAPIKey {
+        if CPEXMLSuite.Settings.mapsAPIService == .googleMaps, let key = CPEXMLSuite.Settings.mapsAPIKey {
             var urlString = "http://maps.googleapis.com/maps/api/staticmap?"
             urlString += "center=\(latitude),\(longitude)"
 

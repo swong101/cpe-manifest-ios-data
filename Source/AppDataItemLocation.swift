@@ -1,12 +1,12 @@
 //
-//  LocationAppDataItem.swift
+//  AppDataItemLocation.swift
 //
 
 import Foundation
 import SWXMLHash
 import CoreLocation
 
-open class LocationAppDataItem: AppDataItem {
+open class AppDataItemLocation: AppDataItem {
 
     var location: Location!
     public var zoomLevel: Int = 0

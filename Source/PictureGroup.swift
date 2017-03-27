@@ -20,7 +20,7 @@ open class Picture {
     var thumbnailImageID: String?
     var captions: [String]?
     public var sequence: UInt = 0
-    
+
     open lazy var image: Image? = { [unowned self] in
         return CPEXMLSuite.current?.manifest.imageWithID(self.imageID)
     }()
@@ -29,11 +29,11 @@ open class Picture {
     open var imageURL: URL? {
         return (_imageURL ?? image?.url)
     }
-    
+
     open lazy var thumbnailImage: Image? = { [unowned self] in
         return CPEXMLSuite.current?.manifest.imageWithID(self.thumbnailImageID)
     }()
-    
+
     open var thumbnailImageURL: URL? {
         return (thumbnailImage?.url ?? imageURL)
     }
@@ -67,7 +67,7 @@ open class Picture {
 
         // Caption
         if indexer.hasElement(Elements.Caption) {
-            captions = indexer[Elements.Caption].flatMap({ $0.stringValue })
+            captions = indexer[Elements.Caption].flatMap({ ($0.stringValue != nil && $0.stringValue!.characters.count > 0 ? $0.stringValue : nil) })
         }
 
         // Sequence
@@ -113,7 +113,7 @@ public class PictureGroup {
         guard indexer.hasElement(Elements.Picture) else {
             throw ManifestError.missingRequiredChildElement(name: Elements.Picture, element: indexer.element)
         }
-        
+
         pictures = try indexer[Elements.Picture].flatMap({ try Picture(indexer: $0) })
     }
 

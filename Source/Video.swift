@@ -78,13 +78,13 @@ open class Video: DigitalAsset, Trackable {
 
     /// Unique identifier
     public var id: String
-    
+
     /// Type of video
     public var type: VideoType
-    
+
     /// Details of the video's encoding process
     public var encoding: VideoEncoding?
-    
+
     /// Size of the video
     public var size: CGSize?
 
@@ -97,7 +97,7 @@ open class Video: DigitalAsset, Trackable {
     open var analyticsID: String {
         return id
     }
-    
+
     /**
         Initializes a new video asset with the provided XML indexer
      

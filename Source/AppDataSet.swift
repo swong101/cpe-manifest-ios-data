@@ -18,8 +18,8 @@ open class AppDataSet {
     }
 
     // Inventory
-    open var locations: [String: LocationAppDataItem]?
-    open var products: [String: ProductAppDataItem]?
+    open var locations: [String: AppDataItemLocation]?
+    open var products: [String: AppDataItemProduct]?
     open var imageCache: [String: UIImage]?
 
     init(indexer: XMLIndexer) throws {
@@ -31,17 +31,17 @@ open class AppDataSet {
         for indexer in indexer[Elements.ManifestAppData] {
             if try indexer[Elements.NVPair].withAttr(Attributes.Name, "type").stringValue(forElement: Elements.Text) == "PRODUCT" {
                 if products == nil {
-                    products = [String: ProductAppDataItem]()
+                    products = [String: AppDataItemProduct]()
                 }
 
-                let product = try ProductAppDataItem(indexer: indexer)
+                let product = try AppDataItemProduct(indexer: indexer)
                 products![product.id] = product
             } else {
                 if locations == nil {
-                    locations = [String: LocationAppDataItem]()
+                    locations = [String: AppDataItemLocation]()
                 }
 
-                let location = try LocationAppDataItem(indexer: indexer)
+                let location = try AppDataItemLocation(indexer: indexer)
                 locations![location.id] = location
             }
         }
@@ -51,8 +51,14 @@ open class AppDataSet {
         if let locations = locations {
             for location in Array(locations.values) {
                 if let imageID = location.iconImageID, let url = CPEXMLSuite.current?.manifest.imageWithID(imageID)?.url {
-                    _ = UIImageRemoteLoader.loadImage(url, completion: { (image) in
-                        CPEXMLSuite.current?.appData?.imageCache?[imageID] = image
+                    _ = UIImageRemoteLoader.loadImage(url, completion: { [weak self] (image) in
+                        if let strongSelf = self {
+                            if strongSelf.imageCache == nil {
+                                strongSelf.imageCache = [String: UIImage]()
+                            }
+
+                            strongSelf.imageCache![imageID] = image
+                        }
                     })
                 }
             }
@@ -63,11 +69,11 @@ open class AppDataSet {
         return (id != nil ? imageCache?[id!] : nil)
     }
 
-    open func locationWithID(_ id: String?) -> LocationAppDataItem? {
+    open func locationWithID(_ id: String?) -> AppDataItemLocation? {
         return (id != nil ? locations?[id!] : nil)
     }
 
-    open func productWithID(_ id: String?) -> ProductAppDataItem? {
+    open func productWithID(_ id: String?) -> AppDataItemProduct? {
         return (id != nil ? products?[id!] : nil)
     }
 

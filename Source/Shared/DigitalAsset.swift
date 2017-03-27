@@ -19,19 +19,19 @@ open class DigitalAssetEncoding {
 
     /// Formal reference identification of codec
     public var codecTypes: [String]?
-    
+
     /// Peak Bitrate (bits/second) averaged over a short period
     public var bitrateMax: Int?
-    
+
     /// Bitrate averaged over the entire track
     public var bitrateAverage: Int?
-    
+
     /// Variable BitRate information
     public var vbr: String?
-    
+
     /// The actual encoded length of the track (in ISO 8601 format)
     public var actualLength: TimeInterval = 0
-    
+
     /**
         Initializes a new digital asset encoding details wrapper with the provided XML indexer
      
@@ -76,16 +76,16 @@ open class DigitalAsset {
 
     /// Text description of the digital asset
     public var description: String?
-    
+
     /// Language of text visible in the video
     public var languages: [String]
-    
+
     /// Track cross-reference to be used in conjunction with container-specific metadata
     public var trackReference: String?
-    
+
     /// Identifiers, such as EIDR, for this track
     public var trackIdentifiers: [ContentIdentifier]?
-    
+
     /// Reference to Container with file name
     public var containerReference: ContainerReference?
 
@@ -93,7 +93,7 @@ open class DigitalAsset {
     open var url: URL? {
         return containerReference?.url
     }
-    
+
     /**
         Initializes a new digital asset with the provided XML indexer
      

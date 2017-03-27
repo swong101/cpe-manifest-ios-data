@@ -18,6 +18,7 @@ private enum InteractiveType: String {
 private enum InteractiveRuntimeEnvironment: String {
     case html5              = "html5"   // W3C HTML5
     case html               = "html"    // W3C HTML5
+    case iOS                = "ios"     // iOS
     case defaultEnvironment = "default" // Represents an application that can be played if nothing else can. This is typically an image
     case other              = "other"   // May be used when there is not a type convention
 

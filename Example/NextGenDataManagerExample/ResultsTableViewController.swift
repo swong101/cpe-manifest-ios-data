@@ -50,7 +50,7 @@ class ResultsTableViewController: UITableViewController {
         if let title = type.title {
             self.title = title
         }
-        
+
         manager = RETableViewManager(tableView: self.tableView)
 
         switch type {
@@ -61,17 +61,17 @@ class ResultsTableViewController: UITableViewController {
         case .experiences:
             showExperiencesTable()
             break
-            
+
         case .mainExperience:
             showMainExperienceTable()
             break
-            
+
         case .experience:
             if let experience = experience {
                 addTable(experience: experience)
             }
             break
-            
+
         case .gallery:
             if let gallery = gallery {
                 addTable(gallery: gallery)
@@ -92,7 +92,7 @@ class ResultsTableViewController: UITableViewController {
         manifestResultsTableViewController.title = (experience?.title ?? gallery?.title)
         self.navigationController?.pushViewController(manifestResultsTableViewController, animated: true)
     }
-    
+
     private func presentVideo(url: URL, title: String? = nil) {
         let player = AVPlayer(url: url)
         let playerViewController = AVPlayerViewController()
@@ -130,15 +130,15 @@ class ResultsTableViewController: UITableViewController {
     private func addTable(manifest: MediaManifest) {
         if let section = RETableViewSection(headerTitle: "Experiences") {
             manager.addSection(section)
-            
+
             addItem(section: section, title: "Main Experience", hasChildren: true) { [weak self] in
                 self?.pushResultsTableView(type: .mainExperience)
             }
-            
+
             addItem(section: section, title: "In-Movie Experience", hasChildren: true, numChildren: manifest.inMovieExperience.numChildExperiences) { [weak self] in
                 self?.pushResultsTableView(type: .experience, experience: manifest.inMovieExperience)
             }
-            
+
             addItem(section: section, title: "Out-of-Movie Experience", hasChildren: true, numChildren: manifest.outOfMovieExperience.numChildExperiences) { [weak self] in
                 self?.pushResultsTableView(type: .experience, experience: manifest.outOfMovieExperience)
             }
@@ -146,7 +146,7 @@ class ResultsTableViewController: UITableViewController {
 
         if let section = RETableViewSection(headerTitle: "Inventory") {
             manager.addSection(section)
-            
+
             let numAudio = (manifest.audios?.count ?? 0)
             let numVideos = (manifest.videos?.count ?? 0)
             let numImages = (manifest.images?.count ?? 0)
@@ -213,29 +213,29 @@ class ResultsTableViewController: UITableViewController {
             addItem(section: section, title: "Main Experience", hasChildren: true) { [weak self] in
                 self?.pushResultsTableView(type: .mainExperience)
             }
-            
+
             addItem(section: section, title: "In-Movie Experience", hasChildren: true, numChildren: manifest.inMovieExperience.numChildExperiences) { [weak self] in
                 self?.pushResultsTableView(type: .experience, experience: manifest.inMovieExperience)
             }
-            
+
             addItem(section: section, title: "Out-of-Movie Experience", hasChildren: true, numChildren: manifest.outOfMovieExperience.numChildExperiences) { [weak self] in
                 self?.pushResultsTableView(type: .experience, experience: manifest.outOfMovieExperience)
             }
         }
     }
-    
+
     private func showMainExperienceTable() {
-        
+
     }
-    
+
     private func addTable(experience: Experience) {
         addImageSection(imageURL: experience.thumbnailImageURL)
-        
+
         if let timedEvents = experience.timedEventSequence?.timedEvents, let section = RETableViewSection(headerTitle: "Timed Events") {
             manager.addSection(section)
-            
+
             addItem(section: section, title: "Total Timed Events", detailText: String(timedEvents.count))
-            
+
             for timedEvent in timedEvents {
                 addItem(section: section, title: "\(timedEvent.startTime.formattedTimecode) -> \(timedEvent.endTime.formattedTimecode)", hasChildren: true, detailText: timedEvent.description) { [weak self] in
                     if timedEvent.isType(.video), let videoURL = timedEvent.video?.url {
@@ -247,7 +247,7 @@ class ResultsTableViewController: UITableViewController {
             }
         } else if let section = RETableViewSection(headerTitle: "Child Experiences") {
             manager.addSection(section)
-            
+
             if let childExperiences = experience.childExperiences {
                 for childExperience in childExperiences {
                     addItem(section: section, title: childExperience.title, hasChildren: true) { [weak self] in
@@ -261,13 +261,13 @@ class ResultsTableViewController: UITableViewController {
             }
         }
     }
-    
+
     private func addTable(gallery: Gallery) {
         addImageSection(imageURL: gallery.thumbnailImageURL)
-        
+
         if let section = RETableViewSection(headerTitle: "Gallery Details") {
             manager.addSection(section)
-            
+
             if let url = gallery.thumbnailImageURL {
                 URLSession.shared.dataTask(with: url) { (data, _, _) in
                     if let data = data {
@@ -278,22 +278,22 @@ class ResultsTableViewController: UITableViewController {
                     }
                 }.resume()
             }
-            
+
             addItem(section: section, title: "Name", detailText: gallery.title)
             addItem(section: section, title: "Total Images", detailText: String(gallery.numPictures))
             addItem(section: section, title: "Turntable?", detailText: (gallery.isTurntable ? "Yes" : "No"))
         }
     }
-    
+
     private func addImageSection(imageURL: URL?) {
         if let imageURL = imageURL {
             let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: 200))
             imageView.backgroundColor = UIColor.black
             imageView.contentMode = .scaleAspectFit
-            
+
             if let section = RETableViewSection(headerView: imageView) {
                 manager.addSection(section)
-                
+
                 URLSession.shared.dataTask(with: imageURL) { (data, _, _) in
                     if let data = data {
                         DispatchQueue.main.async {

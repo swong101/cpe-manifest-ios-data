@@ -24,16 +24,16 @@ public class ContainerReference {
 
     /// List of file locations
     public var locations: [URL]?
-    
+
     /// Container's parent if it's located within another Container
     public var parentContainer: ContainerReference?
-    
+
     /// Identifiers for the Container
     public var identifiers: [ContentIdentifier]?
-    
+
     /// Length of Container in bytes
     public var length: UInt?
-    
+
     /// Hash of Container
     public var hashes: [Hash]?
 
@@ -41,7 +41,7 @@ public class ContainerReference {
     open var url: URL? {
         return locations?.first
     }
-    
+
     /**
         Initializes a new file reference Container with the provided XML indexer
      

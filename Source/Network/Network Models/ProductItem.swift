@@ -6,7 +6,7 @@ import Foundation
 
 @objc public protocol ProductItem {
 
-    var externalID: String { get }
+    var id: String { get }
     var externalURL: URL? { get }
     var name: String { get }
     var brand: String? { get }
@@ -19,4 +19,20 @@ import Foundation
     var bullseyePoint: CGPoint { get }
     var shareText: String { get }
 
+}
+
+public func == (lhs: ProductItem, rhs: ProductItem) -> Bool {
+    return lhs.id == rhs.id
+}
+
+public func != (lhs: ProductItem, rhs: ProductItem) -> Bool {
+    return lhs.id != rhs.id
+}
+
+public func == (lhs: ProductItem?, rhs: ProductItem?) -> Bool {
+    return lhs?.id == rhs?.id
+}
+
+public func != (lhs: ProductItem?, rhs: ProductItem?) -> Bool {
+    return lhs?.id != rhs?.id
 }
