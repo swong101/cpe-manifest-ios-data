@@ -1,13 +1,13 @@
 //
 //  InputViewController.swift
-//  NextGenDataManagerExample
+//  CPEDataExample
 //
 //  Created by Alec Ananian on 2/1/16.
 //  Copyright © 2016 Warner Bros. All rights reserved.
 //
 
 import UIKit
-import NextGenDataManager
+import CPEData
 
 class InputViewController: UIViewController {
 

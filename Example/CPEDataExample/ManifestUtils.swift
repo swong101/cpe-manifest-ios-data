@@ -1,6 +1,6 @@
 //
 //  ManifestUtils.swift
-//  NextGenDataManagerExample
+//  CPEDataExample
 //
 //  Created by Alec Ananian on 3/23/17.
 //  Copyright © 2017 Warner Bros. All rights reserved.

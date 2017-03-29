@@ -8,7 +8,7 @@ public struct UIImageRemoteLoader {
 
     public static func loadImage(_ url: URL, completion: ((_ image: UIImage?) -> Void)?) -> URLSessionDataTask? {
         let request = URLRequest(url: url)
-        let urlCache = URLCache(memoryCapacity: 0, diskCapacity: 1024 * 1024 * 512, diskPath: "com.wb.nextgen_image_cache") // 512Mb
+        let urlCache = URLCache(memoryCapacity: 0, diskCapacity: 1024 * 1024 * 512, diskPath: "com.movielabs.cpedata_image_cache") // 512Mb
         if let cachedResponse = urlCache.cachedResponse(for: request), cachedResponse.data.count > 0 {
             if let completion = completion {
                 completion(UIImage(data: cachedResponse.data, scale: UIScreen.main.scale))

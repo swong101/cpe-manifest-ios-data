@@ -28,7 +28,7 @@
         <!--Input View Controller-->
         <scene sceneID="63z-1o-JJc">
             <objects>
-                <viewController id="Imf-LK-rJ9" customClass="InputViewController" customModule="NextGenDataManagerExample" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="Imf-LK-rJ9" customClass="InputViewController" customModule="CPEDataExample" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="UWX-do-4gC"/>
                         <viewControllerLayoutGuide type="bottom" id="vJS-6C-PJ4"/>
@@ -131,7 +131,7 @@
         <!--Results Table View Controller-->
         <scene sceneID="UJg-Yx-aKI">
             <objects>
-                <tableViewController id="P90-xk-wbc" customClass="ResultsTableViewController" customModule="NextGenDataManagerExample" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController id="P90-xk-wbc" customClass="ResultsTableViewController" customModule="CPEDataExample" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="5tv-5B-tNF">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

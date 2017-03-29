@@ -34,7 +34,7 @@ open class APIUtil: NSObject, URLSessionDataDelegate {
     open func getJSONWithRequest(_ request: URLRequest, successBlock: APIUtilSuccessBlock?, errorBlock: APIUtilErrorBlock?) -> URLSessionDataTask {
         let sessionConfiguration = URLSessionConfiguration.default
         sessionConfiguration.requestCachePolicy = NSURLRequest.CachePolicy.returnCacheDataElseLoad
-        sessionConfiguration.urlCache = URLCache(memoryCapacity: 0, diskCapacity: 1024 * 1024 * 64, diskPath: "com.wb.nextgen_api_cache") // 64Mb
+        sessionConfiguration.urlCache = URLCache(memoryCapacity: 0, diskCapacity: 1024 * 1024 * 64, diskPath: "com.movielabs.cpedata_api_cache") // 64Mb
         sessionConfiguration.timeoutIntervalForRequest = 60
         let task = URLSession(configuration: sessionConfiguration).dataTask(with: request, completionHandler: { (data, _, error) -> Void in
             if error == nil {

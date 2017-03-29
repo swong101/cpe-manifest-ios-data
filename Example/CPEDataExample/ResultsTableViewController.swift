@@ -1,6 +1,6 @@
 //
 //  ResultsTableViewController.swift
-//  NextGenDataManagerExample
+//  CPEDataExample
 //
 //  Created by Alec Ananian on 3/21/17.
 //  Copyright © 2017 Warner Bros. All rights reserved.
@@ -10,7 +10,7 @@ import UIKit
 import AVKit
 import AVFoundation
 import RETableViewManager
-import NextGenDataManager
+import CPEData
 
 enum ResultsTableType {
     case files

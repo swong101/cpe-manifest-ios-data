@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "70A4118D1C6026EC003A65D2"
-               BuildableName = "NextGenDataManagerExample.app"
-               BlueprintName = "NextGenDataManagerExample"
-               ReferencedContainer = "container:NextGenDataManagerExample.xcodeproj">
+               BuildableName = "CPEDataExample.app"
+               BlueprintName = "CPEDataExample"
+               ReferencedContainer = "container:CPEDataExample.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "70A4118D1C6026EC003A65D2"
-            BuildableName = "NextGenDataManagerExample.app"
-            BlueprintName = "NextGenDataManagerExample"
-            ReferencedContainer = "container:NextGenDataManagerExample.xcodeproj">
+            BuildableName = "CPEDataExample.app"
+            BlueprintName = "CPEDataExample"
+            ReferencedContainer = "container:CPEDataExample.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -56,9 +56,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "70A4118D1C6026EC003A65D2"
-            BuildableName = "NextGenDataManagerExample.app"
-            BlueprintName = "NextGenDataManagerExample"
-            ReferencedContainer = "container:NextGenDataManagerExample.xcodeproj">
+            BuildableName = "CPEDataExample.app"
+            BlueprintName = "CPEDataExample"
+            ReferencedContainer = "container:CPEDataExample.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -75,9 +75,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "70A4118D1C6026EC003A65D2"
-            BuildableName = "NextGenDataManagerExample.app"
-            BlueprintName = "NextGenDataManagerExample"
-            ReferencedContainer = "container:NextGenDataManagerExample.xcodeproj">
+            BuildableName = "CPEDataExample.app"
+            BlueprintName = "CPEDataExample"
+            ReferencedContainer = "container:CPEDataExample.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
