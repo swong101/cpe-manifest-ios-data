@@ -66,6 +66,26 @@ open class CPEXMLSuite {
 
     /// Reference to the currently presented XML suite
     open static var current: CPEXMLSuite?
+    
+    private static func requestXMLData(url: URL, completionHandler: @escaping (Data?, Error?) -> Void) {
+        // Check if cached version of this file exists
+        if let tempFileURL = CacheManager.tempFileURL(for: url), CacheManager.fileExists(tempFileURL) {
+            // Download in the background for next launch
+            DispatchQueue.global(qos: .background).async {
+                CacheManager.storeTempFile(url: url)
+            }
+            
+            // Serve up the cached data
+            do {
+                completionHandler(try Data(contentsOf: tempFileURL), nil)
+            } catch {
+                completionHandler(nil, error)
+            }
+        } else {
+            // Cache the remote file and serve its data
+            CacheManager.storeTempFile(url: url, completionHandler: completionHandler)
+        }
+    }
 
     open static func load(manifestXMLURL: URL, appDataXMLURL: URL? = nil, cpeStyleXMLURL: URL? = nil, completionHandler: @escaping () -> Void) throws {
         var fetchedManifest = false
@@ -87,7 +107,7 @@ open class CPEXMLSuite {
         }
 
         if let appDataXMLURL = appDataXMLURL {
-            URLSession.shared.dataTask(with: appDataXMLURL) { (data, _, _) in
+            requestXMLData(url: appDataXMLURL) { (data, _) in
                 do {
                     appDataXMLData = data
                     fetchedAppData = true
@@ -95,13 +115,13 @@ open class CPEXMLSuite {
                 } catch {
 
                 }
-            }.resume()
+            }
         } else {
             fetchedAppData = true
         }
 
         if let cpeStyleXMLURL = cpeStyleXMLURL {
-            URLSession.shared.dataTask(with: cpeStyleXMLURL) { (data, _, _) in
+            requestXMLData(url: cpeStyleXMLURL) { (data, _) in
                 do {
                     cpeStyleXMLData = data
                     fetchedCPEStlye = true
@@ -109,12 +129,12 @@ open class CPEXMLSuite {
                 } catch {
 
                 }
-            }.resume()
+            }
         } else {
             fetchedCPEStlye = true
         }
-
-        URLSession.shared.dataTask(with: manifestXMLURL) { (data, _, _) in
+        
+        requestXMLData(url: manifestXMLURL) { (data, _) in
             do {
                 manifestXMLData = data
                 fetchedManifest = true
@@ -122,7 +142,7 @@ open class CPEXMLSuite {
             } catch {
 
             }
-        }.resume()
+        }
     }
 
     open static func load(manifestXMLPath: String, appDataXMLPath: String? = nil, cpeStyleXMLPath: String? = nil, completionHandler: () -> Void) throws {

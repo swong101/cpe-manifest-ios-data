@@ -64,10 +64,7 @@ open class Location {
 
             urlString += "&scale=2&size=480x270&maptype=roadmap&format=png&visual_refresh=true"
             urlString += "&key=\(key)"
-
-            if let urlString = urlString.addingPercentEscapes(using: .utf8) {
-                return URL(string: urlString)
-            }
+            return URL(string: urlString)
         }
 
         return nil

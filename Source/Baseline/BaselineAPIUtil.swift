@@ -79,7 +79,7 @@ public class BaselineAPIUtil: APIUtil, TalentAPIUtil {
                     completion(people)
                 }
             }) { (error) in
-                print("Error fetching credits for ID \(apiID): \(error)")
+                print("Error fetching credits for ID \(apiID): \(error?.localizedDescription ?? "Unknown error")")
                 completion(nil)
             }
         } else {
@@ -112,7 +112,7 @@ public class BaselineAPIUtil: APIUtil, TalentAPIUtil {
                 completion(nil)
             }
         }) { (error) in
-            print("Error fetching talent images for ID \(talentID): \(error)")
+            print("Error fetching talent images for ID \(talentID): \(error?.localizedDescription ?? "Unknown error")")
             completion(nil)
         }
     }
@@ -164,7 +164,7 @@ public class BaselineAPIUtil: APIUtil, TalentAPIUtil {
 
             completion(result[Keys.ShortBio] as? String, socialAccounts, films)
         }) { (error) in
-            print("Error fetching talent details for ID \(talentID): \(error)")
+            print("Error fetching talent details for ID \(talentID): \(error?.localizedDescription ?? "Unknown error")")
             completion(nil, nil, [])
         }
     }

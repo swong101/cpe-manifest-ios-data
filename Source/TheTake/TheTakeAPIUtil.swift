@@ -54,14 +54,14 @@ public class TheTakeAPIUtil: APIUtil, ProductAPIUtil {
 
     public func getProductFrameTimes(completion: @escaping (_ frameTimes: [Double]?) -> Void) -> URLSessionDataTask? {
         if let apiID = featureAPIID {
-            return getJSONWithPath("/frames/listFrames", parameters: ["media": apiID, "start": "0", "limit": "10000"], successBlock: { [weak self] (result) -> Void in
+            return getJSONWithPath("/frames/listFrames", parameters: ["media": apiID, "start": "0", "limit": "10000"], successBlock: { (result) -> Void in
                 if let frames = result["result"] as? [NSDictionary] {
                     completion(frames.flatMap({ $0["frameTime"] as? Double }))
                 } else {
                     completion(nil)
                 }
             }, errorBlock: { (error) in
-                print("Error fetching product frame times: \(error)")
+                print("Error fetching product frame times: \(error?.localizedDescription ?? "Unknown error")")
                 completion(nil)
             })
         }
@@ -84,7 +84,7 @@ public class TheTakeAPIUtil: APIUtil, ProductAPIUtil {
 
                 completion?(self?.productCategories)
             }, errorBlock: { [weak self] (error) in
-                print("Error fetching product categories: \(error)")
+                print("Error fetching product categories: \(error?.localizedDescription ?? "Unknown error")")
                 completion?(self?.productCategories)
             })
         }
@@ -106,7 +106,7 @@ public class TheTakeAPIUtil: APIUtil, ProductAPIUtil {
                     completion(products)
                 }
             }) { (error) -> Void in
-                print("Error fetching products for frame \(frameTime): \(error)")
+                print("Error fetching products for frame \(frameTime): \(error?.localizedDescription ?? "Unknown error")")
                 completion(nil)
             }
         } else {
@@ -135,7 +135,7 @@ public class TheTakeAPIUtil: APIUtil, ProductAPIUtil {
                     completion(products)
                 }
             }) { (error) -> Void in
-                print("Error fetching products for category ID \(categoryID): \(error)")
+                print("Error fetching products for category ID \(categoryID ?? "NONE"): \(error?.localizedDescription ?? "Unknown error")")
                 completion(nil)
             }
         } else {
@@ -149,7 +149,7 @@ public class TheTakeAPIUtil: APIUtil, ProductAPIUtil {
         return getJSONWithPath("/products/productDetails", parameters: ["product": productID], successBlock: { (result) -> Void in
             completion(TheTakeProduct(data: result))
         }) { (error) -> Void in
-            print("Error fetching product details for product ID \(productID): \(error)")
+            print("Error fetching product details for product ID \(productID): \(error?.localizedDescription ?? "Unknown error")")
             completion(nil)
         }
     }
