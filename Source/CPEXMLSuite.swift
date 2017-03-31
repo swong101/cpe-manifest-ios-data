@@ -60,7 +60,13 @@ open class CPEXMLSuite {
         public static var mapsAPIKey: String?
 
         /// User country code to override detected device region
-        public static var countryCoude = Locale.current.regionCode
+        public static var countryCode = Locale.current.regionCode
+        
+        public static func resetForTitle() {
+            talentAPIUtil = nil
+            productAPIUtil = nil
+            countryCode = Locale.current.regionCode
+        }
 
     }
 
@@ -223,6 +229,10 @@ open class CPEXMLSuite {
 
     open var hasCPEStyle: Bool {
         return (cpeStyle != nil)
+    }
+
+    deinit {
+        Settings.resetForTitle()
     }
 
     init(manifest: MediaManifest, appData: AppDataSet? = nil, cpeStyle: CPEStyleSet? = nil) throws {

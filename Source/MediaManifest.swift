@@ -127,6 +127,13 @@ open class MediaManifest {
         return (numActors > 0)
     }
 
+    deinit {
+        // TimedEvent objects have back references to Experiences that create a retain cycle
+        timedEventSequences = nil
+        timedEvents = nil
+        inMovieExperience = nil
+    }
+
     init(indexer: XMLIndexer) throws {
         // Compatibility
         guard indexer.hasElement(Elements.Compatibility) else {
@@ -503,7 +510,41 @@ open class MediaManifest {
         })
     }
 
-    open func closedTimedEvent(toTimecode timecode: Double, type: TimedEventType = .any) -> TimedEvent? {
+    open func previousTimedEvent(from currentTimedEvent: TimedEvent, ofType type: TimedEventType = .any) -> TimedEvent? {
+        var previousTimedEvent: TimedEvent?
+        if let timedEvents = timedEvents {
+            for timedEvent in timedEvents {
+                if timedEvent.isType(type) {
+                    if timedEvent == currentTimedEvent {
+                        return previousTimedEvent
+                    }
+
+                    previousTimedEvent = timedEvent
+                }
+            }
+        }
+
+        return previousTimedEvent
+    }
+
+    open func nextTimedEvent(from currentTimedEvent: TimedEvent, ofType type: TimedEventType = .any) -> TimedEvent? {
+        var foundCurrentTimedEvent = false
+        if let timedEvents = timedEvents {
+            for timedEvent in timedEvents {
+                if timedEvent.isType(type) {
+                    if timedEvent == currentTimedEvent {
+                        foundCurrentTimedEvent = true
+                    } else if foundCurrentTimedEvent {
+                        return timedEvent
+                    }
+                }
+            }
+        }
+
+        return nil
+    }
+
+    open func closestTimedEvent(toTimecode timecode: Double, type: TimedEventType = .any) -> TimedEvent? {
         return timedEvents?.first(where: { $0.isType(type) && timecode <= $0.endTime })
     }
 
