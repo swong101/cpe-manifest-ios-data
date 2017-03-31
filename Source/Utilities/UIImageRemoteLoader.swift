@@ -23,10 +23,12 @@ public struct UIImageRemoteLoader {
         sessionConfiguration.timeoutIntervalForRequest = 10
         let task = URLSession(configuration: sessionConfiguration).dataTask(with: URLRequest(url: url), completionHandler: { (data, _, _) -> Void in
             if let completion = completion {
-                if let data = data {
-                    completion(UIImage(data: data, scale: UIScreen.main.scale))
-                } else {
-                    completion(nil)
+                DispatchQueue.main.async {
+                    if let data = data {
+                        completion(UIImage(data: data, scale: UIScreen.main.scale))
+                    } else {
+                        completion(nil)
+                    }
                 }
             }
         })
