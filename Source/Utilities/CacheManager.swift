@@ -29,7 +29,7 @@ open class CacheManager {
 
         return directoryURL
     }
-    
+
     open static func urlRequest(for url: URL) -> URLRequest {
         var request = URLRequest(url: url, cachePolicy: .reloadIgnoringCacheData, timeoutInterval: 5)
         request.addValue("gzip", forHTTPHeaderField: "Accept-Encoding")
@@ -68,7 +68,7 @@ open class CacheManager {
                         print("Error deleting existing temp file: \(error)")
                     }
                 }
-                
+
                 do {
                     try FileManager.default.moveItem(at: sourceURL, to: destinationURL)
                 } catch {
@@ -76,7 +76,7 @@ open class CacheManager {
                     completionHandler?(nil, error)
                     return
                 }
-                
+
                 if let completionHandler = completionHandler {
                     do {
                         completionHandler(try Data(contentsOf: destinationURL), nil)

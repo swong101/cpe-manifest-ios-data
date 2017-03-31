@@ -66,7 +66,7 @@ open class CPEXMLSuite {
 
     /// Reference to the currently presented XML suite
     open static var current: CPEXMLSuite?
-    
+
     private static func requestXMLData(url: URL, completionHandler: @escaping (Data?, Error?) -> Void) {
         // Check if cached version of this file exists
         if let tempFileURL = CacheManager.tempFileURL(for: url), CacheManager.fileExists(tempFileURL) {
@@ -74,7 +74,7 @@ open class CPEXMLSuite {
             DispatchQueue.global(qos: .background).async {
                 CacheManager.storeTempFile(url: url)
             }
-            
+
             // Serve up the cached data
             do {
                 completionHandler(try Data(contentsOf: tempFileURL), nil)
@@ -133,7 +133,7 @@ open class CPEXMLSuite {
         } else {
             fetchedCPEStlye = true
         }
-        
+
         requestXMLData(url: manifestXMLURL) { (data, _) in
             do {
                 manifestXMLData = data
