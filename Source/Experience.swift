@@ -27,7 +27,7 @@ public struct ExperienceChild: XMLIndexerDeserializable {
 
     var experienceID: String
     var sequence: Int
-    
+
     public static func deserialize(_ node: XMLIndexer) throws -> ExperienceChild {
         return try ExperienceChild(
             experienceID: node[Elements.ExperienceID].value(),

@@ -19,7 +19,7 @@ public struct ContentIdentifier: XMLIndexerDeserializable {
 
     /// Identifier's value
     public var identifier: String
-    
+
     public static func deserialize(_ node: XMLIndexer) throws -> ContentIdentifier {
         return try ContentIdentifier(
             namespace: node[Elements.Namespace].value(),

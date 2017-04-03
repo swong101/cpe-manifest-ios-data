@@ -34,7 +34,7 @@ public struct ThemeButton: XMLIndexerDeserializable {
     var defocusImage: Image? {
         return CPEXMLSuite.current?.manifest.imageWithID(defocusImageID)
     }
-    
+
     public static func deserialize(_ node: XMLIndexer) throws -> ThemeButton {
         return try ThemeButton(
             label: node.value(ofAttribute: Attributes.Label),

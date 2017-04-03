@@ -55,7 +55,7 @@ open class ExperienceAudioVisual: MetadataDriven {
 
         // PresentationID
         presentationID = try indexer[Elements.PresentationID].value()
-        
+
         // PlayableSequenceID
         playableSequenceID = try indexer[Elements.PlayableSequenceID].value()
 

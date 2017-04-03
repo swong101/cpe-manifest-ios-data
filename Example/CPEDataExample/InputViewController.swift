@@ -42,17 +42,17 @@ class InputViewController: UIViewController {
             }
 
             DispatchQueue.global(qos: .userInitiated).async {
-                do {
-                    try CPEXMLSuite.load(manifestXMLURL: manifestXMLURL, appDataXMLURL: appDataXMLURL, cpeStyleXMLURL: cpeStyleXMLURL) { [weak self] in
+                CPEXMLSuite.load(manifestXMLURL: manifestXMLURL, appDataXMLURL: appDataXMLURL, cpeStyleXMLURL: cpeStyleXMLURL) { [weak self] (error) in
+                    if let error = error {
+                        DispatchQueue.main.async {
+                            let alertController = UIAlertController(title: "Error parsing files", message: "\(error)", preferredStyle: .alert)
+                            alertController.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+                            self?.navigationController?.present(alertController, animated: true, completion: nil)
+                        }
+                    } else {
                         DispatchQueue.main.async {
                             self?.performSegue(withIdentifier: "ShowResults", sender: nil)
                         }
-                    }
-                } catch {
-                    DispatchQueue.main.async {
-                        let alertController = UIAlertController(title: "Error parsing files", message: "\(error)", preferredStyle: .alert)
-                        alertController.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-                        self.navigationController?.present(alertController, animated: true, completion: nil)
                     }
                 }
             }

@@ -143,7 +143,7 @@ open class NodeStyle {
     open var backgroundAudio: Audio? {
         return CPEXMLSuite.current?.manifest.audioWithID(backgroundAudioID)
     }
-    
+
     open var backgroundAudioURL: URL? {
         return backgroundAudio?.url
     }

@@ -61,7 +61,7 @@ open class CPEXMLSuite {
 
         /// User country code to override detected device region
         public static var countryCode = Locale.current.regionCode
-        
+
         public static func resetForTitle() {
             talentAPIUtil = nil
             productAPIUtil = nil
@@ -73,12 +73,12 @@ open class CPEXMLSuite {
     /// Reference to the currently presented XML suite
     open static var current: CPEXMLSuite?
 
-    private static func requestXMLData(url: URL, completionHandler: @escaping (Data?, Error?) -> Void) {
+    private static func requestXMLData(url: URL, timeoutInterval: TimeInterval = 5, completionHandler: @escaping (Data?, Error?) -> Void) -> URLSessionDownloadTask? {
         // Check if cached version of this file exists
         if let tempFileURL = CacheManager.tempFileURL(for: url), CacheManager.fileExists(tempFileURL) {
             // Download in the background for next launch
             DispatchQueue.global(qos: .background).async {
-                CacheManager.storeTempFile(url: url)
+                CacheManager.tempFileDownloadTask(url: url).resume()
             }
 
             // Serve up the cached data
@@ -87,13 +87,15 @@ open class CPEXMLSuite {
             } catch {
                 completionHandler(nil, error)
             }
-        } else {
-            // Cache the remote file and serve its data
-            CacheManager.storeTempFile(url: url, completionHandler: completionHandler)
+
+            return nil
         }
+
+        // Cache the remote file and serve its data
+        return CacheManager.tempFileDownloadTask(url: url, timeoutInterval: timeoutInterval, completionHandler: completionHandler)
     }
 
-    open static func load(manifestXMLURL: URL, appDataXMLURL: URL? = nil, cpeStyleXMLURL: URL? = nil, completionHandler: @escaping () -> Void) throws {
+    open static func load(manifestXMLURL: URL, appDataXMLURL: URL? = nil, cpeStyleXMLURL: URL? = nil, singleTimeoutInterval: TimeInterval = 5, completionHandler: @escaping (_ error: Error?) -> Void) {
         var fetchedManifest = false
         var fetchedAppData = false
         var fetchedCPEStlye = false
@@ -102,77 +104,115 @@ open class CPEXMLSuite {
         var appDataXMLData: Data?
         var cpeStyleXMLData: Data?
 
+        var currentDownloadTasks = [URLSessionDownloadTask]()
+
+        let finishWithError = { (error: Error) in
+            currentDownloadTasks.forEach({
+                if $0.state != .completed {
+                    $0.cancel()
+                }
+            })
+
+            currentDownloadTasks.removeAll()
+            completionHandler(error)
+        }
+
         let checkData = {
             if fetchedManifest && fetchedAppData && fetchedCPEStlye {
                 if let manifestXMLData = manifestXMLData {
-                    try load(manifestXMLData: manifestXMLData, appDataXMLData: appDataXMLData, cpeStyleXMLData: cpeStyleXMLData, completionHandler: completionHandler)
+                    do {
+                        try load(manifestXMLData: manifestXMLData, appDataXMLData: appDataXMLData, cpeStyleXMLData: cpeStyleXMLData)
+                        completionHandler(nil)
+                    } catch {
+                        finishWithError(error)
+                    }
                 } else {
-                    throw ManifestError.missingManifest
+                    finishWithError(ManifestError.missingManifest)
                 }
             }
         }
 
         if let appDataXMLURL = appDataXMLURL {
-            requestXMLData(url: appDataXMLURL) { (data, _) in
-                do {
+            let downloadTask = requestXMLData(url: appDataXMLURL, timeoutInterval: singleTimeoutInterval) { (data, error) in
+                if let error = error {
+                    finishWithError(error)
+                } else {
                     appDataXMLData = data
                     fetchedAppData = true
-                    try checkData()
-                } catch {
-                    print(error)
+                    checkData()
                 }
+            }
+
+            if let downloadTask = downloadTask {
+                currentDownloadTasks.append(downloadTask)
+                downloadTask.resume()
             }
         } else {
             fetchedAppData = true
         }
 
         if let cpeStyleXMLURL = cpeStyleXMLURL {
-            requestXMLData(url: cpeStyleXMLURL) { (data, _) in
-                do {
+            let downloadTask = requestXMLData(url: cpeStyleXMLURL, timeoutInterval: singleTimeoutInterval) { (data, error) in
+                if let error = error {
+                    finishWithError(error)
+                } else {
                     cpeStyleXMLData = data
                     fetchedCPEStlye = true
-                    try checkData()
-                } catch {
-                    print(error)
+                    checkData()
                 }
+            }
+
+            if let downloadTask = downloadTask {
+                currentDownloadTasks.append(downloadTask)
+                downloadTask.resume()
             }
         } else {
             fetchedCPEStlye = true
         }
 
-        requestXMLData(url: manifestXMLURL) { (data, _) in
-            do {
+        let downloadTask = requestXMLData(url: manifestXMLURL, timeoutInterval: singleTimeoutInterval) { (data, error) in
+            if let error = error {
+                finishWithError(error)
+            } else {
                 manifestXMLData = data
                 fetchedManifest = true
-                try checkData()
-            } catch {
-                print(error)
+                checkData()
             }
         }
+
+        if let downloadTask = downloadTask {
+            currentDownloadTasks.append(downloadTask)
+            downloadTask.resume()
+        }
     }
 
-    open static func load(manifestXMLPath: String, appDataXMLPath: String? = nil, cpeStyleXMLPath: String? = nil, completionHandler: () -> Void) throws {
+    open static func load(manifestXMLPath: String, appDataXMLPath: String? = nil, cpeStyleXMLPath: String? = nil, completionHandler: (_ error: Error?) -> Void) throws {
         current = nil
 
-        // Manifest
-        let manifestXMLData = try Data(contentsOf: URL(fileURLWithPath: manifestXMLPath), options: .mappedIfSafe)
+        do {
+            // Manifest
+            let manifestXMLData = try Data(contentsOf: URL(fileURLWithPath: manifestXMLPath), options: .mappedIfSafe)
 
-        // AppData
-        var appDataXMLData: Data?
-        if let appDataXMLPath = appDataXMLPath {
-            appDataXMLData = try Data(contentsOf: URL(fileURLWithPath: appDataXMLPath), options: .mappedIfSafe)
+            // AppData
+            var appDataXMLData: Data?
+            if let appDataXMLPath = appDataXMLPath {
+                appDataXMLData = try Data(contentsOf: URL(fileURLWithPath: appDataXMLPath), options: .mappedIfSafe)
+            }
+
+            // CPEStyle
+            var cpeStyleXMLData: Data?
+            if let cpeStyleXMLPath = cpeStyleXMLPath {
+                cpeStyleXMLData = try Data(contentsOf: URL(fileURLWithPath: cpeStyleXMLPath), options: .mappedIfSafe)
+            }
+
+            try load(manifestXMLData: manifestXMLData, appDataXMLData: appDataXMLData, cpeStyleXMLData: cpeStyleXMLData)
+            completionHandler(nil)
+        } catch {
+            completionHandler(error)
         }
-
-        // CPEStyle
-        var cpeStyleXMLData: Data?
-        if let cpeStyleXMLPath = cpeStyleXMLPath {
-            cpeStyleXMLData = try Data(contentsOf: URL(fileURLWithPath: cpeStyleXMLPath), options: .mappedIfSafe)
-        }
-
-        try load(manifestXMLData: manifestXMLData, appDataXMLData: appDataXMLData, cpeStyleXMLData: cpeStyleXMLData, completionHandler: completionHandler)
     }
 
-    open static func load(manifestXMLData: Data, appDataXMLData: Data?, cpeStyleXMLData: Data? = nil, completionHandler: () -> Void) throws {
+    open static func load(manifestXMLData: Data, appDataXMLData: Data?, cpeStyleXMLData: Data? = nil) throws {
         // Manifest
         let manifestIndexer = SWXMLHash.config { conf in
             conf.shouldProcessNamespaces = true
@@ -216,7 +256,6 @@ open class CPEXMLSuite {
 
         try manifest.postProcess()
         appData?.postProcess()
-        completionHandler()
     }
 
     open var manifest: MediaManifest

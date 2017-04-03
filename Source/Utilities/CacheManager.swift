@@ -30,12 +30,6 @@ open class CacheManager {
         return directoryURL
     }
 
-    open static func urlRequest(for url: URL) -> URLRequest {
-        var request = URLRequest(url: url, cachePolicy: .reloadIgnoringCacheData, timeoutInterval: 5)
-        request.addValue("gzip", forHTTPHeaderField: "Accept-Encoding")
-        return request
-    }
-
     open static func fileName(for remoteURL: URL) -> String? {
         if let fileName = remoteURL.path.characters.split(separator: "/").last {
             return String(fileName)
@@ -56,10 +50,14 @@ open class CacheManager {
         return FileManager.default.fileExists(atPath: fileURL.path)
     }
 
-    open static func storeTempFile(url: URL, completionHandler: ((Data?, Error?) -> Void)? = nil) {
-        URLSession.shared.downloadTask(with: urlRequest(for: url), completionHandler: { (location, _, error) in
+    open static func tempFileDownloadTask(url: URL, timeoutInterval: TimeInterval = 5, completionHandler: ((Data?, Error?) -> Void)? = nil) -> URLSessionDownloadTask {
+        var request = URLRequest(url: url, cachePolicy: .reloadIgnoringCacheData, timeoutInterval: timeoutInterval)
+        request.addValue("gzip", forHTTPHeaderField: "Accept-Encoding")
+        let downloadTask = URLSession.shared.downloadTask(with: request, completionHandler: { (location, _, error) in
             if let error = error {
                 print("Error downloading temp file: \(error)")
+
+                completionHandler?(nil, error)
             } else if let sourceURL = location, let destinationURL = CacheManager.tempFileURL(for: url) {
                 if fileExists(destinationURL) {
                     do {
@@ -86,7 +84,9 @@ open class CacheManager {
                     }
                 }
             }
-        }).resume()
+        })
+
+        return downloadTask
     }
 
     open static func clearTempDirectory() {
