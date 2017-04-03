@@ -37,7 +37,7 @@ private class InteractiveEncoding: DigitalAssetEncoding {
 
     override init?(indexer: XMLIndexer) throws {
         // RuntimeEnvironment
-        guard let runtimeEnvironmentString = indexer.stringValue(forElement: Elements.RuntimeEnvironment) else {
+        guard let runtimeEnvironmentString: String = try indexer[Elements.RuntimeEnvironment].value() else {
             throw ManifestError.missingRequiredChildElement(name: Elements.RuntimeEnvironment, element: indexer.element)
         }
 
@@ -71,14 +71,14 @@ open class Interactive: DigitalAsset {
 
     override init?(indexer: XMLIndexer) throws {
         // InteractiveTrackID
-        guard let id = indexer.stringValue(forAttribute: Attributes.InteractiveTrackID) else {
+        guard let id: String = indexer.value(ofAttribute: Attributes.InteractiveTrackID) else {
             throw ManifestError.missingRequiredAttribute(Attributes.InteractiveTrackID, element: indexer.element)
         }
 
         self.id = id
 
         // Type
-        guard let typeString = indexer.stringValue(forElement: Elements.InteractiveType) else {
+        guard let typeString: String = try indexer[Elements.InteractiveType].value() else {
             throw ManifestError.missingRequiredChildElement(name: Elements.InteractiveType, element: indexer.element)
         }
 

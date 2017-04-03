@@ -29,7 +29,7 @@ open class Image: DigitalAsset {
 
     override init?(indexer: XMLIndexer) throws {
         // ImageID
-        guard let id = indexer.stringValue(forAttribute: Attributes.ImageID) else {
+        guard let id: String = indexer.value(ofAttribute: Attributes.ImageID) else {
             throw ManifestError.missingRequiredAttribute(Attributes.ImageID, element: indexer.element)
         }
 
@@ -37,18 +37,18 @@ open class Image: DigitalAsset {
 
         // Width
         // Height
-        guard let width = indexer.intValue(forElement: Elements.Width) else {
+        guard let width: Int = try indexer[Elements.Width].value() else {
             throw ManifestError.missingRequiredChildElement(name: Elements.Width, element: indexer.element)
         }
 
-        guard let height = indexer.intValue(forElement: Elements.Height) else {
+        guard let height: Int = try indexer[Elements.Height].value() else {
             throw ManifestError.missingRequiredChildElement(name: Elements.Height, element: indexer.element)
         }
 
         size = CGSize(width: width, height: height)
 
         // Encoding
-        guard let encodingString = indexer.stringValue(forElement: Elements.Encoding) else {
+        guard let encodingString: String = try indexer[Elements.Encoding].value() else {
             throw ManifestError.missingRequiredChildElement(name: Elements.Encoding, element: indexer.element)
         }
 

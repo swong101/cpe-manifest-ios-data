@@ -87,14 +87,14 @@ open class AppDataItemProduct: AppDataItem, ProductItem {
 
         for indexer in indexer[Elements.NVPair] {
             // Name
-            guard let name = indexer.stringValue(forAttribute: Attributes.Name) else {
+            guard let name: String = indexer.value(ofAttribute: Attributes.Name) else {
                 throw ManifestError.missingRequiredAttribute(Attributes.Name, element: indexer.element)
             }
 
             switch name {
             case AppDataNVPairName.ExternalURL:
                 // URL
-                guard let externalURL = indexer.urlValue(forElement: Elements.URL) else {
+                guard let externalURLString: String = try indexer[Elements.URL].value(), let externalURL = URL(string: externalURLString) else {
                     throw ManifestError.missingRequiredChildElement(name: Elements.URL, element: indexer.element)
                 }
 
@@ -103,37 +103,37 @@ open class AppDataItemProduct: AppDataItem, ProductItem {
 
             case AppDataNVPairName.Price:
                 // Money
-                guard let price = indexer.doubleValue(forElement: Elements.Money) else {
+                guard let price: Double = try indexer[Elements.Money].value() else {
                     throw ManifestError.missingRequiredChildElement(name: Elements.Money, element: indexer.element)
                 }
 
                 self.price = price
-                currencyCode = (indexer[Elements.Money].stringValue(forAttribute: Attributes.Currency) ?? "USD")
+                currencyCode = (indexer[Elements.Money].value(ofAttribute: Attributes.Currency) ?? "USD")
                 break
 
             case AppDataNVPairName.ExactMatch:
-                isExactMatch = indexer.boolValue(forElement: Elements.Text)
+                isExactMatch = try indexer[Elements.Text].value()
                 hasExactMatchData = true
                 break
 
             case AppDataNVPairName.SceneImage:
-                sceneImagePictureID = indexer.stringValue(forElement: Elements.PictureID)
+                sceneImagePictureID = try indexer[Elements.PictureID].value()
                 break
 
             case AppDataNVPairName.ProductImageBullseyeX:
-                productImageBullseyeX = indexer.doubleValue(forElement: Elements.Decimal)
+                productImageBullseyeX = try indexer[Elements.Decimal].value()
                 break
 
             case AppDataNVPairName.ProductImageBullseyeY:
-                productImageBullseyeY = indexer.doubleValue(forElement: Elements.Decimal)
+                productImageBullseyeY = try indexer[Elements.Decimal].value()
                 break
 
             case AppDataNVPairName.SceneImageBullseyeX:
-                sceneImageBullseyeX = indexer.doubleValue(forElement: Elements.Decimal)
+                sceneImageBullseyeX = try indexer[Elements.Decimal].value()
                 break
 
             case AppDataNVPairName.SceneImageBullseyeY:
-                sceneImageBullseyeY = indexer.doubleValue(forElement: Elements.Decimal)
+                sceneImageBullseyeY = try indexer[Elements.Decimal].value()
                 break
 
             default:

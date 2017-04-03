@@ -39,7 +39,7 @@ open class MetadataDriven {
 
     init?(indexer: XMLIndexer) throws {
         // ContentID
-        contentID = (indexer.stringValue(forAttribute: Attributes.ContentID) ?? indexer.stringValue(forElement: Elements.ContentID))
+        contentID = try (indexer.value(ofAttribute: Attributes.ContentID) ?? indexer[Elements.ContentID].value())
     }
 
 }

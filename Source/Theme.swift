@@ -5,7 +5,7 @@
 import Foundation
 import SWXMLHash
 
-public struct ThemeButton {
+public struct ThemeButton: XMLIndexerDeserializable {
 
     private struct Attributes {
         static let Label = "label"
@@ -34,42 +34,14 @@ public struct ThemeButton {
     var defocusImage: Image? {
         return CPEXMLSuite.current?.manifest.imageWithID(defocusImageID)
     }
-
-    init(indexer: XMLIndexer) throws {
-        // Label
-        guard let label = indexer.stringValue(forAttribute: Attributes.Label) else {
-            throw ManifestError.missingRequiredAttribute(Attributes.Label, element: indexer.element)
-        }
-
-        self.label = label
-
-        // Default
-        guard indexer.hasElement(Elements.Default) else {
-            throw ManifestError.missingRequiredChildElement(name: Elements.Default, element: indexer.element)
-        }
-
-        let defaultIndexer = indexer[Elements.Default]
-
-        // BaseImage
-        guard let baseImageID = defaultIndexer.stringValue(forElement: Elements.BaseImage) else {
-            throw ManifestError.missingRequiredChildElement(name: Elements.BaseImage, element: indexer.element)
-        }
-
-        self.baseImageID = baseImageID
-
-        // HighlightImage
-        guard let highlightImageID = defaultIndexer.stringValue(forElement: Elements.HighlightImage) else {
-            throw ManifestError.missingRequiredChildElement(name: Elements.HighlightImage, element: indexer.element)
-        }
-
-        self.highlightImageID = highlightImageID
-
-        // DefocusImage
-        guard let defocusImageID = defaultIndexer.stringValue(forElement: Elements.DefocusImage) else {
-            throw ManifestError.missingRequiredChildElement(name: Elements.DefocusImage, element: indexer.element)
-        }
-
-        self.defocusImageID = defocusImageID
+    
+    public static func deserialize(_ node: XMLIndexer) throws -> ThemeButton {
+        return try ThemeButton(
+            label: node.value(ofAttribute: Attributes.Label),
+            baseImageID: node[Elements.Default][Elements.BaseImage].value(),
+            highlightImageID: node[Elements.Default][Elements.HighlightImage].value(),
+            defocusImageID: node[Elements.Default][Elements.DefocusImage].value()
+        )
     }
 
 }
@@ -90,7 +62,7 @@ open class Theme {
 
     init(indexer: XMLIndexer) throws {
         // ThemeID
-        guard let id = indexer.stringValue(forAttribute: Attributes.ThemeID) else {
+        guard let id: String = indexer.value(ofAttribute: Attributes.ThemeID) else {
             throw ManifestError.missingRequiredAttribute(Attributes.ThemeID, element: indexer.element)
         }
 
@@ -105,7 +77,7 @@ open class Theme {
 
             var buttons = [String: ThemeButton]()
             for indexer in indexer[Elements.ButtonImageSet][Elements.Button] {
-                let button = try ThemeButton(indexer: indexer)
+                let button: ThemeButton = try indexer.value()
                 buttons[button.label] = button
             }
 

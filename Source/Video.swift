@@ -42,7 +42,7 @@ open class VideoEncoding: DigitalAssetEncoding {
     */
     override init?(indexer: XMLIndexer) throws {
         // Codec
-        guard let codecString = indexer.stringValue(forElement: Elements.Codec) else {
+        guard let codecString: String = try indexer[Elements.Codec].value() else {
             throw ManifestError.missingRequiredChildElement(name: Elements.Codec, element: indexer.element)
         }
 
@@ -108,16 +108,16 @@ open class Video: DigitalAsset, Trackable {
      */
     override public init?(indexer: XMLIndexer) throws {
         // AudioTrackID
-        guard let id = indexer.stringValue(forAttribute: Attributes.VideoTrackID) else {
+        guard let id: String = indexer.value(ofAttribute: Attributes.VideoTrackID) else {
             throw ManifestError.missingRequiredAttribute(Attributes.VideoTrackID, element: indexer.element)
         }
 
         self.id = id
 
         // Type
-        if let string = indexer.stringValue(forElement: Elements.VideoType) {
-            guard let type = VideoType(rawValue: string) else {
-                print("Ignoring unsupported Video object with Type \"\(string)\"")
+        if let typeString: String = try indexer[Elements.VideoType].value() {
+            guard let type = VideoType(rawValue: typeString) else {
+                print("Ignoring unsupported Video object with Type \"\(typeString)\"")
                 return nil
             }
 
@@ -131,10 +131,8 @@ open class Video: DigitalAsset, Trackable {
         }
 
         // Picture
-        if indexer.hasElement(Elements.Picture) {
-            if let width = indexer[Elements.Picture].intValue(forElement: Elements.WidthPixels), let height = indexer[Elements.Picture].intValue(forElement: Elements.HeightPixels) {
-                size = CGSize(width: width, height: height)
-            }
+        if let width: Int = try indexer[Elements.Picture][Elements.WidthPixels].value(), let height: Int = try indexer[Elements.Picture][Elements.HeightPixels].value() {
+            size = CGSize(width: width, height: height)
         }
 
         // DigitalAsset

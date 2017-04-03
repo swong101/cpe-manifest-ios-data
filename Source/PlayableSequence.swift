@@ -25,7 +25,7 @@ open class PlayableSequence {
 
     init(indexer: XMLIndexer) throws {
         // PlayableSequenceID
-        guard let id = indexer.stringValue(forAttribute: Attributes.PlayableSequenceID) else {
+        guard let id: String = indexer.value(ofAttribute: Attributes.PlayableSequenceID) else {
             throw ManifestError.missingRequiredAttribute(Attributes.PlayableSequenceID, element: indexer.element)
         }
 
@@ -36,7 +36,7 @@ open class PlayableSequence {
             throw ManifestError.missingRequiredChildElement(name: Elements.Clip, element: indexer.element)
         }
 
-        presentationIDs = indexer[Elements.Clip].flatMap({ $0.stringValue(forElement: Elements.PresentationID) })
+        presentationIDs = try indexer[Elements.Clip].flatMap({ try $0[Elements.PresentationID].value() })
     }
 
 }

@@ -45,7 +45,7 @@ open class AppDataItemLocation: AppDataItem {
 
         for indexer in indexer[Elements.NVPair] {
             // Name
-            guard let name = indexer.stringValue(forAttribute: Attributes.Name) else {
+            guard let name: String = indexer.value(ofAttribute: Attributes.Name) else {
                 throw ManifestError.missingRequiredAttribute(Attributes.Name, element: indexer.element)
             }
 
@@ -65,7 +65,7 @@ open class AppDataItemLocation: AppDataItem {
                 break
 
             case AppDataNVPairName.Zoom:
-                guard let zoomLevel = indexer.intValue(forElement: Elements.Integer) else {
+                guard let zoomLevel: Int = try indexer[Elements.Integer].value() else {
                     throw ManifestError.missingRequiredChildElement(name: Elements.Integer, element: indexer.element)
                 }
 
@@ -73,7 +73,7 @@ open class AppDataItemLocation: AppDataItem {
                 break
 
             case AppDataNVPairName.ZoomLocked:
-                self.zoomLocked = indexer.boolValue
+                self.zoomLocked = try indexer.value()
                 break
 
             default:

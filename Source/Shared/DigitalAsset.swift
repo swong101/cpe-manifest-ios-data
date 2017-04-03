@@ -40,22 +40,20 @@ open class DigitalAssetEncoding {
      */
     public init?(indexer: XMLIndexer) throws {
         // CodecType
-        if indexer[Elements.CodecType].hasChildren {
-            codecTypes = indexer[Elements.CodecType].flatMap({ $0.stringValue })
-        }
+        codecTypes = try indexer[Elements.CodecType].value()
 
         // BitrateMax
-        bitrateMax = indexer.intValue(forElement: Elements.BitrateMax)
+        bitrateMax = try indexer[Elements.BitrateMax].value()
 
         // BitrateAverage
-        bitrateAverage = indexer.intValue(forElement: Elements.BitrateAverage)
+        bitrateAverage = try indexer[Elements.BitrateAverage].value()
 
         // VBR
-        vbr = indexer.stringValue(forElement: Elements.VBR)
+        vbr = try indexer[Elements.VBR].value()
 
         // ActualLength
-        if let string = indexer.stringValue(forElement: Elements.ActualLength) {
-            actualLength = string.iso8601TimeInSeconds()
+        if let runtimeString: String = try indexer[Elements.ActualLength].value() {
+            actualLength = runtimeString.iso8601TimeInSeconds()
         }
     }
 
@@ -102,22 +100,16 @@ open class DigitalAsset {
      */
     public init?(indexer: XMLIndexer) throws {
         // Description
-        description = indexer.stringValue(forElement: Elements.Description)
+        description = try indexer[Elements.Description].value()
 
         // Language
-        if indexer.hasElement(Elements.Language) {
-            languages = indexer[Elements.Language].flatMap({ $0.stringValue })
-        } else {
-            languages = ["en"]
-        }
+        languages = (try indexer[Elements.Language].value() ?? ["en"])
 
         // TrackReference
-        trackReference = indexer.stringValue(forElement: Elements.TrackReference)
+        trackReference = try indexer[Elements.TrackReference].value()
 
         // TrackIdentifier
-        if indexer.hasElement(Elements.TrackIdentifier) {
-            trackIdentifiers = try indexer[Elements.TrackIdentifier].map({ try ContentIdentifier(indexer: $0) })
-        }
+        trackIdentifiers = try indexer[Elements.TrackIdentifier].value()
 
         // ContainerReference
         if indexer.hasElement(Elements.ContainerReference) {

@@ -48,19 +48,16 @@ open class ExperienceAudioVisual: MetadataDriven {
 
     override init?(indexer: XMLIndexer) throws {
         // Type
-        type = ExperienceAudioVisualType.build(rawValue: indexer.stringValue(forElement: Elements.AudioVisualType))
+        type = ExperienceAudioVisualType.build(rawValue: try indexer[Elements.AudioVisualType].value())
 
         // SubType
-        if indexer.hasElement(Elements.SubType) {
-            subTypes = indexer[Elements.SubType].flatMap({ $0.stringValue })
-        }
+        subTypes = try indexer[Elements.SubType].value()
 
-        // PresentationID / PlayableSequenceID
-        if indexer.hasElement(Elements.PresentationID) {
-            presentationID = indexer.stringValue(forElement: Elements.PresentationID)
-        } else if indexer.hasElement(Elements.PlayableSequenceID) {
-            playableSequenceID = indexer.stringValue(forElement: Elements.PlayableSequenceID)
-        }
+        // PresentationID
+        presentationID = try indexer[Elements.PresentationID].value()
+        
+        // PlayableSequenceID
+        playableSequenceID = try indexer[Elements.PlayableSequenceID].value()
 
         // MetadataDriven
         try super.init(indexer: indexer)

@@ -23,14 +23,14 @@ open class TextObject {
 
     init(indexer: XMLIndexer) throws {
         // TextObjectID
-        guard let id = indexer.stringValue(forAttribute: Attributes.TextObjectID) else {
+        guard let id: String = indexer.value(ofAttribute: Attributes.TextObjectID) else {
             throw ManifestError.missingRequiredAttribute(Attributes.TextObjectID, element: indexer.element)
         }
 
         self.id = id
 
         // Language
-        language = indexer.stringValue(forAttribute: Attributes.Language)
+        language = indexer.value(ofAttribute: Attributes.Language)
 
         // TextString
         guard indexer.hasElement(Elements.TextString) else {
@@ -40,7 +40,7 @@ open class TextObject {
         textStrings = [Int: String?]()
         var i = 1
         for indexer in indexer[Elements.TextString] {
-            textStrings[indexer.intValue(forAttribute: Attributes.Index) ?? i] = indexer.stringValue
+            textStrings[indexer.value(ofAttribute: Attributes.Index) ?? i] = try indexer.value()
             i += 1
         }
     }

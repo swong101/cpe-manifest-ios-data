@@ -103,7 +103,7 @@ open class AppDataItem: Trackable {
 
     init(indexer: XMLIndexer) throws {
         // AppID
-        guard let id = indexer.stringValue(forAttribute: Attributes.AppID) else {
+        guard let id: String = indexer.value(ofAttribute: Attributes.AppID) else {
             throw ManifestError.missingRequiredAttribute(Attributes.AppID, element: indexer.element)
         }
 
@@ -116,14 +116,14 @@ open class AppDataItem: Trackable {
 
         for indexer in indexer[Elements.NVPair] {
             // Name
-            guard let name = indexer.stringValue(forAttribute: Attributes.Name) else {
+            guard let name: String = indexer.value(ofAttribute: Attributes.Name) else {
                 throw ManifestError.missingRequiredAttribute(Attributes.Name, element: indexer.element)
             }
 
             switch name {
             case AppDataNVPairName.ExperienceID:
                 // ExperienceID
-                guard let experienceID = indexer.stringValue(forElement: Elements.ExperienceID) else {
+                guard let experienceID: String = try indexer[Elements.ExperienceID].value() else {
                     throw ManifestError.missingRequiredChildElement(name: Elements.ExperienceID, element: indexer.element)
                 }
 
@@ -132,7 +132,7 @@ open class AppDataItem: Trackable {
 
             case AppDataNVPairName.ContentID:
                 // ContentID
-                guard let contentID = indexer.stringValue(forElement: Elements.ContentID) else {
+                guard let contentID: String = try indexer[Elements.ContentID].value() else {
                     throw ManifestError.missingRequiredChildElement(name: Elements.ContentID, element: indexer.element)
                 }
 
@@ -141,7 +141,7 @@ open class AppDataItem: Trackable {
 
             case AppDataNVPairName.ParentContentID:
                 // Content ID
-                guard let parentContentID = indexer.stringValue(forElement: Elements.ContentID) else {
+                guard let parentContentID: String = try indexer[Elements.ContentID].value() else {
                     throw ManifestError.missingRequiredChildElement(name: Elements.ContentID, element: indexer.element)
                 }
 
@@ -149,7 +149,7 @@ open class AppDataItem: Trackable {
                 break
 
             case AppDataNVPairName.DisplayOrder:
-                guard let displayOrder = indexer.intValue(forElement: Elements.Integer) else {
+                guard let displayOrder: Int = try indexer[Elements.Integer].value() else {
                     throw ManifestError.missingRequiredChildElement(name: Elements.Integer, element: indexer.element)
                 }
 

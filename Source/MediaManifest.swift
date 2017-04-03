@@ -142,13 +142,13 @@ open class MediaManifest {
 
         let compatibilityIndexer = indexer[Elements.Compatibility]
 
-        if let string = compatibilityIndexer.stringValue(forElement: Elements.SpecVersion), let specVersion = ManifestSpecVersion(rawValue: string) {
+        if let specString: String = try compatibilityIndexer[Elements.SpecVersion].value(), let specVersion = ManifestSpecVersion(rawValue: specString) {
             currentSpecVersion = specVersion
         } else {
             currentSpecVersion = .unknown
         }
 
-        if let string = compatibilityIndexer.stringValue(forElement: Elements.Profile), let profile = ManifestProfile(rawValue: string) {
+        if let profileString: String = try compatibilityIndexer[Elements.Profile].value(), let profile = ManifestProfile(rawValue: profileString) {
             currentProfile = profile
         } else {
             currentProfile = .none

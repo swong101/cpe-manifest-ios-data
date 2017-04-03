@@ -33,19 +33,19 @@ open class Location {
 
     init(indexer: XMLIndexer) throws {
         // Icon
-        iconImageID = indexer.stringValue(forAttribute: Attributes.Icon)
+        iconImageID = indexer.value(ofAttribute: Attributes.Icon)
 
         // Name
-        name = indexer.stringValue(forElement: Elements.Name)
+        name = try indexer[Elements.Name].value()
 
         // Address
-        address = indexer.stringValue(forElement: Elements.Address)
+        address = try indexer[Elements.Address].value()
 
         // EarthCoordinate
         if indexer.hasElement(Elements.EarthCoordinate) {
             let coordinateIndexer = indexer[Elements.EarthCoordinate]
-            latitude = (coordinateIndexer.doubleValue(forElement: Elements.Latitude) ?? 0)
-            longitude = (coordinateIndexer.doubleValue(forElement: Elements.Longitude) ?? 0)
+            latitude = (try coordinateIndexer[Elements.Latitude].value() ?? 0)
+            longitude = (try coordinateIndexer[Elements.Longitude].value() ?? 0)
         }
 
         // Custom

@@ -32,7 +32,7 @@ public class ContainerReference {
     public var identifiers: [ContentIdentifier]?
 
     /// Length of Container in bytes
-    public var length: UInt?
+    public var length: Int?
 
     /// Hash of Container
     public var hashes: [Hash]?
@@ -55,9 +55,9 @@ public class ContainerReference {
         if indexer.hasElement(Elements.ContainerLocation) {
             var locations = [URL?](repeating: nil, count: indexer[Elements.ContainerLocation].all.count)
             for indexer in indexer[Elements.ContainerLocation] {
-                if let url = indexer.urlValue {
+                if let urlString: String = try indexer.value(), let url = URL(string: urlString) {
                     var index = 0
-                    if let priority = indexer.intValue(forAttribute: Attributes.Priority) {
+                    if let priority: Int = indexer.value(ofAttribute: Attributes.Priority) {
                         index = min(priority - 1, 0)
                     }
 
@@ -74,12 +74,10 @@ public class ContainerReference {
         }
 
         // ContainerIdentifier
-        if indexer.hasElement(Elements.ContainerIdentifier) {
-            identifiers = try indexer[Elements.ContainerIdentifier].map({ try ContentIdentifier(indexer: $0) })
-        }
+        identifiers = try indexer[Elements.ContainerIdentifier].value()
 
         // Length
-        length = indexer.uintValue(forElement: Elements.Length)
+        length = try indexer[Elements.Length].value()
 
         // Hash
         if indexer.hasElement(Elements.Hash) {

@@ -17,7 +17,7 @@ public func == (lhs: Experience, rhs: Experience) -> Bool {
     return lhs.id == rhs.id
 }
 
-public struct ExperienceChild {
+public struct ExperienceChild: XMLIndexerDeserializable {
 
     private struct Elements {
         static let ExperienceID = "ExperienceID"
@@ -26,23 +26,13 @@ public struct ExperienceChild {
     }
 
     var experienceID: String
-    var sequence: Int = 0
-
-    init(indexer: XMLIndexer) throws {
-        // ExperienceID
-        guard let id = indexer.stringValue(forElement: Elements.ExperienceID) else {
-            throw ManifestError.missingRequiredChildElement(name: Elements.ExperienceID, element: indexer.element)
-        }
-
-        self.experienceID = id
-
-        // SequenceInfo
-        if indexer.hasElement(Elements.SequenceInfo) {
-            // Number
-            sequence = (indexer[Elements.SequenceInfo].intValue(forElement: Elements.Number) ?? 0)
-        } else {
-            sequence = 0
-        }
+    var sequence: Int
+    
+    public static func deserialize(_ node: XMLIndexer) throws -> ExperienceChild {
+        return try ExperienceChild(
+            experienceID: node[Elements.ExperienceID].value(),
+            sequence: (node[Elements.SequenceInfo][Elements.Number].value() ?? 0)
+        )
     }
 
 }
@@ -213,7 +203,7 @@ open class Experience: MetadataDriven, Equatable, Trackable {
 
     override init?(indexer: XMLIndexer) throws {
         // ExperienceID
-        guard let id = indexer.stringValue(forAttribute: Attributes.ExperienceID) else {
+        guard let id: String = indexer.value(ofAttribute: Attributes.ExperienceID) else {
             throw ManifestError.missingRequiredAttribute(Attributes.ExperienceID, element: indexer.element)
         }
 
@@ -222,13 +212,13 @@ open class Experience: MetadataDriven, Equatable, Trackable {
         // Region / ExcludedRegion
         if let regionCode = Locale.currentRegionCode {
             if indexer.hasElement(Elements.Region) {
-                let supportedRegions = indexer[Elements.Region].flatMap({ $0.stringValue(forElement: Elements.Country) })
+                let supportedRegions: [String] = try indexer[Elements.Region].flatMap({ try $0[Elements.Country].value() })
                 if !supportedRegions.contains(regionCode) {
                     print("Ignoring unsupported Experience object with ID \(id) and Regions \"\(supportedRegions.joined(separator: ", "))\"")
                     return nil
                 }
             } else if indexer.hasElement(Elements.ExcludedRegion) {
-                let unsupportedRegions = indexer[Elements.ExcludedRegion].flatMap({ $0.stringValue(forElement: Elements.Country) })
+                let unsupportedRegions: [String] = try indexer[Elements.ExcludedRegion].flatMap({ try $0[Elements.Country].value() })
                 if unsupportedRegions.contains(regionCode) {
                     print("Ignoring unsupported Experience object with ID \(id) and ExcludedRegions \"\(unsupportedRegions.joined(separator: ", "))\"")
                     return nil
@@ -252,12 +242,10 @@ open class Experience: MetadataDriven, Equatable, Trackable {
         }
 
         // TimedSequenceID
-        timedEventSequenceID = indexer.stringValue(forElement: Elements.TimedSequenceID)
+        timedEventSequenceID = try indexer[Elements.TimedSequenceID].value()
 
         // ExperienceChild
-        if indexer.hasElement(Elements.ExperienceChild) {
-            experienceChildren = try indexer[Elements.ExperienceChild].flatMap({ try ExperienceChild(indexer: $0) })
-        }
+        experienceChildren = try indexer[Elements.ExperienceChild].value()
 
         // MetadataDriven
         try super.init(indexer: indexer)

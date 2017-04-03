@@ -35,7 +35,7 @@ private class AudioEncoding: DigitalAssetEncoding {
 
     override init?(indexer: XMLIndexer) throws {
         // Codec
-        if let codecString = indexer.stringValue(forElement: Elements.Codec) {
+        if let codecString: String = try indexer[Elements.Codec].value() {
             guard let codec = AudioCodec(rawValue: codecString) else {
                 print("Ignoring unsupported Audio Encoding object with Codec \"\(codecString)\"")
                 return nil
@@ -47,13 +47,13 @@ private class AudioEncoding: DigitalAssetEncoding {
         }
 
         // SampleRate
-        sampleRate = indexer.intValue(forElement: Elements.SampleRate)
+        sampleRate = try indexer[Elements.SampleRate].value()
 
         // SampleBitDepth
-        sampleBitDepth = indexer.intValue(forElement: Elements.SampleBitDepth)
+        sampleBitDepth = try indexer[Elements.SampleBitDepth].value()
 
         // ChannelMapping
-        channelMapping = indexer.stringValue(forElement: Elements.ChannelMapping)
+        channelMapping = try indexer[Elements.ChannelMapping].value()
 
         // DigitalAssetEncoding
         try super.init(indexer: indexer)
@@ -87,14 +87,14 @@ open class Audio: DigitalAsset {
 
     override init?(indexer: XMLIndexer) throws {
         // AudioTrackID
-        guard let id = indexer.stringValue(forAttribute: Attributes.AudioTrackID) else {
+        guard let id: String = indexer.value(ofAttribute: Attributes.AudioTrackID) else {
             throw ManifestError.missingRequiredAttribute(Attributes.AudioTrackID, element: indexer.element)
         }
 
         self.id = id
 
         // Type
-        if let typeString = indexer.stringValue(forElement: Elements.AudioType) {
+        if let typeString: String = try indexer[Elements.AudioType].value() {
             guard let type = AudioType(rawValue: typeString) else {
                 print("Ignoring unsupported Audio object with Type \"\(typeString)\"")
                 return nil
@@ -111,10 +111,10 @@ open class Audio: DigitalAsset {
         }
 
         // Language
-        isDubbed = indexer[Elements.Language].boolValue(forAttribute: Attributes.Dubbed)
+        isDubbed = (indexer[Elements.Language].value(ofAttribute: Attributes.Dubbed) ?? false)
 
         // Channels
-        channels = indexer.stringValue(forElement: Elements.Channels)
+        channels = try indexer[Elements.Channels].value()
 
         // DigitalAsset
         try super.init(indexer: indexer)

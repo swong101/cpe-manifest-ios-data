@@ -96,21 +96,19 @@ public struct PersonJob {
 
     init(indexer: XMLIndexer) throws {
         // JobFunction
-        guard let functionString = indexer.stringValue(forElement: Elements.JobFunction) else {
+        guard let functionString: String = try indexer[Elements.JobFunction].value() else {
             throw ManifestError.missingRequiredChildElement(name: Elements.JobFunction, element: indexer.element)
         }
 
         function = PersonJobFunction.build(rawValue: functionString)
 
         // BillingBlockOrder
-        if let billingBlockOrder = indexer.intValue(forElement: Elements.BillingBlockOrder) {
+        if let billingBlockOrder: Int = try indexer[Elements.BillingBlockOrder].value() {
             self.billingBlockOrder = billingBlockOrder
         }
 
         // Character
-        if indexer.hasElement(Elements.Character) {
-            characters = indexer[Elements.Character].flatMap({ $0.stringValue })
-        }
+        characters = try indexer[Elements.Character].value()
     }
 
 }
@@ -215,7 +213,7 @@ open class Person: Equatable, Trackable {
         jobs = try indexer[Elements.Job].flatMap({ try PersonJob(indexer: $0) })
 
         // Name
-        guard let name = indexer[Elements.Name][Elements.DisplayName].stringValue else {
+        guard let name: String = try indexer[Elements.Name][Elements.DisplayName].value() else {
             throw ManifestError.missingRequiredChildElement(name: "\(Elements.Name).\(Elements.DisplayName)", element: indexer.element)
         }
 
@@ -223,7 +221,7 @@ open class Person: Equatable, Trackable {
 
         // Identifier
         if indexer.hasElement(Elements.Identifier) {
-            contentIdentifiers = try indexer[Elements.Identifier].flatMap({ try ContentIdentifier(indexer: $0) })
+            contentIdentifiers = try indexer[Elements.Identifier].value()
         }
     }
 

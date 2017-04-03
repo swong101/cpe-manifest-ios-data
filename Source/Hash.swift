@@ -34,14 +34,14 @@ public struct Hash {
 
     public init(indexer: XMLIndexer) throws {
         // value
-        guard let value = indexer.stringValue else {
+        guard let value: String = try indexer.value() else {
             throw ManifestError.missingRequiredValue(element: indexer.element)
         }
 
         self.value = value
 
         // Method
-        guard let methodString = indexer.stringValue(forAttribute: Attributes.Method) else {
+        guard let methodString: String = indexer.value(ofAttribute: Attributes.Method) else {
             throw ManifestError.missingRequiredAttribute(Attributes.Method, element: indexer.element)
         }
 

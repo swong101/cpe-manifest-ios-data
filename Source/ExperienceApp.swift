@@ -51,19 +51,17 @@ open class ExperienceApp: MetadataDriven, Trackable {
 
     override init?(indexer: XMLIndexer) throws {
         // AppID
-        appID = indexer.stringValue(forAttribute: Attributes.AppID)
+        appID = indexer.value(ofAttribute: Attributes.AppID)
 
         // AppGroupID
-        guard let appGroupID = indexer.stringValue(forElement: Elements.AppGroupID) else {
+        guard let appGroupID: String = try indexer[Elements.AppGroupID].value() else {
             throw ManifestError.missingRequiredChildElement(name: Elements.AppGroupID, element: indexer.element)
         }
 
         self.appGroupID = appGroupID
 
         // AppName
-        if indexer.hasElement(Elements.AppName) {
-            names = indexer[Elements.AppName].flatMap({ $0.stringValue })
-        }
+        names = try indexer[Elements.AppName].value()
 
         // MetadataDriven
         try super.init(indexer: indexer)

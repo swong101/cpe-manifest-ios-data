@@ -36,7 +36,7 @@ public class AppGroup: MetadataDriven, Trackable {
 
     override init?(indexer: XMLIndexer) throws {
         // AppGroupID
-        guard let id = indexer.stringValue(forAttribute: Attributes.AppGroupID) else {
+        guard let id: String = indexer.value(ofAttribute: Attributes.AppGroupID) else {
             throw ManifestError.missingRequiredAttribute(Attributes.AppGroupID, element: indexer.element)
         }
 
@@ -51,7 +51,7 @@ public class AppGroup: MetadataDriven, Trackable {
 
         for indexer in indexer[Elements.InteractiveTrackReference] {
             // InteractiveTrackID
-            guard let id = indexer.stringValue(forElement: Elements.InteractiveTrackID) else {
+            guard let id: String = try indexer[Elements.InteractiveTrackID].value() else {
                 throw ManifestError.missingRequiredChildElement(name: Elements.InteractiveTrackID, element: indexer.element)
             }
 

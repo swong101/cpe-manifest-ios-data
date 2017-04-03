@@ -29,7 +29,7 @@ open class AppDataSet {
         }
 
         for indexer in indexer[Elements.ManifestAppData] {
-            if try indexer[Elements.NVPair].withAttr(Attributes.Name, "type").stringValue(forElement: Elements.Text) == "PRODUCT" {
+            if try indexer[Elements.NVPair].withAttr(Attributes.Name, "type")[Elements.Text].value() == "PRODUCT" {
                 if products == nil {
                     products = [String: AppDataItemProduct]()
                 }

@@ -26,21 +26,21 @@ open class TextGroup {
 
     init(indexer: XMLIndexer) throws {
         // TextGroupID
-        guard let id = indexer.stringValue(forAttribute: Attributes.TextGroupID) else {
+        guard let id: String = indexer.value(ofAttribute: Attributes.TextGroupID) else {
             throw ManifestError.missingRequiredAttribute(Attributes.TextGroupID, element: indexer.element)
         }
 
         self.id = id
 
         // Language
-        language = indexer.stringValue(forAttribute: Attributes.Language)
+        language = indexer.value(ofAttribute: Attributes.Language)
 
         // TextObjectID
         guard indexer.hasElement(Elements.TextObjectID) else {
             throw ManifestError.missingRequiredChildElement(name: Elements.TextObjectID, element: indexer.element)
         }
 
-        textObjectIDs = indexer[Elements.TextObjectID].flatMap({ $0.stringValue })
+        textObjectIDs = try indexer[Elements.TextObjectID].value()
     }
 
 }

@@ -72,7 +72,7 @@ open class CPEStyleSet {
         // ExperienceStyleMap (continued)
         for indexer in indexer[Elements.ExperienceStyleMap] {
             // ExperienceID
-            guard let experienceID = indexer.stringValue(forElement: Elements.ExperienceID) else {
+            guard let experienceID: String = try indexer[Elements.ExperienceID].value() else {
                 throw ManifestError.missingRequiredChildElement(name: Elements.ExperienceID, element: indexer.element)
             }
 
@@ -83,11 +83,11 @@ open class CPEStyleSet {
 
             for nodeStyleRefIndexer in indexer[Elements.NodeStyleRef] {
                 // NodeStyleID
-                guard let nodeStyleID = nodeStyleRefIndexer.stringValue(forAttribute: Attributes.NodeStyleID), let nodeStyle = nodeStyles[nodeStyleID] else {
+                guard let nodeStyleID: String = nodeStyleRefIndexer.value(ofAttribute: Attributes.NodeStyleID), let nodeStyle = nodeStyles[nodeStyleID] else {
                     throw ManifestError.missingRequiredAttribute(Attributes.NodeStyleID, element: nodeStyleRefIndexer.element)
                 }
 
-                if let orientation = nodeStyleRefIndexer.stringValue(forElement: Elements.Orientation) {
+                if let orientation: String = try nodeStyleRefIndexer[Elements.Orientation].value() {
                     nodeStyle.supportsLandscape = nodeStyle.supportsLandscape || (orientation == "Landscape")
                     nodeStyle.supportsPortrait = nodeStyle.supportsPortrait || (orientation == "Portrait")
                 } else {
@@ -99,13 +99,13 @@ open class CPEStyleSet {
                 if nodeStyleRefIndexer.hasElement(Elements.DeviceTarget) {
                     for deviceIndexer in nodeStyleRefIndexer[Elements.DeviceTarget] {
                         // Class
-                        guard let deviceTargetClassString = deviceIndexer.stringValue(forElement: Elements.Class) else {
+                        guard let deviceTargetClassString: String = try deviceIndexer[Elements.Class].value() else {
                             throw ManifestError.missingRequiredChildElement(name: Elements.Class, element: deviceIndexer.element)
                         }
 
                         if DeviceTargetClass(rawValue: deviceTargetClassString) == .mobile {
                             // SubClass
-                            guard let deviceTargetSubClassString = deviceIndexer.stringValue(forElement: Elements.SubClass) else {
+                            guard let deviceTargetSubClassString: String = try deviceIndexer[Elements.SubClass].value() else {
                                 throw ManifestError.missingRequiredChildElement(name: Elements.SubClass, element: deviceIndexer.element)
                             }
 

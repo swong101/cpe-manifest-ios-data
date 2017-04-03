@@ -63,35 +63,31 @@ open class Gallery: MetadataDriven, Trackable {
 
     override init?(indexer: XMLIndexer) throws {
         // GalleryID
-        guard let id = indexer.stringValue(forAttribute: Attributes.GalleryID) else {
+        guard let id: String = indexer.value(ofAttribute: Attributes.GalleryID) else {
             throw ManifestError.missingRequiredAttribute(Attributes.GalleryID, element: indexer.element)
         }
 
         self.id = id
 
         // Type
-        guard let type = indexer.stringValue(forElement: Elements.GalleryType) else {
+        guard let type: String = try indexer[Elements.GalleryType].value() else {
             throw ManifestError.missingRequiredChildElement(name: Elements.GalleryType, element: indexer.element)
         }
 
         self.type = type
 
         // SubType
-        if indexer.hasElement(Elements.SubType) {
-            subTypes = indexer[Elements.SubType].flatMap({ $0.stringValue })
-        }
+        subTypes = try indexer[Elements.SubType].value()
 
         // PictureGroupID
-        guard let pictureGroupID = indexer.stringValue(forElement: Elements.PictureGroupID) else {
+        guard let pictureGroupID: String = try indexer[Elements.PictureGroupID].value() else {
             throw ManifestError.missingRequiredChildElement(name: Elements.PictureGroupID, element: indexer.element)
         }
 
         self.pictureGroupID = pictureGroupID
 
         // GalleryName
-        if indexer.hasElement(Elements.GalleryName) {
-            names = indexer[Elements.GalleryName].flatMap({ $0.stringValue })
-        }
+        names = try indexer[Elements.GalleryName].value()
 
         try super.init(indexer: indexer)
     }

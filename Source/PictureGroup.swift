@@ -19,7 +19,7 @@ open class Picture {
     public var imageID: String?
     var thumbnailImageID: String?
     var captions: [String]?
-    public var sequence: UInt = 0
+    public var sequence: Int = 0
 
     open lazy var image: Image? = { [unowned self] in
         return CPEXMLSuite.current?.manifest.imageWithID(self.imageID)
@@ -49,29 +49,27 @@ open class Picture {
 
     init(indexer: XMLIndexer) throws {
         // PictureID
-        guard let id = indexer.stringValue(forElement: Elements.PictureID) else {
+        guard let id: String = try indexer[Elements.PictureID].value() else {
             throw ManifestError.missingRequiredChildElement(name: Elements.PictureID, element: indexer.element)
         }
 
         self.id = id
 
         // ImageID
-        guard let imageID = indexer.stringValue(forElement: Elements.ImageID) else {
+        guard let imageID: String = try indexer[Elements.ImageID].value() else {
             throw ManifestError.missingRequiredChildElement(name: Elements.ImageID, element: indexer.element)
         }
 
         self.imageID = imageID
 
         // ThumbnailImageID
-        thumbnailImageID = indexer.stringValue(forElement: Elements.ThumbnailImageID)
+        thumbnailImageID = try indexer[Elements.ThumbnailImageID].value()
 
         // Caption
-        if indexer.hasElement(Elements.Caption) {
-            captions = indexer[Elements.Caption].flatMap({ ($0.stringValue != nil && $0.stringValue!.characters.count > 0 ? $0.stringValue : nil) })
-        }
+        captions = try indexer[Elements.Caption].value()
 
         // Sequence
-        sequence = (indexer.uintValue(forElement: Elements.Sequence) ?? 0)
+        sequence = (try indexer[Elements.Sequence].value() ?? 0)
     }
 
 }
@@ -103,7 +101,7 @@ public class PictureGroup {
 
     init(indexer: XMLIndexer) throws {
         // PictureGroupID
-        guard let id = indexer.stringValue(forAttribute: Attributes.PictureGroupID) else {
+        guard let id: String = indexer.value(ofAttribute: Attributes.PictureGroupID) else {
             throw ManifestError.missingRequiredAttribute(Attributes.PictureGroupID, element: indexer.element)
         }
 

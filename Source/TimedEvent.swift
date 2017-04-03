@@ -219,14 +219,14 @@ open class TimedEvent: Equatable, Trackable {
         id = UUID().uuidString
 
         // StartTimecode
-        guard let startTime = indexer.doubleValue(forElement: Elements.StartTimecode) else {
+        guard let startTime: Double = try indexer[Elements.StartTimecode].value() else {
             throw ManifestError.missingRequiredChildElement(name: Elements.StartTimecode, element: indexer.element)
         }
 
         self.startTime = startTime
 
         // EndTimecode
-        guard let endTime = indexer.doubleValue(forElement: Elements.EndTimecode) else {
+        guard let endTime: Double = try indexer[Elements.EndTimecode].value() else {
             throw ManifestError.missingRequiredChildElement(name: Elements.EndTimecode, element: indexer.element)
         }
 
@@ -234,31 +234,31 @@ open class TimedEvent: Equatable, Trackable {
 
         // PresentationID / PictureID / GalleryID / AppGroupID / TextGroupID / OtherID
         if indexer.hasElement(Elements.PresentationID) {
-            presentationID = indexer.stringValue(forElement: Elements.PresentationID)
+            presentationID = try indexer[Elements.PresentationID].value()
         } else if indexer.hasElement(Elements.PictureID) {
-            pictureID = indexer.stringValue(forElement: Elements.PictureID)
+            pictureID = try indexer[Elements.PictureID].value()
         } else if indexer.hasElement(Elements.GalleryID) {
-            galleryID = indexer.stringValue(forElement: Elements.GalleryID)
+            galleryID = try indexer[Elements.GalleryID].value()
         } else if indexer.hasElement(Elements.AppGroupID) {
-            appGroupID = indexer.stringValue(forElement: Elements.AppGroupID)
+            appGroupID = try indexer[Elements.AppGroupID].value()
         } else if indexer.hasElement(Elements.TextGroupID) {
             var textGroupMappings = [(String, Int)]()
             for indexer in indexer[Elements.TextGroupID] {
-                if let textGroupID = indexer.stringValue, let index = indexer.intValue(forAttribute: Attributes.Index) {
+                if let textGroupID: String = try indexer.value(), let index: Int = indexer.value(ofAttribute: Attributes.Index) {
                     textGroupMappings.append((textGroupID, index))
                 }
             }
 
             self.textGroupMappings = textGroupMappings
         } else if indexer.hasElement(Elements.ProductID) {
-            productID = try ContentIdentifier(indexer: indexer[Elements.ProductID])
+            productID = try indexer[Elements.ProductID].value()
         } else if indexer.hasElement(Elements.OtherID) {
-            otherID = try ContentIdentifier(indexer: indexer[Elements.OtherID])
+            otherID = try indexer[Elements.OtherID].value()
         }
 
         // Initialization
         if pictureID == nil { // Making assumption that supplemental PictureID is in the Initialization property
-            pictureID = indexer.stringValue(forElement: Elements.Initialization)
+            pictureID = try indexer[Elements.Initialization].value()
         }
     }
 

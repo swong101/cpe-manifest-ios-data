@@ -119,7 +119,7 @@ open class CPEXMLSuite {
                     fetchedAppData = true
                     try checkData()
                 } catch {
-
+                    print(error)
                 }
             }
         } else {
@@ -133,7 +133,7 @@ open class CPEXMLSuite {
                     fetchedCPEStlye = true
                     try checkData()
                 } catch {
-
+                    print(error)
                 }
             }
         } else {
@@ -146,7 +146,7 @@ open class CPEXMLSuite {
                 fetchedManifest = true
                 try checkData()
             } catch {
-
+                print(error)
             }
         }
     }

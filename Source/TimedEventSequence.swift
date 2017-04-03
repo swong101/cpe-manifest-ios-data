@@ -52,7 +52,7 @@ open class TimedEventSequence {
      */
     init(indexer: XMLIndexer) throws {
         // TimedSequenceID
-        guard let id = indexer.stringValue(forAttribute: Attributes.TimedSequenceID) else {
+        guard let id: String = indexer.value(ofAttribute: Attributes.TimedSequenceID) else {
             throw ManifestError.missingRequiredAttribute(Attributes.TimedSequenceID, element: indexer.element)
         }
 
@@ -60,9 +60,9 @@ open class TimedEventSequence {
 
         // PresentationID / PlayableSequenceID
         if indexer.hasElement(Elements.PresentationID) {
-            presentationID = indexer.stringValue(forElement: Elements.PresentationID)
+            presentationID = try indexer[Elements.PresentationID].value()
         } else if indexer.hasElement(Elements.PlayableSequenceID) {
-            playableSequenceID = indexer.stringValue(forElement: Elements.PlayableSequenceID)
+            playableSequenceID = try indexer[Elements.PlayableSequenceID].value()
         } else {
             throw ManifestError.missingRequiredChildElement(name: "\(Elements.PresentationID) or \(Elements.PlayableSequenceID)", element: indexer.element)
         }

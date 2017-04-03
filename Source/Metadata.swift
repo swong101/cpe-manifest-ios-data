@@ -27,7 +27,7 @@ public struct ArtReference {
      */
     init(indexer: XMLIndexer) throws {
         // Resolution
-        if let resolution = indexer.stringValue(forAttribute: Attributes.Resolution) {
+        if let resolution: String = indexer.value(ofAttribute: Attributes.Resolution) {
             let sizeArr = resolution.components(separatedBy: "x")
             if sizeArr.count == 2, let width = Int(sizeArr[0]), let height = Int(sizeArr[1]) {
                 size = CGSize(width: width, height: height)
@@ -35,7 +35,7 @@ public struct ArtReference {
         }
 
         // Value
-        guard let imageURL = indexer.urlValue else {
+        guard let imageURLString: String = try indexer.value(), let imageURL = URL(string: imageURLString) else {
             throw ManifestError.missingRequiredValue(element: indexer.element)
         }
 
@@ -125,26 +125,26 @@ open class LocalizedInfo {
      */
     init(indexer: XMLIndexer) throws {
         // Language
-        guard let language = indexer.stringValue(forAttribute: Attributes.Language) else {
+        guard let language: String = indexer.value(ofAttribute: Attributes.Language) else {
             throw ManifestError.missingRequiredAttribute(Attributes.Language, element: indexer.element)
         }
 
         self.language = language
 
         // Default
-        isDefault = indexer.boolValue(forAttribute: Attributes.Default)
+        isDefault = (indexer.value(ofAttribute: Attributes.Default) ?? false)
 
         // TitleDisplay19
-        titleShort = indexer.stringValue(forElement: Elements.TitleDisplay19)
+        titleShort = try indexer[Elements.TitleDisplay19].value()
 
         // TitleDisplay60
-        titleMedium = indexer.stringValue(forElement: Elements.TitleDisplay60)
+        titleMedium = try indexer[Elements.TitleDisplay60].value()
 
         // TitleDisplayUnlimited
-        titleUnlimited = indexer.stringValue(forElement: Elements.TitleDisplayUnlimited)
+        titleUnlimited = try indexer[Elements.TitleDisplayUnlimited].value()
 
         // TitleSort
-        guard let titleSortable = indexer.stringValue(forElement: Elements.TitleSort) else {
+        guard let titleSortable: String = try indexer[Elements.TitleSort].value() else {
             throw ManifestError.missingRequiredChildElement(name: Elements.TitleSort, element: indexer.element)
         }
 
@@ -156,17 +156,17 @@ open class LocalizedInfo {
         }
 
         // Summary190
-        guard let descriptionShort = indexer.stringValue(forElement: Elements.Summary190) else {
+        guard let descriptionShort: String = try indexer[Elements.Summary190].value() else {
             throw ManifestError.missingRequiredChildElement(name: Elements.Summary190, element: indexer.element)
         }
 
         self.descriptionShort = descriptionShort
 
         // Summary400
-        descriptionMedium = indexer.stringValue(forElement: Elements.Summary400)
+        descriptionMedium = try indexer[Elements.Summary400].value()
 
         // Summary4000
-        descriptionLong = indexer.stringValue(forElement: Elements.Summary4000)
+        descriptionLong = try indexer[Elements.Summary4000].value()
     }
 
 }
@@ -253,7 +253,7 @@ open class Metadata {
      */
     init(indexer: XMLIndexer) throws {
         // ContentID
-        guard let id = indexer.stringValue(forAttribute: Attributes.ContentID) else {
+        guard let id: String = indexer.value(ofAttribute: Attributes.ContentID) else {
             throw ManifestError.missingRequiredAttribute(Attributes.ContentID, element: indexer.element)
         }
 
@@ -274,9 +274,7 @@ open class Metadata {
         localizedInfos = try metadataIndexer[Elements.LocalizedInfo].flatMap({ try LocalizedInfo(indexer: $0) })
 
         // AltIdentifier
-        if metadataIndexer.hasElement(Elements.AltIdentifier) {
-            contentIdentifiers = try metadataIndexer[Elements.AltIdentifier].flatMap({ try ContentIdentifier(indexer: $0) })
-        }
+        contentIdentifiers = try metadataIndexer[Elements.AltIdentifier].value()
 
         // People
         if metadataIndexer.hasElement(Elements.People) {

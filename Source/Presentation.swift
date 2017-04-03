@@ -41,7 +41,7 @@ open class Presentation {
 
     init(indexer: XMLIndexer) throws {
         // PresentationID
-        guard let id = indexer.stringValue(forAttribute: Attributes.PresentationID) else {
+        guard let id: String = indexer.value(ofAttribute: Attributes.PresentationID) else {
             throw ManifestError.missingRequiredAttribute(Attributes.PresentationID, element: indexer.element)
         }
 
@@ -53,10 +53,10 @@ open class Presentation {
         }
 
         // VideoTrackReference
-        videoIDs = indexer[Elements.TrackMetadata][Elements.VideoTrackReference].flatMap({ $0.stringValue(forElement: Elements.VideoTrackID) })
+        videoIDs = try indexer[Elements.TrackMetadata][Elements.VideoTrackReference].flatMap({ try $0[Elements.VideoTrackID].value() })
 
         // AudioTrackReference
-        audioIDs = indexer[Elements.TrackMetadata][Elements.AudioTrackReference].flatMap({ $0.stringValue(forElement: Elements.AudioTrackID) })
+        audioIDs = try indexer[Elements.TrackMetadata][Elements.AudioTrackReference].flatMap({ try $0[Elements.AudioTrackID].value() })
     }
 
 }
