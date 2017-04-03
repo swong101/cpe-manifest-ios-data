@@ -52,11 +52,27 @@ open class Presentation {
             throw ManifestError.missingRequiredChildElement(name: Elements.TrackMetadata, element: indexer.element)
         }
 
-        // VideoTrackReference
-        videoIDs = try indexer[Elements.TrackMetadata][Elements.VideoTrackReference].flatMap({ try $0[Elements.VideoTrackID].value() })
+        for indexer in indexer[Elements.TrackMetadata] {
+            // VideoTrackReference
+            let videoIDs: [String] = try indexer[Elements.VideoTrackReference].flatMap({ try $0[Elements.VideoTrackID].value() })
+            if videoIDs.count > 0 {
+                if self.videoIDs == nil {
+                    self.videoIDs = videoIDs
+                } else {
+                    self.videoIDs!.append(contentsOf: videoIDs)
+                }
+            }
 
-        // AudioTrackReference
-        audioIDs = try indexer[Elements.TrackMetadata][Elements.AudioTrackReference].flatMap({ try $0[Elements.AudioTrackID].value() })
+            // AudioTrackReference
+            let audioIDs: [String] = try indexer[Elements.AudioTrackReference].flatMap({ try $0[Elements.AudioTrackID].value() })
+            if audioIDs.count > 0 {
+                if self.audioIDs == nil {
+                    self.audioIDs = audioIDs
+                } else {
+                    self.audioIDs!.append(contentsOf: audioIDs)
+                }
+            }
+        }
     }
 
 }
