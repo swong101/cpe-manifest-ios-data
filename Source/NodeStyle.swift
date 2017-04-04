@@ -226,17 +226,17 @@ open class NodeStyle {
 
             // OverlayArea
             if backgroundIndexer.hasElement(Elements.OverlayArea) {
-                let overlayIndexer = backgroundIndexer[Elements.OverlayArea]
+                for overlayIndexer in backgroundIndexer[Elements.OverlayArea] {
+                    // Type
+                    guard let type: String = overlayIndexer.value(ofAttribute: Attributes.Tag) else {
+                        throw ManifestError.missingRequiredAttribute(Attributes.Tag, element: overlayIndexer.element)
+                    }
 
-                // Type
-                guard let type: String = overlayIndexer.value(ofAttribute: Attributes.Tag) else {
-                    throw ManifestError.missingRequiredAttribute(Attributes.Tag, element: overlayIndexer.element)
-                }
-
-                if type.lowercased() == OverlayAreaType.Button {
-                    buttonOverlayArea = try OverlayArea(indexer: overlayIndexer)
-                } else if type.lowercased() == OverlayAreaType.Title {
-                    titleOverlayArea = try OverlayArea(indexer: overlayIndexer)
+                    if type.lowercased() == OverlayAreaType.Button {
+                        buttonOverlayArea = try OverlayArea(indexer: overlayIndexer)
+                    } else if type.lowercased() == OverlayAreaType.Title {
+                        titleOverlayArea = try OverlayArea(indexer: overlayIndexer)
+                    }
                 }
             }
         }
