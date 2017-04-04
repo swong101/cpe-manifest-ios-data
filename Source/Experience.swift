@@ -134,7 +134,7 @@ open class Experience: MetadataDriven, Equatable, Trackable {
     }()
 
     open var numChildExperiences: Int {
-        return (experienceChildren?.count ?? 0)
+        return (childExperiences?.count ?? 0)
     }
 
     open var video: Video? {
@@ -210,7 +210,7 @@ open class Experience: MetadataDriven, Equatable, Trackable {
         self.id = id
 
         // Region / ExcludedRegion
-        if let regionCode = Locale.currentRegionCode {
+        if let regionCode = CPEXMLSuite.Settings.countryCode {
             if indexer.hasElement(Elements.Region) {
                 let supportedRegions: [String] = try indexer[Elements.Region].flatMap({ try $0[Elements.Country].value() })
                 if !supportedRegions.contains(regionCode) {

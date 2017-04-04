@@ -15,8 +15,4 @@ extension Locale {
         return deviceLanguage[deviceLanguage.startIndex ..< deviceLanguage.characters.index(deviceLanguage.startIndex, offsetBy: 2)]
     }
 
-    static var currentRegionCode: String? {
-        return Locale.current.regionCode
-    }
-
 }
