@@ -145,17 +145,17 @@ open class Experience: MetadataDriven, Equatable, Trackable {
         return audioVisual?.presentation?.video
     }
 
-    open lazy var location: AppDataItemLocation? = { [unowned self] in
-        return CPEXMLSuite.current?.appData?.locationWithID(self.app?.id)
-    }()
+    open var location: AppDataItemLocation? {
+        return CPEXMLSuite.current?.appData?.locationWithID(app?.id)
+    }
 
     open var locationMediaCount: Int {
         return (location?.mediaCount ?? 0)
     }
 
-    open lazy var product: AppDataItemProduct? = { [unowned self] in
-        return CPEXMLSuite.current?.appData?.productWithID(self.app?.id)
-    }()
+    open var product: AppDataItemProduct? {
+        return CPEXMLSuite.current?.appData?.productWithID(app?.id)
+    }
 
     open lazy var productCategories: [ProductCategory]? = { [unowned self] in
         var productCategories: [ProductCategory]?
@@ -176,13 +176,13 @@ open class Experience: MetadataDriven, Equatable, Trackable {
         return productCategories
     }()
 
-    open lazy var timedEventSequence: TimedEventSequence? = { [unowned self] in
-        return CPEXMLSuite.current?.manifest.timedEventSequenceWithID(self.timedEventSequenceID)
-    }()
+    open var timedEventSequence: TimedEventSequence? {
+        return CPEXMLSuite.current?.manifest.timedEventSequenceWithID(timedEventSequenceID)
+    }
 
-    open lazy var isMainExperience: Bool = { [unowned self] in
-        return (self.audioVisual?.type == .main)
-    }()
+    open var isMainExperience: Bool {
+        return (audioVisual?.type == .main)
+    }
 
     open lazy var isInMovieExperience: Bool = { [unowned self] in
         return (CPEXMLSuite.current?.manifest.inMovieExperience == self)

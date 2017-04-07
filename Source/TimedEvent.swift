@@ -105,9 +105,9 @@ open class TimedEvent: Equatable, Trackable {
     }()
 
     /// Parent `Experience`
-    open lazy var experience: Experience? = { [unowned self] in
-        return CPEXMLSuite.current?.manifest.experienceWithID(self.experienceID)
-    }()
+    open var experience: Experience? {
+        return CPEXMLSuite.current?.manifest.experienceWithID(experienceID)
+    }
 
     /// Associated `ExperienceAudioVisual` (used for video clips)
     lazy var audioVisual: ExperienceAudioVisual? = { [unowned self] in
@@ -119,46 +119,46 @@ open class TimedEvent: Equatable, Trackable {
     }()
 
     /// Associated `Picture` (used for single/supplemental image)
-    open lazy var picture: Picture? = { [unowned self] in
-        return CPEXMLSuite.current?.manifest.pictureWithID(self.pictureID)
-    }()
+    open var picture: Picture? {
+        return CPEXMLSuite.current?.manifest.pictureWithID(pictureID)
+    }
 
     /// Associated `Gallery` (used for gallery of images)
-    open lazy var gallery: Gallery? = { [unowned self] in
-        return CPEXMLSuite.current?.manifest.galleryWithID(self.galleryID)
-    }()
+    open var gallery: Gallery? {
+        return CPEXMLSuite.current?.manifest.galleryWithID(galleryID)
+    }
 
     /// Associated `AppGroup` (used for HTML5 apps)
-    open lazy var appGroup: AppGroup? = { [unowned self] in
-        return CPEXMLSuite.current?.manifest.appGroupWithID(self.appGroupID)
-    }()
+    open var appGroup: AppGroup? {
+        return CPEXMLSuite.current?.manifest.appGroupWithID(appGroupID)
+    }
 
     /// Associated `Person` (used for talent details)
-    open lazy var person: Person? = { [unowned self] in
-        if let otherID = self.otherID, otherID.namespace == Namespaces.PeopleID {
+    open var person: Person? {
+        if let otherID = otherID, otherID.namespace == Namespaces.PeopleID {
             return CPEXMLSuite.current?.manifest.personWithID(otherID.identifier)
         }
 
         return nil
-    }()
+    }
 
     /// Associated `AppDataItemLocation` (used for scene loations)
-    open lazy var location: AppDataItemLocation? = { [unowned self] in
-        if let otherID = self.otherID, otherID.namespace == Namespaces.AppDataID {
+    open var location: AppDataItemLocation? {
+        if let otherID = otherID, otherID.namespace == Namespaces.AppDataID {
             return CPEXMLSuite.current?.appData?.locationWithID(otherID.identifier)
         }
 
         return nil
-    }()
+    }
 
     /// Associated `AppDataItemProduct` (used for scene products)
-    open lazy var product: AppDataItemProduct? = { [unowned self] in
-        if let otherID = self.otherID, otherID.namespace == Namespaces.AppDataID {
+    open var product: AppDataItemProduct? {
+        if let otherID = otherID, otherID.namespace == Namespaces.AppDataID {
             return CPEXMLSuite.current?.appData?.productWithID(otherID.identifier)
         }
 
         return nil
-    }()
+    }
 
     /// Associated text item (used for trivia)
     open lazy var textItem: String? = { [unowned self] in

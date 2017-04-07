@@ -17,9 +17,16 @@ open class MetadataDriven {
 
     var contentID: String?
 
-    open lazy var metadata: Metadata? = { [unowned self] in
-        return CPEXMLSuite.current?.manifest.metadataWithID(self.contentID)
-    }()
+    private var _metadata: Metadata?
+    open var metadata: Metadata? {
+        get {
+            return (_metadata ?? CPEXMLSuite.current?.manifest.metadataWithID(contentID))
+        }
+
+        set {
+            _metadata = newValue
+        }
+    }
 
     open var title: String? {
         return metadata?.title

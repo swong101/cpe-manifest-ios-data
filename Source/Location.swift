@@ -27,9 +27,9 @@ open class Location {
     public var centerPoint: CLLocationCoordinate2D
 
     var iconImageID: String?
-    open lazy var iconImage: UIImage? = { [unowned self] in
-        return CPEXMLSuite.current?.appData?.cachedImageWithID(self.iconImageID)
-    }()
+    open var iconImage: UIImage? {
+        return CPEXMLSuite.current?.appData?.cachedImageWithID(iconImageID)
+    }
 
     init(indexer: XMLIndexer) throws {
         // Icon

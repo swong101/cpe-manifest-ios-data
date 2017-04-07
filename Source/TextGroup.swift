@@ -20,9 +20,9 @@ open class TextGroup {
     var language: String?
     var textObjectIDs: [String]
 
-    open lazy var textObject: TextObject? = { [unowned self] in
-        return CPEXMLSuite.current?.manifest.textObjectWithID(self.textObjectIDs.first)
-    }()
+    open var textObject: TextObject? {
+        return CPEXMLSuite.current?.manifest.textObjectWithID(textObjectIDs.first)
+    }
 
     init(indexer: XMLIndexer) throws {
         // TextGroupID

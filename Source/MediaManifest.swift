@@ -115,18 +115,6 @@ open class MediaManifest {
         }
     }
 
-    open var actors: [Person]? {
-        return mainExperience.metadata?.actors
-    }
-
-    open var numActors: Int {
-        return (actors?.count ?? 0)
-    }
-
-    open var hasActors: Bool {
-        return (numActors > 0)
-    }
-
     deinit {
         // TimedEvent objects have back references to Experiences that create a retain cycle
         timedEventSequences = nil
@@ -391,10 +379,10 @@ open class MediaManifest {
             let loadTalentImages = { [weak self] in
                 if let people = self?.people {
                     for person in people {
-                        if person.images == nil, let id = person.apiID {
-                            talentAPIUtil.getTalentImages(id, completion: { (images) in
-                                person.images = images
-                            })
+                        if person.pictureGroup == nil, let id = person.apiID {
+                            talentAPIUtil.fetchImages(forPersonID: id) { (pictureGroup) in
+                                person.pictureGroup = pictureGroup
+                            }
                         }
                     }
                 }
@@ -406,10 +394,10 @@ open class MediaManifest {
                 // Find the API ID for this feature in the main Experience's identifiers
                 talentAPIUtil.featureAPIID = featureAPIID
 
-                talentAPIUtil.prefetchCredits({ [weak self] (people) in
+                talentAPIUtil.prefetchPeople { [weak self] (people) in
                     self?.people = people
                     loadTalentImages()
-                })
+                }
             }
         }
 

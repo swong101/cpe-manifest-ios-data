@@ -29,9 +29,9 @@ open class Gallery: MetadataDriven, Trackable {
     var names: [String]?
 
     private var _pictureGroup: PictureGroup?
-    open lazy var pictureGroup: PictureGroup? = { [unowned self] in
-        return (self._pictureGroup ?? CPEXMLSuite.current?.manifest.pictureGroupWithID(self.pictureGroupID))
-    }()
+    open var pictureGroup: PictureGroup? {
+        return (_pictureGroup ?? CPEXMLSuite.current?.manifest.pictureGroupWithID(pictureGroupID))
+    }
 
     override open var title: String? {
         return (names?.first ?? super.title)
@@ -57,6 +57,20 @@ open class Gallery: MetadataDriven, Trackable {
     public init?(imageURLs: [URL]) {
         id = UUID().uuidString
         _pictureGroup = PictureGroup(imageURLs: imageURLs)
+
+        super.init()
+    }
+
+    public init?(pictures: [Picture]) {
+        id = UUID().uuidString
+        _pictureGroup = PictureGroup(pictures: pictures)
+
+        super.init()
+    }
+
+    public init?(pictureGroup: PictureGroup) {
+        id = UUID().uuidString
+        _pictureGroup = pictureGroup
 
         super.init()
     }
@@ -93,11 +107,7 @@ open class Gallery: MetadataDriven, Trackable {
     }
 
     public func picture(atIndex index: Int) -> Picture? {
-        if let pictures = pictureGroup?.pictures, pictures.count > index {
-            return pictures[index]
-        }
-
-        return nil
+        return pictureGroup?.picture(atIndex: index)
     }
 
 }

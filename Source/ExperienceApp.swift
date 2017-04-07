@@ -28,9 +28,9 @@ open class ExperienceApp: MetadataDriven, Trackable {
         return (names?.first ?? super.title)
     }
 
-    open lazy var appGroup: AppGroup? = { [unowned self] in
-        return CPEXMLSuite.current?.manifest.appGroupWithID(self.appGroupID)
-    }()
+    open var appGroup: AppGroup? {
+        return CPEXMLSuite.current?.manifest.appGroupWithID(appGroupID)
+    }
 
     open var url: URL? {
         return appGroup?.url

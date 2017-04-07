@@ -98,9 +98,9 @@ open class NodeStyle {
 
     /// General theme (includes buttons)
     private var themeID: String
-    open lazy var theme: Theme = { [unowned self] in
-        return (CPEXMLSuite.current?.cpeStyle?.themeWithID(self.themeID))!
-    }()
+    open var theme: Theme {
+        return (CPEXMLSuite.current?.cpeStyle?.themeWithID(themeID))!
+    }
 
     /// Background properties
     public var backgroundColor = UIColor.black
@@ -110,9 +110,9 @@ open class NodeStyle {
     /// Background image
     private var backgroundImagePictureGroupID: String?
 
-    private lazy var backgroundImage: Image? = { [unowned self] in
-        return CPEXMLSuite.current?.manifest.pictureGroupWithID(self.backgroundImagePictureGroupID)?.pictures.first?.image
-    }()
+    private var backgroundImage: Image? {
+        return CPEXMLSuite.current?.manifest.pictureGroupWithID(backgroundImagePictureGroupID)?.pictures.first?.image
+    }
 
     open var backgroundImageSize: CGSize {
         return (backgroundImage?.size ?? CGSize.zero)

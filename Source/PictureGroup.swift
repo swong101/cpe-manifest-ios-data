@@ -21,30 +21,32 @@ open class Picture {
     var captions: [String]?
     public var sequence: Int = 0
 
-    open lazy var image: Image? = { [unowned self] in
-        return CPEXMLSuite.current?.manifest.imageWithID(self.imageID)
-    }()
+    open var image: Image? {
+        return CPEXMLSuite.current?.manifest.imageWithID(imageID)
+    }
 
     private var _imageURL: URL?
     open var imageURL: URL? {
         return (_imageURL ?? image?.url)
     }
 
-    open lazy var thumbnailImage: Image? = { [unowned self] in
-        return CPEXMLSuite.current?.manifest.imageWithID(self.thumbnailImageID)
-    }()
+    open var thumbnailImage: Image? {
+        return CPEXMLSuite.current?.manifest.imageWithID(thumbnailImageID)
+    }
 
+    private var _thumbnailImageURL: URL?
     open var thumbnailImageURL: URL? {
-        return (thumbnailImage?.url ?? imageURL)
+        return (_thumbnailImageURL ?? thumbnailImage?.url ?? imageURL)
     }
 
     open var caption: String? {
         return captions?.first
     }
 
-    init(imageURL: URL) {
+    init(imageURL: URL, thumbnailImageURL: URL? = nil) {
         id = UUID().uuidString
         _imageURL = imageURL
+        _thumbnailImageURL = thumbnailImageURL
     }
 
     init(indexer: XMLIndexer) throws {
@@ -99,6 +101,10 @@ public class PictureGroup {
         pictures = imageURLs.map({ Picture(imageURL: $0) })
     }
 
+    init(pictures: [Picture]) {
+        self.pictures = pictures
+    }
+
     init(indexer: XMLIndexer) throws {
         // PictureGroupID
         guard let id: String = indexer.value(ofAttribute: Attributes.PictureGroupID) else {
@@ -113,6 +119,10 @@ public class PictureGroup {
         }
 
         pictures = try indexer[Elements.Picture].flatMap({ try Picture(indexer: $0) })
+    }
+
+    public func picture(atIndex index: Int) -> Picture? {
+        return (pictures.count > index ? pictures[index] : nil)
     }
 
 }

@@ -27,17 +27,17 @@ open class TimedEventSequence {
     public var presentationID: String?
 
     /// Associated `Presentation`
-    open lazy var presentation: Presentation? = { [unowned self] in
-        return CPEXMLSuite.current?.manifest.presentationWithID(self.presentationID)
-    }()
+    open var presentation: Presentation? {
+        return CPEXMLSuite.current?.manifest.presentationWithID(presentationID)
+    }
 
     /// ID for associated `PlayableSequence`
     public var playableSequenceID: String?
 
     /// Associated `PlayableSequence`
-    open lazy var playableSequence: PlayableSequence? = { [unowned self] in
-        return CPEXMLSuite.current?.manifest.playableSequenceWithID(self.playableSequenceID)
-    }()
+    open var playableSequence: PlayableSequence? {
+        return CPEXMLSuite.current?.manifest.playableSequenceWithID(playableSequenceID)
+    }
 
     /// Series of `TimedEvents` tied to playback
     public var timedEvents: [TimedEvent]

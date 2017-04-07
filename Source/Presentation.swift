@@ -23,17 +23,17 @@ open class Presentation {
     var videoIDs: [String]?
     var audioIDs: [String]?
 
-    open lazy var audio: Audio? = { [unowned self] in
-        return CPEXMLSuite.current?.manifest.audioWithID(self.audioIDs?.first)
-    }()
+    open var audio: Audio? {
+        return CPEXMLSuite.current?.manifest.audioWithID(audioIDs?.first)
+    }
 
     open var audioURL: URL? {
         return audio?.url
     }
 
-    open lazy var video: Video? = { [unowned self] in
-        return CPEXMLSuite.current?.manifest.videoWithID(self.videoIDs?.first)
-    }()
+    open var video: Video? {
+        return CPEXMLSuite.current?.manifest.videoWithID(videoIDs?.first)
+    }
 
     open var videoURL: URL? {
         return video?.url
