@@ -22,6 +22,7 @@ enum ResultsTableType {
     case experience
     case mainExperience
     case gallery
+    case videos
 
     var title: String? {
         switch self {
@@ -31,6 +32,7 @@ enum ResultsTableType {
         case .cpeStyle:             return "CPEStyle"
         case .experiences:          return "Experiences"
         case .mainExperience:       return "Main Experience"
+        case .videos:               return "Videos"
         default:                    return nil
         }
     }
@@ -84,6 +86,12 @@ class ResultsTableViewController: UITableViewController {
         case .gallery:
             if let gallery = gallery {
                 addTable(gallery: gallery)
+            }
+            break
+
+        case .videos:
+            if let videos = CPEXMLSuite.current!.manifest.videos {
+                videos.forEach({ addSection(video: $1) })
             }
             break
 
@@ -180,8 +188,8 @@ class ResultsTableViewController: UITableViewController {
 
             }
 
-            addItem(section: section, title: "Videos", hasChildren: (numVideos > 0), numChildren: numVideos) {
-
+            addItem(section: section, title: "Videos", hasChildren: (numVideos > 0), numChildren: numVideos) { [weak self] in
+                self?.pushResultsTableView(type: .videos)
             }
 
             addItem(section: section, title: "Images", hasChildren: (numImages > 0), numChildren: numImages) {
@@ -325,6 +333,29 @@ class ResultsTableViewController: UITableViewController {
 
     private func addTable(cpeStyle: CPEStyleSet) {
         cpeStyle.nodeStyles.forEach({ addSection(nodeStyle: $1) })
+    }
+
+    private func addSection(video: Video) {
+        if let section = RETableViewSection(headerTitle: "Video (\(video.id))") {
+            manager.addSection(section)
+
+            addItem(section: section, title: "Type", detailText: video.type.rawValue)
+            if let codec = video.encoding?.codec {
+                addItem(section: section, title: "Codec", detailText: codec.rawValue)
+            }
+
+            if let size = video.size {
+                addItem(section: section, title: "Size", detailText: "\(size.width) x \(size.height)")
+            }
+
+            addItem(section: section, title: "Runtime", detailText: "\(String(video.runtimeInSeconds)) sec")
+
+            if let url = video.url {
+                addItem(section: section, title: "Watch", hasChildren: true) { [weak self] in
+                    self?.presentAVAsset(url: url, title: video.id)
+                }
+            }
+        }
     }
 
     private func addSection(nodeStyle: NodeStyle) {
