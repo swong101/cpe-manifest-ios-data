@@ -1,12 +1,12 @@
 platform :ios, '8.0'
 
-project 'NextGenDataManagerExample'
-workspace 'NextGenDataManagerExampleWorkspace'
+project 'CPEDataExample'
+workspace 'CPEDataExampleWorkspace'
+use_frameworks!
 
-target 'NextGenDataManagerExample' do
+target 'CPEDataExample' do
     
-    use_frameworks!
-
-    pod 'NextGenDataManager', :path => '../'
+    pod 'CPEData', :path => '../'
+    pod 'RETableViewManager'
 
 end

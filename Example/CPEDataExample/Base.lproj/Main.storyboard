@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="jng-bI-dA5">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Navigation Controller-->
+        <scene sceneID="iFX-QQ-DTU">
+            <objects>
+                <navigationController id="jng-bI-dA5" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="BhK-2w-VlC">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="Imf-LK-rJ9" kind="relationship" relationship="rootViewController" id="1Dk-Hh-d5B"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Jo7-55-Ms2" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-151" y="125"/>
+        </scene>
+        <!--Input View Controller-->
+        <scene sceneID="63z-1o-JJc">
+            <objects>
+                <viewController id="Imf-LK-rJ9" customClass="InputViewController" customModule="CPEDataExample" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="UWX-do-4gC"/>
+                        <viewControllerLayoutGuide type="bottom" id="vJS-6C-PJ4"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Bxn-Eo-UK9">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Manifest XML:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iDu-23-eaZ">
+                                <rect key="frame" x="20" y="84" width="335" height="20.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="mpL-tO-8Xq">
+                                <rect key="frame" x="20" y="112" width="335" height="35"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="35" id="W9f-ea-fW6"/>
+                                </constraints>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="AppData XML:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SNP-4p-x4v">
+                                <rect key="frame" x="20" y="187" width="335" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="gVH-Wl-OON">
+                                <rect key="frame" x="20" y="216" width="335" height="35"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="CPEStyle XML:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="con-BN-u2O">
+                                <rect key="frame" x="20" y="291" width="335" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="L8u-4M-axh">
+                                <rect key="frame" x="20" y="320" width="335" height="35"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6Ed-Sn-WrC">
+                                <rect key="frame" x="20" y="375" width="335" height="40"/>
+                                <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="g2o-Xa-tx0"/>
+                                </constraints>
+                                <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <state key="normal" title="Load"/>
+                                <connections>
+                                    <action selector="onLoad" destination="Imf-LK-rJ9" eventType="touchUpInside" id="YX5-Gl-oi8"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="con-BN-u2O" firstAttribute="trailing" secondItem="SNP-4p-x4v" secondAttribute="trailing" id="3ed-oM-1oE"/>
+                            <constraint firstItem="iDu-23-eaZ" firstAttribute="top" secondItem="UWX-do-4gC" secondAttribute="bottom" constant="20" id="7D4-yN-J7l"/>
+                            <constraint firstItem="6Ed-Sn-WrC" firstAttribute="leading" secondItem="L8u-4M-axh" secondAttribute="leading" id="93o-dV-jTy"/>
+                            <constraint firstItem="mpL-tO-8Xq" firstAttribute="top" secondItem="iDu-23-eaZ" secondAttribute="bottom" constant="8" id="DbI-Gv-W2D"/>
+                            <constraint firstItem="L8u-4M-axh" firstAttribute="height" secondItem="gVH-Wl-OON" secondAttribute="height" id="GzJ-3t-Cb7"/>
+                            <constraint firstItem="6Ed-Sn-WrC" firstAttribute="trailing" secondItem="L8u-4M-axh" secondAttribute="trailing" id="Hgr-WM-beR"/>
+                            <constraint firstItem="gVH-Wl-OON" firstAttribute="height" secondItem="mpL-tO-8Xq" secondAttribute="height" id="Hqe-Hd-CSE"/>
+                            <constraint firstAttribute="trailing" secondItem="iDu-23-eaZ" secondAttribute="trailing" constant="20" id="Kga-ss-Q2Y"/>
+                            <constraint firstItem="SNP-4p-x4v" firstAttribute="leading" secondItem="iDu-23-eaZ" secondAttribute="leading" id="Nzo-2Z-nEI"/>
+                            <constraint firstItem="con-BN-u2O" firstAttribute="top" secondItem="gVH-Wl-OON" secondAttribute="bottom" constant="40" id="P3y-g9-tKS"/>
+                            <constraint firstItem="SNP-4p-x4v" firstAttribute="trailing" secondItem="iDu-23-eaZ" secondAttribute="trailing" id="PaC-B9-tWv"/>
+                            <constraint firstItem="gVH-Wl-OON" firstAttribute="top" secondItem="SNP-4p-x4v" secondAttribute="bottom" constant="8" id="Q7c-97-SEg"/>
+                            <constraint firstItem="mpL-tO-8Xq" firstAttribute="trailing" secondItem="iDu-23-eaZ" secondAttribute="trailing" id="TC5-GS-PHR"/>
+                            <constraint firstItem="gVH-Wl-OON" firstAttribute="leading" secondItem="SNP-4p-x4v" secondAttribute="leading" id="Uk4-hv-uLf"/>
+                            <constraint firstItem="L8u-4M-axh" firstAttribute="leading" secondItem="con-BN-u2O" secondAttribute="leading" id="XhO-2Y-60H"/>
+                            <constraint firstItem="gVH-Wl-OON" firstAttribute="trailing" secondItem="SNP-4p-x4v" secondAttribute="trailing" id="Z9m-Rq-Xwc"/>
+                            <constraint firstItem="L8u-4M-axh" firstAttribute="top" secondItem="con-BN-u2O" secondAttribute="bottom" constant="8" id="ade-xS-MgC"/>
+                            <constraint firstItem="L8u-4M-axh" firstAttribute="trailing" secondItem="con-BN-u2O" secondAttribute="trailing" id="d17-aN-WDs"/>
+                            <constraint firstItem="iDu-23-eaZ" firstAttribute="leading" secondItem="Bxn-Eo-UK9" secondAttribute="leading" constant="20" id="eit-tX-swS"/>
+                            <constraint firstItem="con-BN-u2O" firstAttribute="leading" secondItem="SNP-4p-x4v" secondAttribute="leading" id="gWA-1E-LjJ"/>
+                            <constraint firstItem="mpL-tO-8Xq" firstAttribute="leading" secondItem="iDu-23-eaZ" secondAttribute="leading" id="oVu-zx-PYv"/>
+                            <constraint firstItem="SNP-4p-x4v" firstAttribute="top" secondItem="mpL-tO-8Xq" secondAttribute="bottom" constant="40" id="xxk-gr-Q8U"/>
+                            <constraint firstItem="6Ed-Sn-WrC" firstAttribute="top" secondItem="L8u-4M-axh" secondAttribute="bottom" constant="20" id="zMd-hT-lCU"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="nbu-lr-xRy"/>
+                    <connections>
+                        <outlet property="appDataXMLTextField" destination="gVH-Wl-OON" id="PlP-kM-CBc"/>
+                        <outlet property="cpeStyleXMLTextField" destination="L8u-4M-axh" id="JXR-7T-Eob"/>
+                        <outlet property="manifestXMLTextField" destination="mpL-tO-8Xq" id="sL2-SC-MHv"/>
+                        <segue destination="P90-xk-wbc" kind="show" identifier="ShowResults" id="dXg-SR-WE1"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Vm6-Q5-xhy" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="621.60000000000002" y="124.58770614692655"/>
+        </scene>
+        <!--Results Table View Controller-->
+        <scene sceneID="UJg-Yx-aKI">
+            <objects>
+                <tableViewController id="P90-xk-wbc" customClass="ResultsTableViewController" customModule="CPEDataExample" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="5tv-5B-tNF">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <connections>
+                            <outlet property="dataSource" destination="P90-xk-wbc" id="1pU-eN-oAJ"/>
+                            <outlet property="delegate" destination="P90-xk-wbc" id="QNg-CX-Ecc"/>
+                        </connections>
+                    </tableView>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="rkT-q7-h1J" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1396" y="125"/>
+        </scene>
+    </scenes>
+</document>

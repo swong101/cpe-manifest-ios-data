@@ -1,16 +1,28 @@
 PODS:
-  - NextGenDataManager (2.2.1)
+  - CPEData (3.0.0):
+    - SWXMLHash (~> 3.0)
+  - REFormattedNumberField (1.1.6)
+  - RETableViewManager (1.7):
+    - REFormattedNumberField (~> 1.1.5)
+    - REValidation (~> 0.1.4)
+  - REValidation (0.1.4)
+  - SWXMLHash (3.0.4)
 
 DEPENDENCIES:
-  - NextGenDataManager (from `../`)
+  - CPEData (from `../`)
+  - RETableViewManager
 
 EXTERNAL SOURCES:
-  NextGenDataManager:
+  CPEData:
     :path: "../"
 
 SPEC CHECKSUMS:
-  NextGenDataManager: e22f506227d00f503c19c94952446aa1233c20f4
+  CPEData: 977cab395af03be6c51c012caa6082b85ffdd0fd
+  REFormattedNumberField: 70fc5fb1218ebd5ee9983820defd12806d5c6ec6
+  RETableViewManager: 0f24d796c42c0890d38c79cc9aeb3871e186726e
+  REValidation: 38c4de1be58455f8b00aab208ac80db316a66b7f
+  SWXMLHash: 29d20b84692fc319ea8ed933058fe7d8d005139b
 
-PODFILE CHECKSUM: f0cc31e3f0b1222f24d2e43e185f0000c65887a8
+PODFILE CHECKSUM: 25540c49ae592fbf787c376f07dfc74279b77259
 
 COCOAPODS: 1.2.0
