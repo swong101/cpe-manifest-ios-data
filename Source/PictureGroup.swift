@@ -68,7 +68,13 @@ open class Picture {
         thumbnailImageID = try indexer[Elements.ThumbnailImageID].value()
 
         // Caption
-        captions = try indexer[Elements.Caption].value()
+        captions = try indexer[Elements.Caption].flatMap({
+            if let caption: String = try $0.value(), caption.characters.count > 0 {
+                return caption
+            }
+            
+            return nil
+        })
 
         // Sequence
         sequence = (try indexer[Elements.Sequence].value() ?? 0)
