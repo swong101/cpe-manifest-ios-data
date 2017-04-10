@@ -72,7 +72,7 @@ open class Picture {
             if let caption: String = try $0.value(), caption.characters.count > 0 {
                 return caption
             }
-            
+
             return nil
         })
 

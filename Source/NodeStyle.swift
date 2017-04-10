@@ -88,7 +88,7 @@ open class NodeStyle {
 
     // MARK: Instance Variables
     /// Unique identifier
-    var id: String
+    public var id: String
 
     /// Properties
     public var supportsLandscape = false
@@ -97,7 +97,7 @@ open class NodeStyle {
     public var supportsPhone = false
 
     /// General theme (includes buttons)
-    private var themeID: String
+    public var themeID: String
     open var theme: Theme {
         return (CPEXMLSuite.current?.cpeStyle?.themeWithID(themeID))!
     }
@@ -108,46 +108,27 @@ open class NodeStyle {
     public var backgroundPositioningMethod = BackgroundPositioningMethod.centered
 
     /// Background image
-    private var backgroundImagePictureGroupID: String?
-
-    private var backgroundImage: Image? {
+    public var backgroundImagePictureGroupID: String?
+    open var backgroundImage: Image? {
         return CPEXMLSuite.current?.manifest.pictureGroupWithID(backgroundImagePictureGroupID)?.pictures.first?.image
     }
 
-    open var backgroundImageSize: CGSize {
-        return (backgroundImage?.size ?? CGSize.zero)
-    }
-
-    open var backgroundImageURL: URL? {
-        return backgroundImage?.url
-    }
-
     /// Background video
-    private var backgroundPresentationID: String?
-    private var backgroundPresentation: Presentation? {
+    public var backgroundPresentationID: String?
+    open var backgroundPresentation: Presentation? {
         return CPEXMLSuite.current?.manifest.presentationWithID(backgroundPresentationID)
     }
 
-    open var backgroundVideoLoops = false
-    open var backgroundVideoLoopTimecode = 0.0
-    open var backgroundVideoSize: CGSize {
-        return (backgroundPresentation?.video?.size ?? CGSize.zero)
-    }
-
-    open var backgroundVideoURL: URL? {
-        return backgroundPresentation?.videoURL
-    }
+    public var backgroundVideoLoops = false
+    public var backgroundVideoLoopTimecode = 0.0
 
     /// Background audio
-    var backgroundAudioID: String?
+    public var backgroundAudioID: String?
     open var backgroundAudio: Audio? {
         return CPEXMLSuite.current?.manifest.audioWithID(backgroundAudioID)
     }
 
-    open var backgroundAudioURL: URL? {
-        return backgroundAudio?.url
-    }
-
+    // Overlays
     public var buttonOverlayArea: OverlayArea?
     public var titleOverlayArea: OverlayArea?
 
