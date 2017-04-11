@@ -119,6 +119,10 @@ open class NodeStyle {
         return CPEXMLSuite.current?.manifest.presentationWithID(backgroundPresentationID)
     }
 
+    open var backgroundVideo: Video? {
+        return backgroundPresentation?.video
+    }
+
     public var backgroundVideoLoops = false
     public var backgroundVideoLoopTimecode = 0.0
 
