@@ -87,6 +87,8 @@ open class AppDataSet {
                         if let pictures = appDataItem.pictures {
                             person.pictureGroup = PictureGroup(pictures: pictures)
                         }
+
+                        person.detailsLoaded = true
                     }
                 }
             }
