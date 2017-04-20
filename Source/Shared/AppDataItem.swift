@@ -34,6 +34,8 @@ public struct AppDataNVPairName {
     static let SceneImage = "scene_image"
     static let SceneImageBullseyeX = "scene_image_bullseye_x"
     static let SceneImageBullseyeY = "scene_image_bullseye_y"
+    static let ProductVideo = "product_video"
+    static let ProductVideoContentID = "product_video_content_id"
 }
 
 open class AppDataItem: Trackable {
@@ -54,6 +56,7 @@ open class AppDataItem: Trackable {
         static let Money = "Money"
         static let Text = "Text"
         static let PictureID = "PictureID"
+        static let PresentationID = "PresentationID"
         static let Decimal = "Decimal"
         static let Integer = "Integer"
     }

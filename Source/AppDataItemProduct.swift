@@ -60,6 +60,17 @@ open class AppDataItemProduct: AppDataItem, ProductItem {
         return thumbnailImageURL
     }
 
+    public var productVideoPresentationID: String?
+    public var productVideoContentID: String?
+
+    public var productVideoURL: URL? {
+        return CPEXMLSuite.current?.manifest.presentationWithID(productVideoPresentationID)?.videoURL
+    }
+
+    public var productVideoPreviewImageURL: URL? {
+        return CPEXMLSuite.current?.manifest.metadataWithID(productVideoContentID)?.largeImageURL
+    }
+
     public var sceneImagePictureID: String?
     public var sceneImageURL: URL? {
         return CPEXMLSuite.current?.manifest.pictureWithID(sceneImagePictureID)?.imageURL
@@ -118,6 +129,14 @@ open class AppDataItemProduct: AppDataItem, ProductItem {
 
             case AppDataNVPairName.SceneImage:
                 sceneImagePictureID = try indexer[Elements.PictureID].value()
+                break
+
+            case AppDataNVPairName.ProductVideo:
+                productVideoPresentationID = try indexer[Elements.PresentationID].value()
+                break
+
+            case AppDataNVPairName.ProductVideoContentID:
+                productVideoContentID = try indexer[Elements.ContentID].value()
                 break
 
             case AppDataNVPairName.ProductImageBullseyeX:
