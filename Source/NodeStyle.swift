@@ -5,20 +5,51 @@
 import Foundation
 import SWXMLHash
 
+/**
+    Method to use when scaling the background media to the device's display
+ 
+    - bestFit: Scale the image to the display so the image fills the display and is fully displayed along one axis
+    - full: Scale the image to ensure the entire image is visible
+    - tiled: Image is tiled
+ */
 public enum BackgroundScaleMethod: String {
     case bestFit = "BestFit"
     case full = "Full"
     case tiled = "Tiled"
 }
 
+/**
+    Method to use when positioning the background media on the device's display
+ 
+    - upperLeft: Position the upper left corner of the image in the upper left corner of the screen
+    - upperRight: Same as upperleft, but positioned at the upper right
+    - lowerLeft: Same as upperleft, but positioned at the lower left
+    - lowerRight: Same as upperleft, but positioned at the lower right
+    - centered: The center point of the image is at the center point of the screen
+ */
 public enum BackgroundPositioningMethod: String {
     case upperLeft = "upperleft"
     case upperRight = "upperright"
+    case lowerLeft = "lowerleft"
+    case lowerRight = "lowerright"
     case centered = "centered"
 }
 
+/**
+    Supported `OverlayArea` types
+ 
+    - button: Area for positioning and sizing buttons
+    - title: Area for positioning and sizing title treatment
+ */
+public enum OverlayAreaType: String {
+    case button = "button"
+    case title = "title"
+}
+
+/// An area within the device's display to be used to position and size UI elements
 public struct OverlayArea {
 
+    /// Supported XML element tags
     private struct Elements {
         static let WidthPixels = "WidthPixels"
         static let HeightPixels = "HeightPixels"
@@ -26,9 +57,19 @@ public struct OverlayArea {
         static let PixelsFromBottom = "PixelsFromBottom"
     }
 
+    /// Area's size in pixels relative to the background image (or background video, if no image is specified)
     public var size: CGSize
+
+    /// Area's bottom left-hand point in pixels relative to the background image (or background video, if no image is specified)
     public var bottomLeftPoint: CGPoint
 
+    /**
+        Initializes a UI element area with the provided XML indexer
+     
+        - Parameter indexer: The root XML node
+        - Throws:
+            - `ManifestError.missingRequiredChildElement` if an expected XML element is not present
+     */
     init(indexer: XMLIndexer) throws {
         // WidthPixels
         guard let width: Int = try indexer[Elements.WidthPixels].value() else {
@@ -58,12 +99,14 @@ public struct OverlayArea {
 
 open class NodeStyle {
 
+    /// Supported XML attribute keys
     private struct Attributes {
         static let NodeStyleID = "NodeStyleID"
         static let Looping = "looping"
         static let Tag = "tag"
     }
 
+    /// Supported XML element tags
     private struct Elements {
         static let ThemeID = "ThemeID"
         static let Background = "Background"
@@ -81,30 +124,36 @@ open class NodeStyle {
         static let OverlayArea = "OverlayArea"
     }
 
-    private struct OverlayAreaType {
-        static let Button = "button"
-        static let Title = "title"
-    }
-
-    // MARK: Instance Variables
     /// Unique identifier
     public var id: String
 
-    /// Properties
+    /// Flag for if this `NodeStyle` supports devices in landscape mode
     public var supportsLandscape = false
+
+    /// Flag for if this `NodeStyle` supports devices in portrait mode
     public var supportsPortrait = false
+
+    /// Flag for if this `NodeStyle` supports tablets
     public var supportsTablet = false
+
+    /// Flag for if this `NodeStyle` supports phones
     public var supportsPhone = false
 
-    /// General theme (includes buttons)
+    /// ID for associated `Theme`
     public var themeID: String
+
+    /// Associated `Theme` that defines UI elements such as buttons
     open var theme: Theme {
         return (CPEXMLSuite.current?.cpeStyle?.themeWithID(themeID))!
     }
 
-    /// Background properties
+    /// Color to use on UI behind any background videos or images
     public var backgroundColor = UIColor.black
+
+    /// Scale method to use to match the device's display
     public var backgroundScaleMethod = BackgroundScaleMethod.bestFit
+
+    /// Positioning method to use to match the device's display
     public var backgroundPositioningMethod = BackgroundPositioningMethod.centered
 
     /// Background image
@@ -217,9 +266,9 @@ open class NodeStyle {
                         throw ManifestError.missingRequiredAttribute(Attributes.Tag, element: overlayIndexer.element)
                     }
 
-                    if type.lowercased() == OverlayAreaType.Button {
+                    if type.lowercased() == OverlayAreaType.button.rawValue {
                         buttonOverlayArea = try OverlayArea(indexer: overlayIndexer)
-                    } else if type.lowercased() == OverlayAreaType.Title {
+                    } else if type.lowercased() == OverlayAreaType.title.rawValue {
                         titleOverlayArea = try OverlayArea(indexer: overlayIndexer)
                     }
                 }

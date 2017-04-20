@@ -263,7 +263,7 @@ class ResultsTableViewController: UITableViewController {
 
             for timedEvent in timedEvents {
                 addItem(section: section, title: "\(timedEvent.startTime.formattedTimecode) -> \(timedEvent.endTime.formattedTimecode)", hasChildren: true, detailText: timedEvent.description) { [weak self] in
-                    if timedEvent.isType(.video), let videoURL = timedEvent.video?.url {
+                    if timedEvent.isType(.video), let videoURL = timedEvent.audioVisual?.presentation?.videoURL {
                         self?.presentAVAsset(url: videoURL, title: timedEvent.description)
                     } else if timedEvent.isType(.gallery) {
                         self?.pushResultsTableView(type: .gallery, gallery: timedEvent.gallery)
