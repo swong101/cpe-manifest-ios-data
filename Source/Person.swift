@@ -118,7 +118,7 @@ open class Person: Equatable, Trackable {
 
     public var jobs: [PersonJob]?
     public var name: String
-    var contentIdentifiers: [ContentIdentifier]?
+    public var contentIdentifiers: [ContentIdentifier]?
     public var biography: String?
     public var pictureGroup: PictureGroup?
     public var socialAccounts: [SocialAccount]?
@@ -176,7 +176,7 @@ open class Person: Equatable, Trackable {
 
     public var detailsLoaded = false
 
-    // Trackable
+    /// Tracking identifier
     open var analyticsID: String {
         return id
     }

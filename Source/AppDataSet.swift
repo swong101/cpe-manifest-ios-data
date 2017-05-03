@@ -25,10 +25,10 @@ open class AppDataSet {
     }
 
     // Inventory
-    open var locations: [String: AppDataItemLocation]?
-    open var products: [String: AppDataItemProduct]?
-    open var people: [String: AppDataItem]?
-    open var imageCache: [String: UIImage]?
+    public var locations: [String: AppDataItemLocation]?
+    public var products: [String: AppDataItemProduct]?
+    public var people: [String: AppDataItem]?
+    public var imageCache: [String: UIImage]?
 
     init(indexer: XMLIndexer) throws {
         // ManifestAppData

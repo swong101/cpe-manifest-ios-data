@@ -59,7 +59,7 @@ public class BaselineAPIUtil: APIUtil, TalentAPIUtil {
         self.customHeaders[Headers.Studio] = studio.rawValue
     }
 
-    public func prefetchPeople(_ completionHandler: @escaping (_ people: [Person]?) -> Void) {
+    open func prefetchPeople(_ completionHandler: @escaping (_ people: [Person]?) -> Void) {
         if let apiID = featureAPIID {
             _ = getJSONWithPath(Endpoints.GetCredits, parameters: ["id": apiID], successBlock: { (result) -> Void in
                 if let results = result["result"] as? NSArray {
@@ -87,7 +87,7 @@ public class BaselineAPIUtil: APIUtil, TalentAPIUtil {
         }
     }
 
-    public func fetchImages(forPersonID id: String, completionHandler: @escaping (_ pictureGroup: PictureGroup?) -> Void) {
+    open func fetchImages(forPersonID id: String, completionHandler: @escaping (_ pictureGroup: PictureGroup?) -> Void) {
         _ = getJSONWithPath(Endpoints.GetTalentImages, parameters: ["id": id], successBlock: { (result) -> Void in
             if let results = result["result"] as? NSArray, results.count > 0 {
                 var pictures = [Picture]()
@@ -114,7 +114,7 @@ public class BaselineAPIUtil: APIUtil, TalentAPIUtil {
         })
     }
 
-    public func fetchDetails(forPersonID id: String, completionHandler: @escaping (_ biography: String?, _ socialAccounts: [SocialAccount]?, _ films: [Film]) -> Void) {
+    open func fetchDetails(forPersonID id: String, completionHandler: @escaping (_ biography: String?, _ socialAccounts: [SocialAccount]?, _ films: [Film]) -> Void) {
         _ = getJSONWithPath(Endpoints.GetTalentDetails, parameters: ["id": id], successBlock: { (result) in
             var socialAccounts = [SocialAccount]()
             if let socialAccountInfoList = result[Keys.SocialAccounts] as? NSArray {

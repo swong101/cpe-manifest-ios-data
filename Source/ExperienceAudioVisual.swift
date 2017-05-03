@@ -22,6 +22,7 @@ public enum ExperienceAudioVisualType: String {
 
 open class ExperienceAudioVisual: MetadataDriven {
 
+    /// Supported XML element tags
     private struct Elements {
         static let AudioVisualType = "Type"
         static let SubType = "SubType"
@@ -29,10 +30,10 @@ open class ExperienceAudioVisual: MetadataDriven {
         static let PlayableSequenceID = "PlayableSequenceID"
     }
 
-    var type: ExperienceAudioVisualType
-    var subTypes: [String]?
-    var presentationID: String?
-    private var playableSequenceID: String?
+    public var type: ExperienceAudioVisualType
+    public var subTypes: [String]?
+    public var presentationID: String?
+    public var playableSequenceID: String?
 
     open var presentation: Presentation? {
         return CPEXMLSuite.current?.manifest.presentationWithID(presentationID)

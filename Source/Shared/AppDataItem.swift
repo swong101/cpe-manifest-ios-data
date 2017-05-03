@@ -110,7 +110,7 @@ open class AppDataItem: Trackable {
         return (experience?.experienceChildren?.count ?? 0)
     }
 
-    // Trackable
+    /// Tracking identifier
     open var analyticsID: String {
         return id
     }
@@ -196,13 +196,10 @@ open class AppDataItem: Trackable {
         }
     }
 
-    // MARK: Helper Methods
     /**
         Finds the Experience media associated with the AppData at the specified index
      
-        - Parameters:
-            - index: Media index to search
-     
+        - Parameter index: Media index to search
         - Returns: Associated Experience if it exists
      */
     open func mediaAtIndex(_ index: Int) -> Experience? {

@@ -19,14 +19,15 @@ public func == (lhs: Experience, rhs: Experience) -> Bool {
 
 public struct ExperienceChild: XMLIndexerDeserializable {
 
+    /// Supported XML element tags
     private struct Elements {
         static let ExperienceID = "ExperienceID"
         static let SequenceInfo = "SequenceInfo"
         static let Number = "Number"
     }
 
-    var experienceID: String
-    var sequence: Int
+    public var experienceID: String
+    public var sequence: Int
 
     public static func deserialize(_ node: XMLIndexer) throws -> ExperienceChild {
         return try ExperienceChild(
@@ -39,12 +40,12 @@ public struct ExperienceChild: XMLIndexerDeserializable {
 
 open class Experience: MetadataDriven, Equatable, Trackable {
 
-    var nodeStyles: [NodeStyle]?
-
+    /// Supported XML attribute keys
     private struct Attributes {
         static let ExperienceID = "ExperienceID"
     }
 
+    /// Supported XML element tags
     private struct Elements {
         static let Region = "Region"
         static let ExcludedRegion = "ExcludedRegion"
@@ -56,13 +57,15 @@ open class Experience: MetadataDriven, Equatable, Trackable {
         static let ExperienceChild = "ExperienceChild"
     }
 
+    /// Unique identifier
     public var id: String
-    var audioVisual: ExperienceAudioVisual?
+    public var audioVisual: ExperienceAudioVisual?
     public var gallery: Gallery?
     public var app: ExperienceApp?
-    var experienceChildren: [ExperienceChild]?
-    private var timedEventSequenceID: String?
-    var sequence: Int = 0
+    public var experienceChildren: [ExperienceChild]?
+    public var timedEventSequenceID: String?
+    public var sequence: Int = 0
+    public var nodeStyles: [NodeStyle]?
 
     override open var title: String! {
         if let title = super.title {
@@ -196,11 +199,11 @@ open class Experience: MetadataDriven, Equatable, Trackable {
         if let audioVisual = (self.audioVisual ?? self.childExperiences?.first?.audioVisual) {
             return audioVisual.isClipShare
         }
-        
+
         return self.id.contains("clipshare")
     }()
 
-    // Trackable
+    /// Tracking identifier
     open var analyticsID: String {
         return id
     }
@@ -255,16 +258,12 @@ open class Experience: MetadataDriven, Equatable, Trackable {
         try super.init(indexer: indexer)
     }
 
-    // MARK: Helper Methods
     /**
         Check if Experience is of the specified type
      
-        - Parameters:
-            - type: Type of Experience
-     
+        - Parameter type: Type of Experience
         - Returns: `true` if the Experience is of the specified type
      */
-    // FIXME: Hardcoded Experience ID strings are being used to identify Experience types
     open func isType(_ type: ExperienceType) -> Bool {
         switch type {
         case .app:
@@ -303,9 +302,7 @@ open class Experience: MetadataDriven, Equatable, Trackable {
     /**
         Finds the Experience media associated with the AppData at the specified index
  
-        - Parameters:
-            - index: Media index to search
- 
+        - Parameter index: Media index to search
         - Returns: Associated Experience if it exists
     */
     open func locationMediaAtIndex(_ index: Int) -> Experience? {
@@ -315,9 +312,7 @@ open class Experience: MetadataDriven, Equatable, Trackable {
     /**
         Finds the NodeStyle matching the current orientation and device
  
-        - Parameters:
-            - interfaceOrientation: Current device orientation
- 
+        - Parameter interfaceOrientation: Current device orientation
         - Returns: Current NodeStyle if it exists
     */
     open func getNodeStyle(_ interfaceOrientation: UIInterfaceOrientation) -> NodeStyle? {
@@ -357,9 +352,7 @@ open class Experience: MetadataDriven, Equatable, Trackable {
     /**
         Finds the ExperienceChild at the given index
  
-        - Parameters:
-            - index: Child experience index to search
- 
+        - Parameter index: Child experience index to search
         - Returns: Child experience, if it exists
     */
     open func childExperience(atIndex index: Int) -> Experience? {

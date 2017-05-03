@@ -7,15 +7,18 @@ import SWXMLHash
 
 open class MetadataDriven {
 
+    /// Supported XML attribute keys
     private struct Attributes {
         static let ContentID = "ContentID"
     }
 
+    /// Supported XML element tags
     private struct Elements {
         static let ContentID = "ContentID"
     }
 
-    var contentID: String?
+    /// Unique identifier for `Metadata` object
+    public var contentID: String?
 
     private var _metadata: Metadata?
     open var metadata: Metadata? {

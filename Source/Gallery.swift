@@ -7,14 +7,17 @@ import SWXMLHash
 
 open class Gallery: MetadataDriven, Trackable {
 
+    /// Supported subtypes
     private struct Constants {
         static let SubTypeTurntable = "Turntable"
     }
 
+    /// Supported XML attribute keys
     private struct Attributes {
         static let GalleryID = "GalleryID"
     }
 
+    /// Supported XML element tags
     private struct Elements {
         static let GalleryType = "Type"
         static let SubType = "SubType"
@@ -22,11 +25,12 @@ open class Gallery: MetadataDriven, Trackable {
         static let GalleryName = "GalleryName"
     }
 
-    var id: String
-    var type: String?
-    var subTypes: [String]?
-    var pictureGroupID: String?
-    var names: [String]?
+    /// Unique identifier
+    public var id: String
+    public var type: String?
+    public var subTypes: [String]?
+    public var pictureGroupID: String?
+    public var names: [String]?
 
     private var _pictureGroup: PictureGroup?
     open var pictureGroup: PictureGroup? {
@@ -49,7 +53,7 @@ open class Gallery: MetadataDriven, Trackable {
         return (pictureGroup?.numPictures ?? 0)
     }
 
-    // Trackable
+    /// Tracking identifier
     open var analyticsID: String {
         return id
     }

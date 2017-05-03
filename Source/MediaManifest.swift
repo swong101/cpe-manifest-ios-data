@@ -54,32 +54,32 @@ open class MediaManifest {
     }
 
     // Versioning
-    var currentSpecVersion = ManifestSpecVersion.unknown
-    var currentProfile = ManifestProfile.none
+    public var currentSpecVersion = ManifestSpecVersion.unknown
+    public var currentProfile = ManifestProfile.none
 
     // Inventory
-    open var audios: [String: Audio]?
-    open var videos: [String: Video]?
-    open var images: [String: Image]?
-    open var interactives: [String: Interactive]?
-    open var metadatas: [String: Metadata]?
-    open var textObjects: [String: TextObject]?
-    open var textGroups: [String: TextGroup]?
-    open var presentations = [String: Presentation]()
-    open var playableSequences: [String: PlayableSequence]?
-    open var presentationToAudioVisualMapping: [String: ExperienceAudioVisual]?
-    open var pictures: [String: Picture]?
-    open var pictureGroups: [String: PictureGroup]?
-    open var galleries: [String: Gallery]?
-    open var appGroups: [String: AppGroup]?
-    open var experienceApps: [String: ExperienceApp]?
-    open var experiences = [String: Experience]()
-    open var timedEventSequences: [String: TimedEventSequence]?
-    open var timedEvents: [TimedEvent]?
+    public var audios: [String: Audio]?
+    public var videos: [String: Video]?
+    public var images: [String: Image]?
+    public var interactives: [String: Interactive]?
+    public var metadatas: [String: Metadata]?
+    public var textObjects: [String: TextObject]?
+    public var textGroups: [String: TextGroup]?
+    public var presentations = [String: Presentation]()
+    public var playableSequences: [String: PlayableSequence]?
+    public var presentationToAudioVisualMapping: [String: ExperienceAudioVisual]?
+    public var pictures: [String: Picture]?
+    public var pictureGroups: [String: PictureGroup]?
+    public var galleries: [String: Gallery]?
+    public var appGroups: [String: AppGroup]?
+    public var experienceApps: [String: ExperienceApp]?
+    public var experiences = [String: Experience]()
+    public var timedEventSequences: [String: TimedEventSequence]?
+    public var timedEvents: [TimedEvent]?
 
-    open var mainExperience: Experience!
-    open var inMovieExperience: Experience!
-    open var outOfMovieExperience: Experience!
+    public var mainExperience: Experience!
+    public var inMovieExperience: Experience!
+    public var outOfMovieExperience: Experience!
 
     open var title: String {
         return (mainExperience.title ?? "Unknown")
@@ -227,7 +227,7 @@ open class MediaManifest {
         }
     }
 
-    private func initInventory(indexer: XMLIndexer) throws {
+    open func initInventory(indexer: XMLIndexer) throws {
         // Audio
         if indexer.hasElement(Elements.Audio) {
             var audios = [String: Audio]()

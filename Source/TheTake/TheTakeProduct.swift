@@ -65,7 +65,7 @@ public class TheTakeProduct: ProductItem {
     public var brand: String?
 
     public var price: Double?
-    public var displayPrice: String? {
+    open var displayPrice: String? {
         if let price = price {
             let formatter = NumberFormatter()
             formatter.numberStyle = .currency
@@ -82,7 +82,7 @@ public class TheTakeProduct: ProductItem {
     public var isExactMatch = false
     public var externalURL: URL?
     public var bullseyePoint = CGPoint.zero
-    public var shareText: String {
+    open var shareText: String {
         var shareText = name
         if let externalURLString = externalURL?.absoluteString {
             shareText += " - " + externalURLString

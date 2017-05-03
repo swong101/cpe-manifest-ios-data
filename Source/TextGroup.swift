@@ -7,18 +7,21 @@ import SWXMLHash
 
 open class TextGroup {
 
+    /// Supported XML attribute keys
     private struct Attributes {
         static let TextGroupID = "TextGroupID"
         static let Language = "language"
     }
 
+    /// Supported XML element tags
     private struct Elements {
         static let TextObjectID = "TextObjectID"
     }
 
-    var id: String
-    var language: String?
-    var textObjectIDs: [String]
+    /// Unique identifier
+    public var id: String
+    public var language: String?
+    public var textObjectIDs: [String]
 
     open var textObject: TextObject? {
         return CPEXMLSuite.current?.manifest.textObjectWithID(textObjectIDs.first)

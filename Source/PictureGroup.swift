@@ -7,6 +7,7 @@ import SWXMLHash
 
 open class Picture {
 
+    /// Supported XML element tags
     private struct Elements {
         static let PictureID = "PictureID"
         static let ImageID = "ImageID"
@@ -15,10 +16,11 @@ open class Picture {
         static let Sequence = "Sequence"
     }
 
-    var id: String
+    /// Unique identifier
+    public var id: String
     public var imageID: String?
-    var thumbnailImageID: String?
-    var captions: [String]?
+    public var thumbnailImageID: String?
+    public var captions: [String]?
     public var sequence: Int = 0
 
     open var image: Image? {
@@ -84,15 +86,18 @@ open class Picture {
 
 public class PictureGroup {
 
+    /// Supported XML attribute keys
     private struct Attributes {
         static let PictureGroupID = "PictureGroupID"
     }
 
+    /// Supported XML element tags
     private struct Elements {
         static let Picture = "Picture"
     }
 
-    var id: String?
+    /// Unique identifier
+    public var id: String?
     public var pictures: [Picture]
 
     open var thumbnailImageURL: URL? {
@@ -127,7 +132,7 @@ public class PictureGroup {
         pictures = try indexer[Elements.Picture].flatMap({ try Picture(indexer: $0) })
     }
 
-    public func picture(atIndex index: Int) -> Picture? {
+    open func picture(atIndex index: Int) -> Picture? {
         return (pictures.count > index ? pictures[index] : nil)
     }
 

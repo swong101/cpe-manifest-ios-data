@@ -7,10 +7,12 @@ import SWXMLHash
 
 open class Presentation {
 
+    /// Supported XML attribute keys
     private struct Attributes {
         static let PresentationID = "PresentationID"
     }
 
+    /// Supported XML element tags
     private struct Elements {
         static let TrackMetadata = "TrackMetadata"
         static let VideoTrackReference = "VideoTrackReference"
@@ -19,9 +21,10 @@ open class Presentation {
         static let AudioTrackID = "AudioTrackID"
     }
 
-    var id: String
-    var videoIDs: [String]?
-    var audioIDs: [String]?
+    /// Unique identifier
+    public var id: String
+    public var videoIDs: [String]?
+    public var audioIDs: [String]?
 
     open var audio: Audio? {
         return CPEXMLSuite.current?.manifest.audioWithID(audioIDs?.first)

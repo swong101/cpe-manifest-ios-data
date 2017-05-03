@@ -16,20 +16,20 @@ public class AppGroup: MetadataDriven, Trackable {
         static let InteractiveTrackID = "InteractiveTrackID"
     }
 
-    var id: String
-    private var interactiveTrackIDs: [String]
+    public var id: String
+    public var interactiveTrackIDs: [String]
 
-    private lazy var interactives: [Interactive]? = { [unowned self] in
+    open lazy var interactives: [Interactive]? = { [unowned self] in
         return self.interactiveTrackIDs.flatMap({ CPEXMLSuite.current?.manifest.interactiveWithID($0) })
     }()
 
-    public var url: URL? {
+    open var url: URL? {
         return interactives?.first?.url
     }
 
     public var isProductApp = false
 
-    // Trackable
+    /// Tracking identifier
     open var analyticsID: String {
         return id
     }

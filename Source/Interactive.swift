@@ -5,9 +5,16 @@
 import Foundation
 import SWXMLHash
 
-private enum InteractiveType: String {
-    case standaloneGame     = "standalone game" // Playable game that runs independently of audio or video
-    case interactivity      = "interactivity"   // Ability to choose settings, value added material and other options outside of menus. For example, pop-ups.
+/**
+    Supported interactive types
+ 
+    - standaloneGame: Playable game that runs independently of audio or video
+    - interactivity: Ability to choose settings, value added material and other options outside of menus. For example, pop-ups.
+    - other: Miscellaneous interactive types
+ */
+public enum InteractiveType: String {
+    case standaloneGame     = "standalone game"
+    case interactivity      = "interactivity"
     case other              = "other"
 
     static func build(rawValue: String) -> InteractiveType? {
@@ -15,26 +22,44 @@ private enum InteractiveType: String {
     }
 }
 
-private enum InteractiveRuntimeEnvironment: String {
-    case html5              = "html5"   // W3C HTML5
-    case html               = "html"    // W3C HTML5
-    case iOS                = "ios"     // iOS
-    case defaultEnvironment = "default" // Represents an application that can be played if nothing else can. This is typically an image
-    case other              = "other"   // May be used when there is not a type convention
+/**
+    Supported interactive runtime environments
+     
+    - html5: W3C HTML5
+    - html: W3C HTML5
+    - iOS: Apple iOS
+    - defaultEnvironment: Represents an application that can be played if nothing else can. This is typically an image
+    - other: May be used when there is not a type convention
+ */
+public enum InteractiveRuntimeEnvironment: String {
+    case html5              = "html5"
+    case html               = "html"
+    case iOS                = "ios"
+    case defaultEnvironment = "default"
+    case other              = "other"
 
     static func build(rawValue: String) -> InteractiveRuntimeEnvironment? {
         return (InteractiveRuntimeEnvironment(rawValue: rawValue) ?? InteractiveRuntimeEnvironment(rawValue: rawValue.lowercased()))
     }
 }
 
-private class InteractiveEncoding: DigitalAssetEncoding {
+/// Encoding details of an interactive asset
+open class InteractiveEncoding: DigitalAssetEncoding {
 
+    /// Supported XML element tags
     private struct Elements {
         static let RuntimeEnvironment = "RuntimeEnvironment"
     }
 
-    var runtimeEnvironment: InteractiveRuntimeEnvironment
+    /// Runtime environment in which the interactive asset is designed to be launched
+    public var runtimeEnvironment: InteractiveRuntimeEnvironment
 
+    /**
+        Initializes a new interactive encoding details wrapper with the provided XML indexer
+     
+        - Parameter indexer: The root XML node
+        - Throws: `ManiefstError.missingRequiredChildElement` if an expected XML element is not present
+     */
     override init?(indexer: XMLIndexer) throws {
         // RuntimeEnvironment
         guard let runtimeEnvironmentString: String = try indexer[Elements.RuntimeEnvironment].value() else {
@@ -54,21 +79,37 @@ private class InteractiveEncoding: DigitalAssetEncoding {
 
 }
 
+/// Launchable interactive asset
 open class Interactive: DigitalAsset {
 
+    /// Supported XML attribute keys
     private struct Attributes {
         static let InteractiveTrackID = "InteractiveTrackID"
     }
 
+    /// Supported XML element tags
     private struct Elements {
         static let InteractiveType = "Type"
         static let Encoding = "Encoding"
     }
 
-    var id: String
-    private var type: InteractiveType
-    private var encodings: [InteractiveEncoding]
+    /// Unique identifier
+    public var id: String
 
+    /// Type of interactive asset
+    public var type: InteractiveType
+
+    /// Encoding details of interactive asset
+    public var encodings: [InteractiveEncoding]
+
+    /**
+         Initializes a new interactive asset with the provided XML indexer
+         
+         - Parameter indexer: The root XML node
+         - Throws:
+            - `ManifestError.missingRequiredAttribute` if an expected XML attribute is not present
+            - `ManiefstError.missingRequiredChildElement` if an expected XML element is not present
+     */
     override init?(indexer: XMLIndexer) throws {
         // InteractiveTrackID
         guard let id: String = indexer.value(ofAttribute: Attributes.InteractiveTrackID) else {

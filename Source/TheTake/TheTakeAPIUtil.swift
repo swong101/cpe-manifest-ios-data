@@ -21,7 +21,7 @@ public class TheTakeAPIUtil: APIUtil, ProductAPIUtil {
 
     private var frameTimes = [Double: NSDictionary]()
     private var _frameTimeKeys = [Double]()
-    private var frameTimeKeys: [Double] {
+    open var frameTimeKeys: [Double] {
         if _frameTimeKeys.count == 0 {
             _frameTimeKeys = frameTimes.keys.sorted()
         }
@@ -37,7 +37,7 @@ public class TheTakeAPIUtil: APIUtil, ProductAPIUtil {
         self.customHeaders[Headers.Accept] = Headers.AcceptValue
     }
 
-    public func closestFrameTime(_ timeInSeconds: Double) -> Double {
+    open func closestFrameTime(_ timeInSeconds: Double) -> Double {
         let timeInMilliseconds = timeInSeconds * 1000
         var closestFrameTime = -1.0
 
@@ -52,7 +52,7 @@ public class TheTakeAPIUtil: APIUtil, ProductAPIUtil {
         return closestFrameTime
     }
 
-    public func getProductFrameTimes(completion: @escaping (_ frameTimes: [Double]?) -> Void) -> URLSessionDataTask? {
+    open func getProductFrameTimes(completion: @escaping (_ frameTimes: [Double]?) -> Void) -> URLSessionDataTask? {
         if let apiID = featureAPIID {
             return getJSONWithPath("/frames/listFrames", parameters: ["media": apiID, "start": "0", "limit": "10000"], successBlock: { (result) -> Void in
                 if let frames = result["result"] as? [NSDictionary] {
@@ -69,7 +69,7 @@ public class TheTakeAPIUtil: APIUtil, ProductAPIUtil {
         return nil
     }
 
-    public func getProductCategories(completion: ((_ productCategories: [ProductCategory]?) -> Void)?) -> URLSessionDataTask? {
+    open func getProductCategories(completion: ((_ productCategories: [ProductCategory]?) -> Void)?) -> URLSessionDataTask? {
         if productCategories != nil {
             completion?(productCategories)
             return nil
@@ -92,7 +92,7 @@ public class TheTakeAPIUtil: APIUtil, ProductAPIUtil {
         return nil
     }
 
-    public func getFrameProducts(_ frameTime: Double, completion: @escaping (_ products: [ProductItem]?) -> Void) -> URLSessionDataTask? {
+    open func getFrameProducts(_ frameTime: Double, completion: @escaping (_ products: [ProductItem]?) -> Void) -> URLSessionDataTask? {
         if let apiID = featureAPIID, frameTime >= 0 && frameTimes[frameTime] != nil {
             return getJSONWithPath("/frameProducts/listFrameProducts", parameters: ["media": apiID, "time": String(frameTime)], successBlock: { (result) -> Void in
                 if let productList = result["result"] as? NSArray {
@@ -116,7 +116,7 @@ public class TheTakeAPIUtil: APIUtil, ProductAPIUtil {
         return nil
     }
 
-    public func getCategoryProducts(_ categoryID: String?, completion: @escaping (_ products: [ProductItem]?) -> Void) -> URLSessionDataTask? {
+    open func getCategoryProducts(_ categoryID: String?, completion: @escaping (_ products: [ProductItem]?) -> Void) -> URLSessionDataTask? {
         if let apiID = featureAPIID {
             var parameters: [String: String] = ["media": apiID, "limit": "100"]
             if let categoryID = categoryID {
@@ -145,7 +145,7 @@ public class TheTakeAPIUtil: APIUtil, ProductAPIUtil {
         return nil
     }
 
-    public func getProductDetails(_ productID: String, completion: @escaping (_ product: ProductItem?) -> Void) -> URLSessionDataTask {
+    open func getProductDetails(_ productID: String, completion: @escaping (_ product: ProductItem?) -> Void) -> URLSessionDataTask {
         return getJSONWithPath("/products/productDetails", parameters: ["product": productID], successBlock: { (result) -> Void in
             completion(TheTakeProduct(data: result))
         }) { (error) -> Void in
