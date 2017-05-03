@@ -36,7 +36,7 @@ open class DigitalAssetEncoding {
         Initializes a new digital asset encoding details wrapper with the provided XML indexer
      
         - Parameter indexer: The root XML node
-        - Throws: `ManiefstError.missingRequiredChildElement` if an expected XML element is not present
+        - Throws
      */
     public init?(indexer: XMLIndexer) throws {
         // CodecType

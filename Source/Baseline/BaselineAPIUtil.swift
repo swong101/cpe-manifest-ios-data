@@ -59,7 +59,7 @@ public class BaselineAPIUtil: APIUtil, TalentAPIUtil {
         self.customHeaders[Headers.Studio] = studio.rawValue
     }
 
-    public func prefetchCredits(_ completion: @escaping (_ people: [Person]?) -> Void) {
+    open func prefetchPeople(_ completionHandler: @escaping (_ people: [Person]?) -> Void) {
         if let apiID = featureAPIID {
             _ = getJSONWithPath(Endpoints.GetCredits, parameters: ["id": apiID], successBlock: { (result) -> Void in
                 if let results = result["result"] as? NSArray {
@@ -76,49 +76,46 @@ public class BaselineAPIUtil: APIUtil, TalentAPIUtil {
                         i += 1
                     }
 
-                    completion(people)
+                    completionHandler(people)
                 }
-            }) { (error) in
+            }, errorBlock: { (error) in
                 print("Error fetching credits for ID \(apiID): \(error?.localizedDescription ?? "Unknown error")")
-                completion(nil)
-            }
+                completionHandler(nil)
+            })
         } else {
-            completion(nil)
+            completionHandler(nil)
         }
     }
 
-    public func getTalentImages(_ talentID: String, completion: @escaping (_ talentImages: [TalentImage]?) -> Void) {
-        _ = getJSONWithPath(Endpoints.GetTalentImages, parameters: ["id": talentID], successBlock: { (result) -> Void in
+    open func fetchImages(forPersonID id: String, completionHandler: @escaping (_ pictureGroup: PictureGroup?) -> Void) {
+        _ = getJSONWithPath(Endpoints.GetTalentImages, parameters: ["id": id], successBlock: { (result) -> Void in
             if let results = result["result"] as? NSArray, results.count > 0 {
-                var talentImages = [TalentImage]()
+                var pictures = [Picture]()
                 for talentImageInfo in results {
                     if let talentImageInfo = talentImageInfo as? NSDictionary {
-                        var talentImage = TalentImage()
-
+                        var thumbnailImageURL: URL?
                         if let thumbnailURLString = talentImageInfo[Keys.MediumURL] as? String {
-                            talentImage.thumbnailImageURL = URL(string: thumbnailURLString)
+                            thumbnailImageURL = URL(string: thumbnailURLString)
                         }
 
-                        if let imageURLString = talentImageInfo[Keys.FullURL] as? String {
-                            talentImage.imageURL = URL(string: imageURLString)
+                        if let imageURLString = talentImageInfo[Keys.FullURL] as? String, let imageURL = URL(string: imageURLString) {
+                            pictures.append(Picture(imageURL: imageURL, thumbnailImageURL: thumbnailImageURL))
                         }
-
-                        talentImages.append(talentImage)
                     }
                 }
 
-                completion(talentImages)
+                completionHandler(PictureGroup(pictures: pictures))
             } else {
-                completion(nil)
+                completionHandler(nil)
             }
-        }) { (error) in
-            print("Error fetching talent images for ID \(talentID): \(error?.localizedDescription ?? "Unknown error")")
-            completion(nil)
-        }
+        }, errorBlock: { (error) in
+            print("Error fetching talent images for ID \(id): \(error?.localizedDescription ?? "Unknown error")")
+            completionHandler(nil)
+        })
     }
 
-    public func getTalentDetails(_ talentID: String, completion: @escaping (_ biography: String?, _ socialAccounts: [SocialAccount]?, _ films: [Film]) -> Void) {
-        _ = getJSONWithPath(Endpoints.GetTalentDetails, parameters: ["id": talentID], successBlock: { (result) in
+    open func fetchDetails(forPersonID id: String, completionHandler: @escaping (_ biography: String?, _ socialAccounts: [SocialAccount]?, _ films: [Film]) -> Void) {
+        _ = getJSONWithPath(Endpoints.GetTalentDetails, parameters: ["id": id], successBlock: { (result) in
             var socialAccounts = [SocialAccount]()
             if let socialAccountInfoList = result[Keys.SocialAccounts] as? NSArray {
                 for socialAccountInfo in socialAccountInfoList {
@@ -162,11 +159,11 @@ public class BaselineAPIUtil: APIUtil, TalentAPIUtil {
                 }
             }
 
-            completion(result[Keys.ShortBio] as? String, socialAccounts, films)
-        }) { (error) in
-            print("Error fetching talent details for ID \(talentID): \(error?.localizedDescription ?? "Unknown error")")
-            completion(nil, nil, [])
-        }
+            completionHandler(result[Keys.ShortBio] as? String, socialAccounts, films)
+        }, errorBlock: { (error) in
+            print("Error fetching talent details for ID \(id): \(error?.localizedDescription ?? "Unknown error")")
+            completionHandler(nil, nil, [])
+        })
     }
 
 }

@@ -11,8 +11,8 @@ public protocol TalentAPIUtil {
 
     var featureAPIID: String? { get set }
 
-    func prefetchCredits(_ completion: @escaping (_ people: [Person]?) -> Void)
-    func getTalentImages(_ id: String, completion: @escaping (_ talentImages: [TalentImage]?) -> Void)
-    func getTalentDetails(_ id: String, completion: @escaping (_ biography: String?, _ socialAccounts: [SocialAccount]?, _ films: [Film]) -> Void)
+    func prefetchPeople(_ completionHandler: @escaping (_ people: [Person]?) -> Void)
+    func fetchImages(forPersonID id: String, completionHandler: @escaping (_ pictureGroup: PictureGroup?) -> Void)
+    func fetchDetails(forPersonID id: String, completionHandler: @escaping (_ biography: String?, _ socialAccounts: [SocialAccount]?, _ films: [Film]) -> Void)
 
 }

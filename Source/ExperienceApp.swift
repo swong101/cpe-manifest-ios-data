@@ -7,20 +7,23 @@ import SWXMLHash
 
 open class ExperienceApp: MetadataDriven, Trackable {
 
+    /// Supported XML attribute keys
     private struct Attributes {
         static let AppID = "AppID"
     }
 
+    /// Supported XML element tags
     private struct Elements {
         static let AppGroupID = "AppGroupID"
         static let AppName = "AppName"
     }
 
-    var appID: String?
-    var appGroupID: String
-    var names: [String]?
+    public var appID: String?
+    public var appGroupID: String
+    public var names: [String]?
 
-    var id: String {
+    /// Unique identifier
+    open var id: String {
         return (appID ?? appGroupID)
     }
 
@@ -28,9 +31,9 @@ open class ExperienceApp: MetadataDriven, Trackable {
         return (names?.first ?? super.title)
     }
 
-    open lazy var appGroup: AppGroup? = { [unowned self] in
-        return CPEXMLSuite.current?.manifest.appGroupWithID(self.appGroupID)
-    }()
+    open var appGroup: AppGroup? {
+        return CPEXMLSuite.current?.manifest.appGroupWithID(appGroupID)
+    }
 
     open var url: URL? {
         return appGroup?.url
@@ -44,7 +47,7 @@ open class ExperienceApp: MetadataDriven, Trackable {
         return false
     }()
 
-    // Trackable
+    /// Tracking identifier
     open var analyticsID: String {
         return id
     }

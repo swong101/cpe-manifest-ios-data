@@ -12,17 +12,6 @@ public enum SocialAccountType: String {
     case instagram = "INSTAGRAM"
 }
 
-public struct TalentImage {
-
-    public var thumbnailImageURL: URL?
-    public var imageURL: URL?
-
-    public init() {
-
-    }
-
-}
-
 public struct Film {
 
     var id: String
@@ -61,6 +50,7 @@ public struct SocialAccount {
 
 public enum PersonJobFunction: String {
     case actor = "Actor"
+    case keyCharacter = "Key Character"
     case director = "Director"
     case producer = "Producer"
     case writer = "Writer"
@@ -82,9 +72,9 @@ public struct PersonJob {
         static let Character = "Character"
     }
 
-    var function: PersonJobFunction
-    var billingBlockOrder: Int = 0
-    var characters: [String]?
+    public var function: PersonJobFunction
+    public var billingBlockOrder: Int = 0
+    public var characters: [String]?
 
     init(function: PersonJobFunction = .actor, billingBlockOrder: Int = 0, character: String? = nil) {
         self.function = function
@@ -128,9 +118,9 @@ open class Person: Equatable, Trackable {
 
     public var jobs: [PersonJob]?
     public var name: String
-    var contentIdentifiers: [ContentIdentifier]?
+    public var contentIdentifiers: [ContentIdentifier]?
     public var biography: String?
-    public var images: [TalentImage]?
+    public var pictureGroup: PictureGroup?
     public var socialAccounts: [SocialAccount]?
     public var films: [Film]?
 
@@ -152,9 +142,13 @@ open class Person: Equatable, Trackable {
         return nil
     }
 
-    open var personID: String? {
-        return contentIdentifiers?.first(where: { $0.namespace == Namespaces.PeopleID })?.identifier
-    }
+    open lazy var personID: String? = { [unowned self] in
+        return self.contentIdentifiers?.first(where: { $0.namespace == Namespaces.PeopleID })?.identifier
+    }()
+
+    open lazy var appDataID: String? = { [unowned self] in
+        return self.contentIdentifiers?.first(where: { $0.namespace == Namespaces.AppDataID })?.identifier
+    }()
 
     open var character: String? {
         return jobs?.first?.characters?.first
@@ -164,34 +158,25 @@ open class Person: Equatable, Trackable {
         return (jobs?.first?.billingBlockOrder ?? 0)
     }
 
-    open var isActor: Bool {
-        if let jobs = jobs {
-            return jobs.contains(where: { $0.function == .actor })
-        }
-
-        return true
-    }
-
     open var thumbnailImageURL: URL? {
-        return images?.first?.thumbnailImageURL
+        return pictureGroup?.thumbnailImageURL
     }
 
-    open var fullImageURL: URL? {
-        return images?.first?.imageURL
+    open var largeImageURL: URL? {
+        return pictureGroup?.picture(atIndex: 0)?.imageURL
     }
 
-    open var additionalImages: [TalentImage]? {
-        if var images = images {
-            images.remove(at: 0)
-            return images
+    open lazy var gallery: Gallery? = { [unowned self] in
+        if let pictureGroup = self.pictureGroup {
+            return Gallery(pictureGroup: pictureGroup)
         }
 
         return nil
-    }
+    }()
 
     public var detailsLoaded = false
 
-    // Trackable
+    /// Tracking identifier
     open var analyticsID: String {
         return id
     }
@@ -220,23 +205,18 @@ open class Person: Equatable, Trackable {
         self.name = name
 
         // Identifier
-        if indexer.hasElement(Elements.Identifier) {
-            contentIdentifiers = try indexer[Elements.Identifier].value()
-        }
+        contentIdentifiers = try indexer[Elements.Identifier].value()
     }
 
     open func getTalentDetails(_ successBlock: @escaping (_ biography: String?, _ socialAccounts: [SocialAccount]?, _ films: [Film]?) -> Void) {
         if detailsLoaded {
             successBlock(biography, socialAccounts, films)
         } else if let talentAPIUtil = CPEXMLSuite.Settings.talentAPIUtil, let id = apiID {
-            talentAPIUtil.getTalentDetails(id, completion: { [weak self] (biography, socialAccounts, films) in
-                if let strongSelf = self {
-                    strongSelf.biography = biography
-                    strongSelf.socialAccounts = socialAccounts
-                    strongSelf.films = films
-                    strongSelf.detailsLoaded = true
-                }
-
+            talentAPIUtil.fetchDetails(forPersonID: id, completionHandler: { [weak self] (biography, socialAccounts, films) in
+                self?.biography = biography
+                self?.socialAccounts = socialAccounts
+                self?.films = films
+                self?.detailsLoaded = true
                 successBlock(biography, socialAccounts, films)
             })
         } else {

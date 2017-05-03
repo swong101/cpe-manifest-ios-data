@@ -7,14 +7,17 @@ import SWXMLHash
 
 open class Gallery: MetadataDriven, Trackable {
 
+    /// Supported subtypes
     private struct Constants {
         static let SubTypeTurntable = "Turntable"
     }
 
+    /// Supported XML attribute keys
     private struct Attributes {
         static let GalleryID = "GalleryID"
     }
 
+    /// Supported XML element tags
     private struct Elements {
         static let GalleryType = "Type"
         static let SubType = "SubType"
@@ -22,16 +25,17 @@ open class Gallery: MetadataDriven, Trackable {
         static let GalleryName = "GalleryName"
     }
 
-    var id: String
-    var type: String?
-    var subTypes: [String]?
-    var pictureGroupID: String?
-    var names: [String]?
+    /// Unique identifier
+    public var id: String
+    public var type: String?
+    public var subTypes: [String]?
+    public var pictureGroupID: String?
+    public var names: [String]?
 
     private var _pictureGroup: PictureGroup?
-    open lazy var pictureGroup: PictureGroup? = { [unowned self] in
-        return (self._pictureGroup ?? CPEXMLSuite.current?.manifest.pictureGroupWithID(self.pictureGroupID))
-    }()
+    open var pictureGroup: PictureGroup? {
+        return (_pictureGroup ?? CPEXMLSuite.current?.manifest.pictureGroupWithID(pictureGroupID))
+    }
 
     override open var title: String? {
         return (names?.first ?? super.title)
@@ -49,7 +53,7 @@ open class Gallery: MetadataDriven, Trackable {
         return (pictureGroup?.numPictures ?? 0)
     }
 
-    // Trackable
+    /// Tracking identifier
     open var analyticsID: String {
         return id
     }
@@ -57,6 +61,20 @@ open class Gallery: MetadataDriven, Trackable {
     public init?(imageURLs: [URL]) {
         id = UUID().uuidString
         _pictureGroup = PictureGroup(imageURLs: imageURLs)
+
+        super.init()
+    }
+
+    public init?(pictures: [Picture]) {
+        id = UUID().uuidString
+        _pictureGroup = PictureGroup(pictures: pictures)
+
+        super.init()
+    }
+
+    public init?(pictureGroup: PictureGroup) {
+        id = UUID().uuidString
+        _pictureGroup = pictureGroup
 
         super.init()
     }
@@ -93,11 +111,7 @@ open class Gallery: MetadataDriven, Trackable {
     }
 
     public func picture(atIndex index: Int) -> Picture? {
-        if let pictures = pictureGroup?.pictures, pictures.count > index {
-            return pictures[index]
-        }
-
-        return nil
+        return pictureGroup?.picture(atIndex: index)
     }
 
 }

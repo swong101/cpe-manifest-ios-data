@@ -9,6 +9,7 @@
 import UIKit
 import AVKit
 import AVFoundation
+import SafariServices
 import RETableViewManager
 import CPEData
 
@@ -21,6 +22,7 @@ enum ResultsTableType {
     case experience
     case mainExperience
     case gallery
+    case videos
 
     var title: String? {
         switch self {
@@ -30,6 +32,7 @@ enum ResultsTableType {
         case .cpeStyle:             return "CPEStyle"
         case .experiences:          return "Experiences"
         case .mainExperience:       return "Main Experience"
+        case .videos:               return "Videos"
         default:                    return nil
         }
     }
@@ -58,6 +61,14 @@ class ResultsTableViewController: UITableViewController {
             addTable(manifest: CPEXMLSuite.current!.manifest)
             break
 
+        case .appData:
+            addTable(appData: CPEXMLSuite.current!.appData!)
+            break
+
+        case .cpeStyle:
+            addTable(cpeStyle: CPEXMLSuite.current!.cpeStyle!)
+            break
+
         case .experiences:
             showExperiencesTable()
             break
@@ -78,6 +89,12 @@ class ResultsTableViewController: UITableViewController {
             }
             break
 
+        case .videos:
+            if let videos = CPEXMLSuite.current!.manifest.videos {
+                videos.forEach({ addSection(video: $1) })
+            }
+            break
+
         default:
             showFilesTable()
             break
@@ -93,13 +110,21 @@ class ResultsTableViewController: UITableViewController {
         self.navigationController?.pushViewController(manifestResultsTableViewController, animated: true)
     }
 
-    private func presentVideo(url: URL, title: String? = nil) {
+    private func presentAVAsset(url: URL, title: String? = nil) {
         let player = AVPlayer(url: url)
         let playerViewController = AVPlayerViewController()
         playerViewController.player = player
         playerViewController.title = title
         self.present(playerViewController, animated: true) {
             playerViewController.player!.play()
+        }
+    }
+
+    private func presentImage(url: URL) {
+        if #available(iOS 9.0, *) {
+            self.present(SFSafariViewController(url: url), animated: true)
+        } else {
+            UIApplication.shared.openURL(url)
         }
     }
 
@@ -112,15 +137,15 @@ class ResultsTableViewController: UITableViewController {
                     self?.pushResultsTableView(type: .manifest)
                 }
 
-                addItem(section: section, title: "AppData", hasChildren: cpeXMLSuite.hasAppData) {
+                addItem(section: section, title: "AppData", hasChildren: cpeXMLSuite.hasAppData) { [weak self] in
                     if cpeXMLSuite.hasAppData {
-
+                        self?.pushResultsTableView(type: .appData)
                     }
                 }
 
-                addItem(section: section, title: "CPEStyle", hasChildren: cpeXMLSuite.hasCPEStyle) {
+                addItem(section: section, title: "CPEStyle", hasChildren: cpeXMLSuite.hasCPEStyle) { [weak self] in
                     if cpeXMLSuite.hasCPEStyle {
-
+                        self?.pushResultsTableView(type: .cpeStyle)
                     }
                 }
             }
@@ -163,8 +188,8 @@ class ResultsTableViewController: UITableViewController {
 
             }
 
-            addItem(section: section, title: "Videos", hasChildren: (numVideos > 0), numChildren: numVideos) {
-
+            addItem(section: section, title: "Videos", hasChildren: (numVideos > 0), numChildren: numVideos) { [weak self] in
+                self?.pushResultsTableView(type: .videos)
             }
 
             addItem(section: section, title: "Images", hasChildren: (numImages > 0), numChildren: numImages) {
@@ -238,8 +263,8 @@ class ResultsTableViewController: UITableViewController {
 
             for timedEvent in timedEvents {
                 addItem(section: section, title: "\(timedEvent.startTime.formattedTimecode) -> \(timedEvent.endTime.formattedTimecode)", hasChildren: true, detailText: timedEvent.description) { [weak self] in
-                    if timedEvent.isType(.video), let videoURL = timedEvent.video?.url {
-                        self?.presentVideo(url: videoURL, title: timedEvent.description)
+                    if timedEvent.isType(.video), let videoURL = timedEvent.audioVisual?.presentation?.videoURL {
+                        self?.presentAVAsset(url: videoURL, title: timedEvent.description)
                     } else if timedEvent.isType(.gallery) {
                         self?.pushResultsTableView(type: .gallery, gallery: timedEvent.gallery)
                     }
@@ -285,6 +310,91 @@ class ResultsTableViewController: UITableViewController {
         }
     }
 
+    private func addTable(appData: AppDataSet) {
+        let section = RETableViewSection()
+        manager.addSection(section)
+
+        let numLocations = (appData.locations?.count ?? 0)
+        let numProducts = (appData.products?.count ?? 0)
+        let numPeople = (appData.people?.count ?? 0)
+
+        addItem(section: section, title: "Locations", hasChildren: (numLocations > 0), numChildren: numLocations) {
+
+        }
+
+        addItem(section: section, title: "Products", hasChildren: (numProducts > 0), numChildren: numProducts) {
+
+        }
+
+        addItem(section: section, title: "People", hasChildren: (numPeople > 0), numChildren: numPeople) {
+
+        }
+    }
+
+    private func addTable(cpeStyle: CPEStyleSet) {
+        cpeStyle.nodeStyles.forEach({ addSection(nodeStyle: $1) })
+    }
+
+    private func addSection(video: Video) {
+        if let section = RETableViewSection(headerTitle: "Video (\(video.id))") {
+            manager.addSection(section)
+
+            addItem(section: section, title: "Type", detailText: video.type.rawValue)
+            if let codec = video.encoding?.codec {
+                addItem(section: section, title: "Codec", detailText: codec.rawValue)
+            }
+
+            if let size = video.size {
+                addItem(section: section, title: "Size", detailText: "\(size.width) x \(size.height)")
+            }
+
+            addItem(section: section, title: "Runtime", detailText: "\(String(video.runtimeInSeconds)) sec")
+
+            if let url = video.url {
+                addItem(section: section, title: "Watch", hasChildren: true) { [weak self] in
+                    self?.presentAVAsset(url: url, title: video.id)
+                }
+            }
+        }
+    }
+
+    private func addSection(nodeStyle: NodeStyle) {
+        if let section = RETableViewSection(headerTitle: "Node Style (\(nodeStyle.id))") {
+            manager.addSection(section)
+
+            addItem(section: section, title: "Supports Landscape?", detailText: (nodeStyle.supportsLandscape ? "Yes" : "No"))
+            addItem(section: section, title: "Supports Portrait?", detailText: (nodeStyle.supportsPortrait ? "Yes" : "No"))
+            addItem(section: section, title: "Supports Tablet?", detailText: (nodeStyle.supportsTablet ? "Yes" : "No"))
+            addItem(section: section, title: "Supports Phone?", detailText: (nodeStyle.supportsPhone ? "Yes" : "No"))
+
+            let backgroundColorView = UIView(frame: CGRect(x: 0, y: 0, width: 30, height: 30))
+            backgroundColorView.backgroundColor = nodeStyle.backgroundColor
+            addItem(section: section, title: "Background Color", accessoryView: backgroundColorView)
+            addItem(section: section, title: "Background Scale Method", detailText: nodeStyle.backgroundScaleMethod.rawValue)
+            addItem(section: section, title: "Background Positioning Method", detailText: nodeStyle.backgroundPositioningMethod.rawValue)
+
+            addItem(section: section, title: "Background Image", hasChildren: (nodeStyle.backgroundImage != nil)) { [weak self] in
+                if let url = nodeStyle.backgroundImage?.url {
+                    self?.presentImage(url: url)
+                }
+            }
+
+            addItem(section: section, title: "Background Video", hasChildren: (nodeStyle.backgroundPresentation != nil)) { [weak self] in
+                if let url = nodeStyle.backgroundPresentation?.videoURL {
+                    self?.presentAVAsset(url: url)
+                }
+            }
+
+            addItem(section: section, title: "Background Video Loops?", detailText: (nodeStyle.backgroundVideoLoops ? "Yes (\(nodeStyle.backgroundVideoLoopTimecode) sec)" : "No"))
+
+            addItem(section: section, title: "Background Audio", hasChildren: (nodeStyle.backgroundAudio != nil)) { [weak self] in
+                if let url = nodeStyle.backgroundAudio?.url {
+                    self?.presentAVAsset(url: url)
+                }
+            }
+        }
+    }
+
     private func addImageSection(imageURL: URL?) {
         if let imageURL = imageURL {
             let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: 200))
@@ -306,7 +416,7 @@ class ResultsTableViewController: UITableViewController {
         }
     }
 
-    private func addItem(section: RETableViewSection, title: String, hasChildren: Bool = false, numChildren: Int? = nil, detailText: String? = nil, selectionHandler: (() -> Void)? = nil) {
+    private func addItem(section: RETableViewSection, title: String, hasChildren: Bool = false, numChildren: Int? = nil, accessoryView: UIView? = nil, detailText: String? = nil, selectionHandler: (() -> Void)? = nil) {
         let item = RETableViewItem(title: title, accessoryType: (hasChildren ? .disclosureIndicator : .none), selectionHandler: { (item) in
             item?.deselectRow(animated: true)
             selectionHandler?()
@@ -318,7 +428,9 @@ class ResultsTableViewController: UITableViewController {
             item!.selectionStyle = .none
         }
 
-        if let detailText = detailText {
+        if let accessoryView = accessoryView {
+            item!.accessoryView = accessoryView
+        } else if let detailText = detailText {
             item!.detailLabelText = detailText
         } else if let numChildren = numChildren {
             item!.detailLabelText = (numChildren > 0 ? String(numChildren) : "None")

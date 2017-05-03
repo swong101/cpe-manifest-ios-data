@@ -8,7 +8,7 @@ import CoreLocation
 
 open class AppDataItemLocation: AppDataItem {
 
-    var location: Location!
+    public var location: Location!
     public var zoomLevel: Int = 0
     public var zoomLocked = false
 
@@ -61,7 +61,7 @@ open class AppDataItemLocation: AppDataItem {
                     throw ManifestError.missingRequiredChildElement(name: Elements.Location, element: indexer[Elements.LocationSet].element)
                 }
 
-                location = try Location(indexer: indexer[Elements.LocationSet][Elements.Location])
+                location = Location(indexer: indexer[Elements.LocationSet][Elements.Location])
                 break
 
             case AppDataNVPairName.Zoom:

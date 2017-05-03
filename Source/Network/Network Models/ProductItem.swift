@@ -13,6 +13,8 @@ import Foundation
     @objc optional var category: ProductCategory? { get }
     var displayPrice: String? { get }
     var productImageURL: URL? { get }
+    @objc optional var productVideoURL: URL? { get }
+    @objc optional var productVideoPreviewImageURL: URL? { get }
     var sceneImageURL: URL? { get }
     var isExactMatch: Bool { get }
     var hasExactMatchData: Bool { get }

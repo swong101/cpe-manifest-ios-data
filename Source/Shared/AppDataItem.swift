@@ -9,12 +9,13 @@ public struct AppDataNVPairName {
     // Global
     static let AppType = "type"
     static let Text = "text"
+    static let Description = "description"
     static let DisplayOrder = "display_order"
     static let ContentID = "content_id"
     static let ParentContentID = "parent_content_id"
     static let ExperienceID = "experience_id"
     static let VideoID = "video_id"
-    static let GalleryID = "gallery_id"
+    static let PictureID = "picture_id"
     static let VideoThumbnail = "video_thumbnail"
     static let GalleryThumbnail = "gallery_thumbnail"
 
@@ -33,6 +34,8 @@ public struct AppDataNVPairName {
     static let SceneImage = "scene_image"
     static let SceneImageBullseyeX = "scene_image_bullseye_x"
     static let SceneImageBullseyeY = "scene_image_bullseye_y"
+    static let ProductVideo = "product_video"
+    static let ProductVideoContentID = "product_video_content_id"
 }
 
 open class AppDataItem: Trackable {
@@ -53,22 +56,24 @@ open class AppDataItem: Trackable {
         static let Money = "Money"
         static let Text = "Text"
         static let PictureID = "PictureID"
+        static let PresentationID = "PresentationID"
         static let Decimal = "Decimal"
         static let Integer = "Integer"
     }
 
     @objc public var id: String
-    var experienceID: String?
-    var contentID: String?
-    var parentContentID: String?
+    public var displayOrder: Int = 0
 
-    lazy var metadata: Metadata? = { [unowned self] in
+    public var contentID: String?
+    public var parentContentID: String?
+
+    open var metadata: Metadata? {
         return CPEXMLSuite.current?.manifest.metadataWithID(self.contentID)
-    }()
+    }
 
-    lazy var parentMetadata: Metadata? = { [unowned self] in
+    open var parentMetadata: Metadata? {
         return CPEXMLSuite.current?.manifest.metadataWithID(self.parentContentID)
-    }()
+    }
 
     open var title: String? {
         if let title = experience?.title {
@@ -78,25 +83,34 @@ open class AppDataItem: Trackable {
         return metadata?.title
     }
 
+    public var _description: String?
     open var description: String? {
-        return (experience?.description ?? metadata?.description)
+        return (_description ?? experience?.description ?? metadata?.description)
     }
 
     open var thumbnailImageURL: URL? {
         return (experience?.thumbnailImageURL ?? metadata?.imageURL)
     }
 
-    open var displayOrder: Int = 0
+    public var pictureIDs: [String]?
+    open var pictures: [Picture]? {
+        if let pictureIDs = pictureIDs {
+            return pictureIDs.flatMap({ CPEXMLSuite.current?.manifest.pictureWithID($0) })
+        }
 
-    open lazy var experience: Experience? = { [unowned self] in
+        return nil
+    }
+
+    public var experienceID: String?
+    open var experience: Experience? {
         return CPEXMLSuite.current?.manifest.experienceWithID(self.experienceID)
-    }()
+    }
 
     open var mediaCount: Int {
         return (experience?.experienceChildren?.count ?? 0)
     }
 
-    // Trackable
+    /// Tracking identifier
     open var analyticsID: String {
         return id
     }
@@ -156,19 +170,36 @@ open class AppDataItem: Trackable {
                 self.displayOrder = displayOrder
                 break
 
+            case AppDataNVPairName.Description:
+                guard let description: String = try indexer[Elements.Text].value() else {
+                    throw ManifestError.missingRequiredChildElement(name: Elements.Text, element: indexer.element)
+                }
+
+                _description = description
+                break
+
+            case AppDataNVPairName.PictureID:
+                guard let pictureID: String = try indexer[Elements.PictureID].value() else {
+                    throw ManifestError.missingRequiredChildElement(name: Elements.PictureID, element: indexer.element)
+                }
+
+                if pictureIDs == nil {
+                    pictureIDs = [String]()
+                }
+
+                pictureIDs!.append(pictureID)
+                break
+
             default:
                 break
             }
         }
     }
 
-    // MARK: Helper Methods
     /**
         Finds the Experience media associated with the AppData at the specified index
      
-        - Parameters:
-            - index: Media index to search
-     
+        - Parameter index: Media index to search
         - Returns: Associated Experience if it exists
      */
     open func mediaAtIndex(_ index: Int) -> Experience? {

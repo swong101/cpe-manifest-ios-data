@@ -7,17 +7,20 @@ import SWXMLHash
 
 open class PlayableSequence {
 
+    /// Supported XML attribute keys
     private struct Attributes {
         static let PlayableSequenceID = "PlayableSequenceID"
     }
 
+    /// Supported XML element tags
     private struct Elements {
         static let Clip = "Clip"
         static let PresentationID = "PresentationID"
     }
 
-    var id: String
-    var presentationIDs: [String]
+    /// Unique identifier
+    public var id: String
+    public var presentationIDs: [String]
 
     open lazy var presentations: [Presentation] = { [unowned self] in
         return self.presentationIDs.flatMap({ CPEXMLSuite.current?.manifest.presentationWithID($0) })

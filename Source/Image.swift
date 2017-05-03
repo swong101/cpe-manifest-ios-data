@@ -5,28 +5,51 @@
 import Foundation
 import SWXMLHash
 
-private enum ImageEncoding: String {
+/**
+    Supported image types
+ 
+    - jpeg: JPEG
+    - jpg: JPEG
+    - png: PNG
+ */
+public enum ImageEncoding: String {
     case jpeg = "image/jpeg"
     case jpg = "image/jpg"
     case png = "image/png"
 }
 
+/// Displayable image asset
 open class Image: DigitalAsset {
 
+    /// Supported XML attribute keys
     private struct Attributes {
         static let ImageID = "ImageID"
     }
 
+    /// Supported XML element tags
     private struct Elements {
         static let Width = "Width"
         static let Height = "Height"
         static let Encoding = "Encoding"
     }
 
-    var id: String
-    open var size: CGSize
-    private var encoding: ImageEncoding
+    /// Unique identifier
+    public var id: String
 
+    /// Size of the image, in pixels
+    public var size: CGSize
+
+    /// Image file/encoding type
+    public var encoding: ImageEncoding
+
+    /**
+         Initializes a new image asset with the provided XML indexer
+         
+         - Parameter indexer: The root XML node
+         - Throws:
+             - `ManifestError.missingRequiredAttribute` if an expected XML attribute is not present
+             - `ManiefstError.missingRequiredChildElement` if an expected XML element is not present
+     */
     override init?(indexer: XMLIndexer) throws {
         // ImageID
         guard let id: String = indexer.value(ofAttribute: Attributes.ImageID) else {

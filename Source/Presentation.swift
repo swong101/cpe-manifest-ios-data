@@ -7,10 +7,12 @@ import SWXMLHash
 
 open class Presentation {
 
+    /// Supported XML attribute keys
     private struct Attributes {
         static let PresentationID = "PresentationID"
     }
 
+    /// Supported XML element tags
     private struct Elements {
         static let TrackMetadata = "TrackMetadata"
         static let VideoTrackReference = "VideoTrackReference"
@@ -19,21 +21,22 @@ open class Presentation {
         static let AudioTrackID = "AudioTrackID"
     }
 
-    var id: String
-    var videoIDs: [String]?
-    var audioIDs: [String]?
+    /// Unique identifier
+    public var id: String
+    public var videoIDs: [String]?
+    public var audioIDs: [String]?
 
-    open lazy var audio: Audio? = { [unowned self] in
-        return CPEXMLSuite.current?.manifest.audioWithID(self.audioIDs?.first)
-    }()
+    open var audio: Audio? {
+        return CPEXMLSuite.current?.manifest.audioWithID(audioIDs?.first)
+    }
 
     open var audioURL: URL? {
         return audio?.url
     }
 
-    open lazy var video: Video? = { [unowned self] in
-        return CPEXMLSuite.current?.manifest.videoWithID(self.videoIDs?.first)
-    }()
+    open var video: Video? {
+        return CPEXMLSuite.current?.manifest.videoWithID(videoIDs?.first)
+    }
 
     open var videoURL: URL? {
         return video?.url

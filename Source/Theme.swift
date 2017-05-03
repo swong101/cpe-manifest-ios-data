@@ -7,10 +7,12 @@ import SWXMLHash
 
 public struct ThemeButton: XMLIndexerDeserializable {
 
+    /// Supported XML attribute keys
     private struct Attributes {
         static let Label = "label"
     }
 
+    /// Supported XML element tags
     private struct Elements {
         static let Default = "Default"
         static let BaseImage = "BaseImage"
@@ -18,20 +20,20 @@ public struct ThemeButton: XMLIndexerDeserializable {
         static let DefocusImage = "DefocusImage"
     }
 
-    var label: String
-    var baseImageID: String
-    var highlightImageID: String
-    var defocusImageID: String
+    public var label: String
+    public var baseImageID: String
+    public var highlightImageID: String
+    public var defocusImageID: String
 
-    var baseImage: Image? {
+    public var baseImage: Image? {
         return CPEXMLSuite.current?.manifest.imageWithID(baseImageID)
     }
 
-    var highlightImage: Image? {
+    public var highlightImage: Image? {
         return CPEXMLSuite.current?.manifest.imageWithID(highlightImageID)
     }
 
-    var defocusImage: Image? {
+    public var defocusImage: Image? {
         return CPEXMLSuite.current?.manifest.imageWithID(defocusImageID)
     }
 
@@ -48,17 +50,20 @@ public struct ThemeButton: XMLIndexerDeserializable {
 
 open class Theme {
 
+    /// Supported XML attribute keys
     private struct Attributes {
         static let ThemeID = "ThemeID"
     }
 
+    /// Supported XML element tags
     private struct Elements {
         static let ButtonImageSet = "ButtonImageSet"
         static let Button = "Button"
     }
 
-    var id: String
-    private var buttons: [String: ThemeButton]? // Label: ThemeButton
+    /// Unique identifier
+    public var id: String
+    public var buttons: [String: ThemeButton]? // Label: ThemeButton
 
     init(indexer: XMLIndexer) throws {
         // ThemeID

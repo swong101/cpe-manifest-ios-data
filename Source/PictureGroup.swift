@@ -7,6 +7,7 @@ import SWXMLHash
 
 open class Picture {
 
+    /// Supported XML element tags
     private struct Elements {
         static let PictureID = "PictureID"
         static let ImageID = "ImageID"
@@ -15,36 +16,39 @@ open class Picture {
         static let Sequence = "Sequence"
     }
 
-    var id: String
+    /// Unique identifier
+    public var id: String
     public var imageID: String?
-    var thumbnailImageID: String?
-    var captions: [String]?
+    public var thumbnailImageID: String?
+    public var captions: [String]?
     public var sequence: Int = 0
 
-    open lazy var image: Image? = { [unowned self] in
-        return CPEXMLSuite.current?.manifest.imageWithID(self.imageID)
-    }()
+    open var image: Image? {
+        return CPEXMLSuite.current?.manifest.imageWithID(imageID)
+    }
 
     private var _imageURL: URL?
     open var imageURL: URL? {
         return (_imageURL ?? image?.url)
     }
 
-    open lazy var thumbnailImage: Image? = { [unowned self] in
-        return CPEXMLSuite.current?.manifest.imageWithID(self.thumbnailImageID)
-    }()
+    open var thumbnailImage: Image? {
+        return CPEXMLSuite.current?.manifest.imageWithID(thumbnailImageID)
+    }
 
+    private var _thumbnailImageURL: URL?
     open var thumbnailImageURL: URL? {
-        return (thumbnailImage?.url ?? imageURL)
+        return (_thumbnailImageURL ?? thumbnailImage?.url ?? imageURL)
     }
 
     open var caption: String? {
         return captions?.first
     }
 
-    init(imageURL: URL) {
+    init(imageURL: URL, thumbnailImageURL: URL? = nil) {
         id = UUID().uuidString
         _imageURL = imageURL
+        _thumbnailImageURL = thumbnailImageURL
     }
 
     init(indexer: XMLIndexer) throws {
@@ -66,7 +70,13 @@ open class Picture {
         thumbnailImageID = try indexer[Elements.ThumbnailImageID].value()
 
         // Caption
-        captions = try indexer[Elements.Caption].value()
+        captions = try indexer[Elements.Caption].flatMap({
+            if let caption: String = try $0.value(), caption.characters.count > 0 {
+                return caption
+            }
+
+            return nil
+        })
 
         // Sequence
         sequence = (try indexer[Elements.Sequence].value() ?? 0)
@@ -76,15 +86,18 @@ open class Picture {
 
 public class PictureGroup {
 
+    /// Supported XML attribute keys
     private struct Attributes {
         static let PictureGroupID = "PictureGroupID"
     }
 
+    /// Supported XML element tags
     private struct Elements {
         static let Picture = "Picture"
     }
 
-    var id: String?
+    /// Unique identifier
+    public var id: String?
     public var pictures: [Picture]
 
     open var thumbnailImageURL: URL? {
@@ -97,6 +110,10 @@ public class PictureGroup {
 
     init(imageURLs: [URL]) {
         pictures = imageURLs.map({ Picture(imageURL: $0) })
+    }
+
+    init(pictures: [Picture]) {
+        self.pictures = pictures
     }
 
     init(indexer: XMLIndexer) throws {
@@ -113,6 +130,10 @@ public class PictureGroup {
         }
 
         pictures = try indexer[Elements.Picture].flatMap({ try Picture(indexer: $0) })
+    }
+
+    open func picture(atIndex index: Int) -> Picture? {
+        return (pictures.count > index ? pictures[index] : nil)
     }
 
 }

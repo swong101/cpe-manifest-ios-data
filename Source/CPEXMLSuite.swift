@@ -15,21 +15,30 @@ public enum ManifestError: Error {
     case missingSupplementalExperiences
 }
 
+/**
+    Supported interactive maps services
+ 
+    - googleMaps: Google Maps (SDK required)
+    - appleMaps: Apple Maps (native)
+ */
 public enum MapsAPIService {
     case googleMaps
     case appleMaps
 }
 
+/// Supported custom namespaces
 public struct Namespaces {
     static let AppDataID = "AppID"
     static let PeopleID = "PeopleOtherID"
 }
 
+/// Supported Media Manifest spec versions
 public enum ManifestSpecVersion: String {
     case unknown = "UNKNOWN"
     case oneDotFive = "1.5"
 }
 
+/// Supported Media Manifest profiles
 public enum ManifestProfile: String {
     case none = "NONE"
     case ip1 = "IP-1"

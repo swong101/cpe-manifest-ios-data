@@ -238,11 +238,6 @@ open class Metadata {
         return largeImageURL(forLanguage: Locale.deviceLanguage)
     }
 
-    /// List of `People` of type `.actor`
-    open lazy var actors: [Person]? = { [unowned self] in
-        return self.people?.filter({ $0.isActor })
-    }()
-
     /**
         Initializes a new collection of metadata for multiple languages with the provided XML indexer
      

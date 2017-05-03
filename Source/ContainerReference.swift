@@ -34,9 +34,6 @@ public class ContainerReference {
     /// Length of Container in bytes
     public var length: Int?
 
-    /// Hash of Container
-    public var hashes: [Hash]?
-
     /// Container's primary file location
     open var url: URL? {
         return locations?.first
@@ -78,11 +75,6 @@ public class ContainerReference {
 
         // Length
         length = try indexer[Elements.Length].value()
-
-        // Hash
-        if indexer.hasElement(Elements.Hash) {
-            hashes = try indexer[Elements.Hash].map({ try Hash(indexer: $0) })
-        }
     }
 
 }

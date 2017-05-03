@@ -22,6 +22,7 @@ public enum ExperienceAudioVisualType: String {
 
 open class ExperienceAudioVisual: MetadataDriven {
 
+    /// Supported XML element tags
     private struct Elements {
         static let AudioVisualType = "Type"
         static let SubType = "SubType"
@@ -29,18 +30,18 @@ open class ExperienceAudioVisual: MetadataDriven {
         static let PlayableSequenceID = "PlayableSequenceID"
     }
 
-    var type: ExperienceAudioVisualType
-    var subTypes: [String]?
-    var presentationID: String?
-    private var playableSequenceID: String?
+    public var type: ExperienceAudioVisualType
+    public var subTypes: [String]?
+    public var presentationID: String?
+    public var playableSequenceID: String?
 
-    open lazy var presentation: Presentation? = { [unowned self] in
-        return CPEXMLSuite.current?.manifest.presentationWithID(self.presentationID)
-    }()
+    open var presentation: Presentation? {
+        return CPEXMLSuite.current?.manifest.presentationWithID(presentationID)
+    }
 
-    open lazy var playableSequence: PlayableSequence? = { [unowned self] in
-        return CPEXMLSuite.current?.manifest.playableSequenceWithID(self.playableSequenceID)
-    }()
+    open var playableSequence: PlayableSequence? {
+        return CPEXMLSuite.current?.manifest.playableSequenceWithID(playableSequenceID)
+    }
 
     open lazy var isClipShare: Bool = { [unowned self] in
         return (self.subTypes?.contains("Shareable Clip") ?? false)

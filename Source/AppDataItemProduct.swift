@@ -27,15 +27,15 @@ open class AppDataItemProduct: AppDataItem, ProductItem {
 
     public var externalURL: URL?
 
-    public var name: String {
+    open var name: String {
         return (title ?? "")
     }
 
-    public var brand: String? {
+    open var brand: String? {
         return description
     }
 
-    public lazy var category: AppDataItemProductCategory? = { [unowned self] in
+    open lazy var category: AppDataItemProductCategory? = { [unowned self] in
         if let metadata = self.parentMetadata {
             return AppDataItemProductCategory(metadata: metadata)
         }
@@ -45,7 +45,7 @@ open class AppDataItemProduct: AppDataItem, ProductItem {
 
     public var price: Double?
     public var currencyCode = "USD"
-    public var displayPrice: String? {
+    open var displayPrice: String? {
         if let price = price {
             let formatter = NumberFormatter()
             formatter.numberStyle = .currency
@@ -56,19 +56,30 @@ open class AppDataItemProduct: AppDataItem, ProductItem {
         return nil
     }
 
-    public var productImageURL: URL? {
+    open var productImageURL: URL? {
         return thumbnailImageURL
     }
 
+    public var productVideoPresentationID: String?
+    public var productVideoContentID: String?
+
+    open var productVideoURL: URL? {
+        return CPEXMLSuite.current?.manifest.presentationWithID(productVideoPresentationID)?.videoURL
+    }
+
+    open var productVideoPreviewImageURL: URL? {
+        return CPEXMLSuite.current?.manifest.metadataWithID(productVideoContentID)?.largeImageURL
+    }
+
     public var sceneImagePictureID: String?
-    public var sceneImageURL: URL? {
+    open var sceneImageURL: URL? {
         return CPEXMLSuite.current?.manifest.pictureWithID(sceneImagePictureID)?.imageURL
     }
 
     public var isExactMatch = false
     public var hasExactMatchData = false
     public var bullseyePoint = CGPoint.zero
-    public var shareText: String {
+    open var shareText: String {
         var shareText = name
         if let externalURLString = externalURL?.absoluteString {
             shareText += " - " + externalURLString
@@ -118,6 +129,14 @@ open class AppDataItemProduct: AppDataItem, ProductItem {
 
             case AppDataNVPairName.SceneImage:
                 sceneImagePictureID = try indexer[Elements.PictureID].value()
+                break
+
+            case AppDataNVPairName.ProductVideo:
+                productVideoPresentationID = try indexer[Elements.PresentationID].value()
+                break
+
+            case AppDataNVPairName.ProductVideoContentID:
+                productVideoContentID = try indexer[Elements.ContentID].value()
                 break
 
             case AppDataNVPairName.ProductImageBullseyeX:

@@ -9,6 +9,7 @@ open class AppDataSet {
 
     private struct Attributes {
         static let Name = "Name"
+        static let AppDataType = "type"
     }
 
     private struct Elements {
@@ -17,10 +18,17 @@ open class AppDataSet {
         static let Text = "Text"
     }
 
+    private enum AppDataType: String {
+        case product = "PRODUCT"
+        case person = "PERSON"
+        case location = "LOCATION"
+    }
+
     // Inventory
-    open var locations: [String: AppDataItemLocation]?
-    open var products: [String: AppDataItemProduct]?
-    open var imageCache: [String: UIImage]?
+    public var locations: [String: AppDataItemLocation]?
+    public var products: [String: AppDataItemProduct]?
+    public var people: [String: AppDataItem]?
+    public var imageCache: [String: UIImage]?
 
     init(indexer: XMLIndexer) throws {
         // ManifestAppData
@@ -29,13 +37,20 @@ open class AppDataSet {
         }
 
         for indexer in indexer[Elements.ManifestAppData] {
-            if try indexer[Elements.NVPair].withAttr(Attributes.Name, "type")[Elements.Text].value() == "PRODUCT" {
+            if try indexer[Elements.NVPair].withAttr(Attributes.Name, Attributes.AppDataType)[Elements.Text].value() == AppDataType.product.rawValue {
                 if products == nil {
                     products = [String: AppDataItemProduct]()
                 }
 
                 let product = try AppDataItemProduct(indexer: indexer)
                 products![product.id] = product
+            } else if try indexer[Elements.NVPair].withAttr(Attributes.Name, Attributes.AppDataType)[Elements.Text].value() == AppDataType.person.rawValue {
+                if people == nil {
+                    people = [String: AppDataItem]()
+                }
+
+                let person = try AppDataItem(indexer: indexer)
+                people![person.id] = person
             } else {
                 if locations == nil {
                     locations = [String: AppDataItemLocation]()
@@ -62,6 +77,23 @@ open class AppDataSet {
                     })
                 }
             }
+        }
+
+        if let appDataPeople = people {
+            if let people = CPEXMLSuite.current?.manifest.people {
+                for person in people {
+                    if let appDataID = person.appDataID, let appDataItem = appDataPeople[appDataID] {
+                        person.biography = appDataItem.description
+                        if let pictures = appDataItem.pictures {
+                            person.pictureGroup = PictureGroup(pictures: pictures)
+                        }
+
+                        person.detailsLoaded = true
+                    }
+                }
+            }
+
+            self.people = nil
         }
     }
 

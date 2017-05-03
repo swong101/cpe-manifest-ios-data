@@ -5,6 +5,19 @@
 import Foundation
 import SWXMLHash
 
+/**
+    Supported `TimedEvent` types
+ 
+    - any: Event has any kind of item associated with it
+    - appGroup: Event has an `AppGroup` associated with it
+    - gallery: Event has a `Gallery` associated with it
+    - video: Event has a `Presentation` associated with it
+    - clipShare: Event is a `video` type with subtype `Shareable Clip`
+    - location: Event has a `Location` associated with it
+    - product: Event has a `ProductItem` associated with it
+    - person: Event has a `Person` associated with it
+    - textItem: Event has a `TextObject` associated with it
+ */
 public enum TimedEventType {
     case any
     case appGroup
@@ -17,6 +30,15 @@ public enum TimedEventType {
     case textItem
 }
 
+/**
+    Checks the equality of two `TimedEvent` objects
+ 
+    - Parameters
+        - lhs: The first `TimedEvent` object to compare
+        - rhs: The second `TimedEvent` object to compare
+ 
+    - Returns: `true` if the `TimedEvent` objects have the same ID and start time
+ */
 public func == (lhs: TimedEvent, rhs: TimedEvent) -> Bool {
     return (lhs.id == rhs.id && lhs.startTime == rhs.startTime)
 }
@@ -105,12 +127,12 @@ open class TimedEvent: Equatable, Trackable {
     }()
 
     /// Parent `Experience`
-    open lazy var experience: Experience? = { [unowned self] in
-        return CPEXMLSuite.current?.manifest.experienceWithID(self.experienceID)
-    }()
+    open var experience: Experience? {
+        return CPEXMLSuite.current?.manifest.experienceWithID(experienceID)
+    }
 
     /// Associated `ExperienceAudioVisual` (used for video clips)
-    lazy var audioVisual: ExperienceAudioVisual? = { [unowned self] in
+    open lazy var audioVisual: ExperienceAudioVisual? = { [unowned self] in
         if let id = self.presentationID {
             return CPEXMLSuite.current?.manifest.presentationToAudioVisualMapping?[id]
         }
@@ -119,46 +141,46 @@ open class TimedEvent: Equatable, Trackable {
     }()
 
     /// Associated `Picture` (used for single/supplemental image)
-    open lazy var picture: Picture? = { [unowned self] in
-        return CPEXMLSuite.current?.manifest.pictureWithID(self.pictureID)
-    }()
+    open var picture: Picture? {
+        return CPEXMLSuite.current?.manifest.pictureWithID(pictureID)
+    }
 
     /// Associated `Gallery` (used for gallery of images)
-    open lazy var gallery: Gallery? = { [unowned self] in
-        return CPEXMLSuite.current?.manifest.galleryWithID(self.galleryID)
-    }()
+    open var gallery: Gallery? {
+        return CPEXMLSuite.current?.manifest.galleryWithID(galleryID)
+    }
 
     /// Associated `AppGroup` (used for HTML5 apps)
-    open lazy var appGroup: AppGroup? = { [unowned self] in
-        return CPEXMLSuite.current?.manifest.appGroupWithID(self.appGroupID)
-    }()
+    open var appGroup: AppGroup? {
+        return CPEXMLSuite.current?.manifest.appGroupWithID(appGroupID)
+    }
 
     /// Associated `Person` (used for talent details)
-    open lazy var person: Person? = { [unowned self] in
-        if let otherID = self.otherID, otherID.namespace == Namespaces.PeopleID {
+    open var person: Person? {
+        if let otherID = otherID, otherID.namespace == Namespaces.PeopleID {
             return CPEXMLSuite.current?.manifest.personWithID(otherID.identifier)
         }
 
         return nil
-    }()
+    }
 
     /// Associated `AppDataItemLocation` (used for scene loations)
-    open lazy var location: AppDataItemLocation? = { [unowned self] in
-        if let otherID = self.otherID, otherID.namespace == Namespaces.AppDataID {
+    open var location: AppDataItemLocation? {
+        if let otherID = otherID, otherID.namespace == Namespaces.AppDataID {
             return CPEXMLSuite.current?.appData?.locationWithID(otherID.identifier)
         }
 
         return nil
-    }()
+    }
 
     /// Associated `AppDataItemProduct` (used for scene products)
-    open lazy var product: AppDataItemProduct? = { [unowned self] in
-        if let otherID = self.otherID, otherID.namespace == Namespaces.AppDataID {
+    open var product: AppDataItemProduct? {
+        if let otherID = otherID, otherID.namespace == Namespaces.AppDataID {
             return CPEXMLSuite.current?.appData?.productWithID(otherID.identifier)
         }
 
         return nil
-    }()
+    }
 
     /// Associated text item (used for trivia)
     open lazy var textItem: String? = { [unowned self] in
@@ -169,6 +191,7 @@ open class TimedEvent: Equatable, Trackable {
         return nil
     }()
 
+    /// Primary text of associated object
     open var description: String? {
         if isType(.textItem) {
             return textItem
@@ -177,6 +200,7 @@ open class TimedEvent: Equatable, Trackable {
         return (gallery?.title ?? location?.title ?? audioVisual?.title)
     }
 
+    /// Image URL of associated object
     open var imageURL: URL? {
         if isType(.clipShare) {
             return audioVisual?.metadata?.largeImageURL
@@ -185,6 +209,7 @@ open class TimedEvent: Equatable, Trackable {
         return picture?.imageURL
     }
 
+    /// Thumbnail image URL of associated object
     private var _thumbnailImageURL: URL?
     open var thumbnailImageURL: URL? {
         if _thumbnailImageURL == nil {
@@ -204,16 +229,26 @@ open class TimedEvent: Equatable, Trackable {
         return (_thumbnailImageURL ?? imageURL)
     }
 
-    open var video: Video? {
-        return audioVisual?.presentation?.video
-    }
-
+    /**
+        Initializes a new event at the provided timecodes
+     
+        - Parameters
+            - startTime: The start time, in seconds, of the event
+            - endTime: The end time, in seconds, of the event
+     */
     init(startTime: Double, endTime: Double) {
         id = UUID().uuidString
         self.startTime = startTime
         self.endTime = endTime
     }
 
+    /**
+        Initializes a new event with the provided XML indexer
+     
+        - Parameter indexer: The root XML node
+        - Throws:
+            - `ManifestError.missingRequiredChildElement` if an expected XML element is not present
+     */
     init(indexer: XMLIndexer) throws {
         // Custom ID
         id = UUID().uuidString
@@ -262,13 +297,10 @@ open class TimedEvent: Equatable, Trackable {
         }
     }
 
-    // MARK: Helper Methods
     /**
         Check if TimedEvent is of the specified type
  
-        - Parameters:
-            - type: Type of TimedEvent
- 
+        - Parameter type: Type of TimedEvent
         - Returns: `true` if the TimedEvent is of the specified type
     */
     open func isType(_ type: TimedEventType) -> Bool {

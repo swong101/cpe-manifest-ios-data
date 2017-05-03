@@ -35,9 +35,9 @@ open class CPEStyleSet {
     }
 
     // Inventory
-    open var experienceToNodeStyleMapping: [String: [String]] // ExperienceID: [NodeStyleID]
-    open var nodeStyles: [String: NodeStyle]
-    open var themes: [String: Theme]
+    public var experienceToNodeStyleMapping: [String: [String]] // ExperienceID: [NodeStyleID]
+    public var nodeStyles: [String: NodeStyle]
+    public var themes: [String: Theme]
 
     init(indexer: XMLIndexer) throws {
         // ExperienceStyleMap
