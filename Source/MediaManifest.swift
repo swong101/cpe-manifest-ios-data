@@ -322,6 +322,9 @@ open class MediaManifest {
         var experienceApps = [String: ExperienceApp]()
         var presentationToAudioVisualMapping = [String: ExperienceAudioVisual]()
         for experience in experiences {
+            // Process child experiences
+            _ = experience.childExperiences
+            
             if let experienceTimedEvents = experience.timedEventSequence?.timedEvents {
                 for timedEvent in experienceTimedEvents {
                     timedEvent.experienceID = experience.id
@@ -493,8 +496,14 @@ open class MediaManifest {
     }
 
     open func timedEvents(atTimecode timecode: Double, type: TimedEventType = .any) -> [TimedEvent]? {
-        return timedEvents?.filter({ $0.isType(type) && timecode >= $0.startTime && timecode <= $0.endTime }).sorted(by: {
-            ($0.experience != nil && $1.experience != nil && $0.experience!.sequence < $1.experience!.sequence)
+        return timedEvents?.filter({ (timedEvent) -> Bool in
+            return timedEvent.isType(type) && timecode >= timedEvent.startTime && timecode <= timedEvent.endTime
+        }).sorted(by: { (timedEvent1, timedEvent2) -> Bool in
+            if let sequence1 = timedEvent1.experience?.sequence, let sequence2 = timedEvent2.experience?.sequence {
+                return (sequence1 < sequence2);
+            }
+            
+            return false
         })
     }
 
