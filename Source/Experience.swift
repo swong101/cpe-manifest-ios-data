@@ -196,8 +196,8 @@ open class Experience: MetadataDriven, Equatable, Trackable {
     }()
 
     open lazy var isClipShareExperience: Bool = { [unowned self] in
-        if let audioVisual = (self.audioVisual ?? self.childExperiences?.first?.audioVisual) {
-            return audioVisual.isClipShare
+        if let audioVisual = (self.audioVisual ?? self.childExperiences?.first?.audioVisual), audioVisual.isClipShare {
+            return true
         }
 
         return self.id.contains("clipshare")
