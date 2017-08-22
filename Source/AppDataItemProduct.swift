@@ -35,7 +35,7 @@ open class AppDataItemProduct: AppDataItem, ProductItem {
         return description
     }
 
-    open lazy var category: AppDataItemProductCategory? = { [unowned self] in
+    open lazy var category: ProductCategory? = { [unowned self] in
         if let metadata = self.parentMetadata {
             return AppDataItemProductCategory(metadata: metadata)
         }

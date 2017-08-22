@@ -16,7 +16,8 @@ extension String {
             var currentNumberString = ""
             var hours = 0.0, minutes = 0.0, seconds = 0.0
 
-            let timeString = self.substring(from: self.index(self.startIndex, offsetBy: 2))
+            
+            let timeString = String(self[self.index(self.startIndex, offsetBy: 2)...])
             for i in 0 ..< timeString.characters.count {
                 if timeString[i] == "H", let numValue = Double(currentNumberString) {
                     hours = numValue
@@ -53,7 +54,7 @@ extension String {
     subscript (r: Range<Int>) -> String {
         let start = characters.index(startIndex, offsetBy: r.lowerBound)
         let end = index(start, offsetBy: r.upperBound - r.lowerBound)
-        return self[start ..< end]
+        return String(self[start ..< end])
     }
 
 }

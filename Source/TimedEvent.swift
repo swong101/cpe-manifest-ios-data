@@ -322,7 +322,7 @@ open class TimedEvent: Equatable, Trackable {
 
         case .product:
             if let productAPIUtil = CPEXMLSuite.Settings.productAPIUtil, let productNamespace = productID?.namespace {
-                return (productNamespace == type(of: productAPIUtil).APINamespace)
+                return (productNamespace == Swift.type(of: productAPIUtil).APINamespace)
             }
 
             return (product != nil)
