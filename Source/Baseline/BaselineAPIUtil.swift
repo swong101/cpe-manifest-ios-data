@@ -11,7 +11,7 @@ public enum BaselineAPIStudio: String {
 
 public class BaselineAPIUtil: APIUtil, TalentAPIUtil {
 
-    public static var APIDomain = "https://vic57ayytg.execute-api.us-west-2.amazonaws.com/prod"
+    public static var APIDomain = "https://talent-api.crossplatformextras.com"
     public static var APINamespace = "baselineapi.com"
 
     private struct Endpoints {
