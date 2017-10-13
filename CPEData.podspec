@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
 
   s.platform        = :ios, '8.0'
 
-  s.dependency        'SWXMLHash', '3.2'
+  s.dependency        'SWXMLHash', '~> 4.2'
 
   
   s.source          = { :git => 'https://github.com/swong101/cpe-manifest-ios-data.git', :tag => s.version.to_s }
