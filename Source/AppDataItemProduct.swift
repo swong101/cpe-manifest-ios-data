@@ -96,7 +96,7 @@ open class AppDataItemProduct: AppDataItem, ProductItem {
         var sceneImageBullseyeX: Double?
         var sceneImageBullseyeY: Double?
 
-        for indexer in indexer[Elements.NVPair] {
+        for indexer in indexer[Elements.NVPair].all {
             // Name
             guard let name: String = indexer.value(ofAttribute: Attributes.Name) else {
                 throw ManifestError.missingRequiredAttribute(Attributes.Name, element: indexer.element)

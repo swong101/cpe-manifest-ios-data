@@ -278,7 +278,7 @@ open class TimedEvent: Equatable, Trackable {
             appGroupID = try indexer[Elements.AppGroupID].value()
         } else if indexer.hasElement(Elements.TextGroupID) {
             var textGroupMappings = [(String, Int)]()
-            for indexer in indexer[Elements.TextGroupID] {
+            for indexer in indexer[Elements.TextGroupID].all {
                 if let textGroupID: String = try indexer.value(), let index: Int = indexer.value(ofAttribute: Attributes.Index) {
                     textGroupMappings.append((textGroupID, index))
                 }
