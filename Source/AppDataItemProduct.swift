@@ -96,7 +96,7 @@ open class AppDataItemProduct: AppDataItem, ProductItem {
         var sceneImageBullseyeX: Double?
         var sceneImageBullseyeY: Double?
 
-        if let elementsArray = indexer[Elements.NVPair].all {
+        if let elementsArray = indexer[Elements.NVPair]?.all {
             for indexer in elementsArray {
                 // Name
                 guard let name: String = indexer.value(ofAttribute: Attributes.Name) else {
